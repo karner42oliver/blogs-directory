@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2017, Paul Ryley
  * @license   GPLv3
  * @since     2.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Handlers;
+namespace PsourceLabs\SiteReviews\Handlers;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Commands\RegisterTaxonomy as Command;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Commands\RegisterTaxonomy as Command;
 
 class RegisterTaxonomy
 {

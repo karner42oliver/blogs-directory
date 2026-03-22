@@ -1,16 +1,6 @@
 <?php
 
-/**
- * Widget Boilerplate
- *
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- * -------------------------------------------------------------------------------------------------
- */
-
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
 use WP_Widget;
 

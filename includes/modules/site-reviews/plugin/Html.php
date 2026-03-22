@@ -1,17 +1,9 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- * -------------------------------------------------------------------------------------------------
- */
-
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
 use Exception;
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 
 class Html
 {
@@ -34,7 +26,7 @@ class Html
 	/**
 	 * Add a custom field to the form
 	 * @param string $formId
-	 * @return \GeminiLabs\SiteReviews\Html\Form|false
+	 * @return \PsourceLabs\SiteReviews\Html\Form|false
 	 */
 	public function addCustomField( $formId, callable $callback )
 	{
@@ -45,7 +37,7 @@ class Html
 	/**
 	 * Add a field to an existing form
 	 * @param string $formId
-	 * @return \GeminiLabs\SiteReviews\Html\Form|false
+	 * @return \PsourceLabs\SiteReviews\Html\Form|false
 	 */
 	public function addField( $formId, array $args = [] )
 	{
@@ -56,7 +48,7 @@ class Html
 	/**
 	 * Create a new form
 	 * @param string $formId
-	 * @return \GeminiLabs\SiteReviews\Html\Form
+	 * @return \PsourceLabs\SiteReviews\Html\Form
 	 */
 	public function createForm( $formId, array $args = [] )
 	{
@@ -187,7 +179,7 @@ class Html
 
 	/**
 	 * Return a stored form
-	 * @return \GeminiLabs\SiteReviews\Html\Form|false
+	 * @return \PsourceLabs\SiteReviews\Html\Form|false
 	 */
 	public function switchForm( $formId )
 	{

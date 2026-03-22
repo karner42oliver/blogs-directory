@@ -1,21 +1,13 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     2.3.0
- * -------------------------------------------------------------------------------------------------
- */
-
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
 use DateTime;
-use GeminiLabs\SchemaOrg\Review as ReviewSchema;
-use GeminiLabs\SchemaOrg\Schema as SchemaOrg;
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Database;
-use GeminiLabs\SiteReviews\Rating;
+use PsourceLabs\SchemaOrg\Review as ReviewSchema;
+use PsourceLabs\SchemaOrg\Schema as SchemaOrg;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Database;
+use PsourceLabs\SiteReviews\Rating;
 
 class Schema
 {
@@ -221,7 +213,7 @@ class Schema
 	}
 
 	/**
-	 * @return \GeminiLabs\SchemaOrg\Type
+	 * @return \PsourceLabs\SchemaOrg\Type
 	 */
 	protected function getSchemaType()
 	{

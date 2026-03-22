@@ -1,18 +1,10 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- * -------------------------------------------------------------------------------------------------
- */
+namespace PsourceLabs\SiteReviews;
 
-namespace GeminiLabs\SiteReviews;
-
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Html;
-use GeminiLabs\SiteReviews\Translator;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Html;
+use PsourceLabs\SiteReviews\Translator;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -475,16 +467,6 @@ class Settings
 				'name' => __( 'Name', 'blogs-directory' ),
 				'email' => __( 'E-Mail', 'blogs-directory' ),
 			],
-		]);
-
-		$this->addSetting( $formId, [
-			'type' => 'yesno_inline',
-			'name' => 'akismet',
-			'label' => __( 'Akismet-Integration aktivieren', 'blogs-directory' ),
-			'default' => 'no',
-			'desc' => sprintf( __( 'Die %s-Integration bietet Spam-Filter fuer deine Bewertungen. Damit diese Einstellung wirkt, musst du zuerst das Akismet-Plugin installieren und aktivieren sowie einen WordPress.com-API-Key einrichten.', 'blogs-directory' ),
-				sprintf( '<a href="https://akismet.com" target="_blank">%s</a>', __( 'Akismet-Plugin', 'blogs-directory' ))
-			),
 		]);
 
 		$this->addSetting( $formId, [

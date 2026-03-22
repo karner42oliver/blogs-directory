@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Handlers;
+namespace PsourceLabs\SiteReviews\Handlers;
 
 use Exception;
-use GeminiLabs\SiteReviews\Commands\RegisterWidgets as Command;
+use PsourceLabs\SiteReviews\Commands\RegisterWidgets as Command;
 
 class RegisterWidgets
 {
@@ -24,7 +24,7 @@ class RegisterWidgets
 
 		foreach( $command->widgets as $key => $values ) {
 
-			$widgetClass = glsr_resolve( 'Helper' )->buildClassName( $key, 'GeminiLabs\SiteReviews\Widgets' );
+			$widgetClass = glsr_resolve( 'Helper' )->buildClassName( $key, 'PsourceLabs\SiteReviews\Widgets' );
 
 			try {
 				// bypass register_widget() in order to pass our custom values to the widget

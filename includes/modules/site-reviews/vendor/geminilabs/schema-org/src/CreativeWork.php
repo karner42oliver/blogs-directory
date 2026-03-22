@@ -1,6 +1,6 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg;
+namespace PsourceLabs\SchemaOrg;
 
 /**
  * The most generic kind of creative work, including books, movies, photographs, software programs,

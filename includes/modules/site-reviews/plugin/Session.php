@@ -1,18 +1,8 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- *
- * This class is derived from WP Session Manager (1.2.0)
- * -------------------------------------------------------------------------------------------------
- */
+namespace PsourceLabs\SiteReviews;
 
-namespace GeminiLabs\SiteReviews;
-
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 use PasswordHash;
 
 class Session

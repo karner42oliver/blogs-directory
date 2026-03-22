@@ -1,6 +1,6 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg;
+namespace PsourceLabs\SchemaOrg;
 
 /**
  * A particular physical business or branch of an organization. Examples of LocalBusiness include a

@@ -1,18 +1,8 @@
 <?php
 
-/**
- * This class interacts with the global WP_Query and/or builds SQL/WP_Query strings
- *
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2017, Paul Ryley
- * @license   GPLv3
- * @since     2.0.0
- * -------------------------------------------------------------------------------------------------
- */
+namespace PsourceLabs\SiteReviews;
 
-namespace GeminiLabs\SiteReviews;
-
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 use WP_Query;
 
 class Query

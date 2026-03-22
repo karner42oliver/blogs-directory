@@ -3,16 +3,16 @@
 /**
  * Site Reviews Summary shortcode button
  *
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2017, Paul Ryley
  * @license   GPLv3
  * @since     2.3.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Shortcodes\Buttons;
+namespace PsourceLabs\SiteReviews\Shortcodes\Buttons;
 
-use GeminiLabs\SiteReviews\Shortcodes\Buttons\Generator;
+use PsourceLabs\SiteReviews\Shortcodes\Buttons\Generator;
 
 class SiteReviewsSummary extends Generator
 {

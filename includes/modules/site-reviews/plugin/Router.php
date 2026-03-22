@@ -1,16 +1,8 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- * -------------------------------------------------------------------------------------------------
- */
+namespace PsourceLabs\SiteReviews;
 
-namespace GeminiLabs\SiteReviews;
-
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 
 class Router
 {
@@ -41,7 +33,7 @@ class Router
 
 	public function routeAjaxRequests()
 	{
-		// Nonce url is localized in "GeminiLabs\SiteReviews\Handlers\EnqueueAssets"
+		// Nonce url is localized in "PsourceLabs\SiteReviews\Handlers\EnqueueAssets"
 		$check = check_ajax_referer( glsr_app()->id.'-ajax-nonce', '_nonce', false );
 		if( !$check ) {
 			glsr_log( 'Nonce check failed for ajax request.', 'error' );

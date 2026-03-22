@@ -1,12 +1,12 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg;
+namespace PsourceLabs\SchemaOrg;
 
 use BadMethodCallException;
 use DateTime;
 use DateTimeInterface;
-use GeminiLabs\SchemaOrg\Exceptions\InvalidProperty;
-use GeminiLabs\SchemaOrg\Type;
+use PsourceLabs\SchemaOrg\Exceptions\InvalidProperty;
+use PsourceLabs\SchemaOrg\Type;
 use ReflectionClass;
 
 abstract class BaseType implements Type

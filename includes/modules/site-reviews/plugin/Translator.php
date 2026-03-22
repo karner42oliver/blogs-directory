@@ -1,17 +1,9 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     2.3.0
- * -------------------------------------------------------------------------------------------------
- */
+namespace PsourceLabs\SiteReviews;
 
-namespace GeminiLabs\SiteReviews;
-
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Database;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Database;
 
 class Translator
 {

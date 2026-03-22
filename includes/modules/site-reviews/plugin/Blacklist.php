@@ -1,8 +1,8 @@
 <?php
 
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
-use GeminiLabs\SiteReviews\Commands\SubmitReview;
+use PsourceLabs\SiteReviews\Commands\SubmitReview;
 
 class Blacklist
 {

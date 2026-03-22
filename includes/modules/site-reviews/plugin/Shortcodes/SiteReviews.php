@@ -3,17 +3,17 @@
 /**
  * Site Reviews shortcode
  *
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Shortcodes;
+namespace PsourceLabs\SiteReviews\Shortcodes;
 
-use GeminiLabs\SiteReviews\Shortcode;
-use GeminiLabs\SiteReviews\Traits\SiteReviews as Common;
+use PsourceLabs\SiteReviews\Shortcode;
+use PsourceLabs\SiteReviews\Traits\SiteReviews as Common;
 
 class SiteReviews extends Shortcode
 {

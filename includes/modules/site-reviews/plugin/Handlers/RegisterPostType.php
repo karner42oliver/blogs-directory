@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Handlers;
+namespace PsourceLabs\SiteReviews\Handlers;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Commands\RegisterPostType as Command;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Commands\RegisterPostType as Command;
 use WP_Screen;
 use WP_Query;
 
@@ -28,7 +28,7 @@ class RegisterPostType
 	protected $columns;
 
 	/**
-	 * @var \GeminiLabs\SiteReviews\Database
+	 * @var \PsourceLabs\SiteReviews\Database
 	 */
 	protected $db;
 

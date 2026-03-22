@@ -1,18 +1,8 @@
 <?php
 
-/**
- * Shortcode Boilerplate
- *
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- * -------------------------------------------------------------------------------------------------
- */
-
 namespace Geminilabs\SiteReviews;
 
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 
 abstract class Shortcode
 {

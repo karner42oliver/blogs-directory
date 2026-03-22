@@ -1,6 +1,6 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg\Exceptions;
+namespace PsourceLabs\SchemaOrg\Exceptions;
 
 use Exception;
 

@@ -8,9 +8,9 @@ defined( 'WPINC' ) || die;
 spl_autoload_register( function( $class )
 {
 	$namespaces = [
-		'GeminiLabs\\SiteReviews\\'        => __DIR__ . '/plugin/',
-		'GeminiLabs\\SiteReviews\\Tests\\' => __DIR__ . '/tests/',
-		'GeminiLabs\\SchemaOrg\\'          => __DIR__ . '/vendor/geminilabs/schema-org/src/',
+		'PsourceLabs\\SiteReviews\\'        => __DIR__ . '/plugin/',
+		'PsourceLabs\\SiteReviews\\Tests\\' => __DIR__ . '/tests/',
+		'PsourceLabs\\SchemaOrg\\'          => __DIR__ . '/vendor/geminilabs/schema-org/src/',
 		'Sepia\\PoParser\\'                => __DIR__ . '/vendor/qcubed/i18n/src/Sepia/',
 		'Sinergi\\BrowserDetector\\'       => __DIR__ . '/vendor/sinergi/browser-detector/src/',
 		'Vectorface\\Whip\\'               => __DIR__ . '/vendor/vectorface/whip/src/',

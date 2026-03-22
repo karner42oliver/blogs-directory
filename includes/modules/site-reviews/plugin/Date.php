@@ -1,6 +1,6 @@
 <?php
 
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
 class Date
 {

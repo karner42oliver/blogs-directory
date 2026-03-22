@@ -3,17 +3,17 @@
 /**
  * Site Reviews Sumary shortcode
  *
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     2.3.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Shortcodes;
+namespace PsourceLabs\SiteReviews\Shortcodes;
 
-use GeminiLabs\SiteReviews\Rating;
-use GeminiLabs\SiteReviews\Shortcode;
+use PsourceLabs\SiteReviews\Rating;
+use PsourceLabs\SiteReviews\Shortcode;
 
 class SiteReviewsSummary extends Shortcode
 {

@@ -1,16 +1,16 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
-use GeminiLabs\SiteReviews\Container;
+use PsourceLabs\SiteReviews\Container;
 
 /**
  * @property string $file

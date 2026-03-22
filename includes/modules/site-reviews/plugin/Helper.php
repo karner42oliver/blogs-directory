@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2017, Paul Ryley
  * @license   GPLv3
  * @since     2.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Database;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Database;
 use Vectorface\Whip\Whip;
 
 class Helper

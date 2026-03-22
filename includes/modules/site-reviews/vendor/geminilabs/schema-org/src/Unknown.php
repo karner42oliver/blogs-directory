@@ -1,6 +1,6 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg;
+namespace PsourceLabs\SchemaOrg;
 
 /**
  * This is a catch-all class for an unknown thing which assumes it can provide an aggregateRating.

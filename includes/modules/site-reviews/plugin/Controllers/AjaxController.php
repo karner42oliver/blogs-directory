@@ -1,19 +1,19 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Controllers;
+namespace PsourceLabs\SiteReviews\Controllers;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Controllers\BaseController;
-use GeminiLabs\SiteReviews\Commands\ChangeStatus;
-use GeminiLabs\SiteReviews\Commands\TogglePinned;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Controllers\BaseController;
+use PsourceLabs\SiteReviews\Commands\ChangeStatus;
+use PsourceLabs\SiteReviews\Commands\TogglePinned;
 use WP_Query;
 
 class AjaxController extends BaseController

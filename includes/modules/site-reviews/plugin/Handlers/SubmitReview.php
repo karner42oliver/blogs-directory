@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Handlers;
+namespace PsourceLabs\SiteReviews\Handlers;
 
 use Exception;
-use GeminiLabs\SiteReviews\Commands\SubmitReview as Command;
+use PsourceLabs\SiteReviews\Commands\SubmitReview as Command;
 use ReflectionException;
 
 class SubmitReview
@@ -50,7 +50,7 @@ class SubmitReview
 	}
 
 	/**
-	 * @return \GeminiLabs\SiteReviews\Email
+	 * @return \PsourceLabs\SiteReviews\Email
 	 */
 	protected function createEmailNotification( Command $command, array $args = [] )
 	{

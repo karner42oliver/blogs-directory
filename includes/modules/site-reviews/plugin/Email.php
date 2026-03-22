@@ -1,8 +1,8 @@
 <?php
 
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 
 class Email
 {

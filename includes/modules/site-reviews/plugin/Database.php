@@ -1,11 +1,11 @@
 <?php
 
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Database\Options;
-use GeminiLabs\SiteReviews\Database\OptionsContract;
-use GeminiLabs\SiteReviews\Commands\SubmitReview;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Database\Options;
+use PsourceLabs\SiteReviews\Database\OptionsContract;
+use PsourceLabs\SiteReviews\Commands\SubmitReview;
 use WP_Query;
 
 class Database implements OptionsContract

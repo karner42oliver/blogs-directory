@@ -1,16 +1,16 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Providers;
+namespace PsourceLabs\SiteReviews\Providers;
 
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 
 interface ProviderInterface
 {

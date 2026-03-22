@@ -1,6 +1,6 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg;
+namespace PsourceLabs\SchemaOrg;
 
 /**
  * An organization such as a school, NGO, corporation, club, etc.

@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Handlers;
+namespace PsourceLabs\SiteReviews\Handlers;
 
-use GeminiLabs\SiteReviews\Commands\TogglePinned as Command;
-use GeminiLabs\SiteReviews\Notices;
+use PsourceLabs\SiteReviews\Commands\TogglePinned as Command;
+use PsourceLabs\SiteReviews\Notices;
 
 class TogglePinned
 {

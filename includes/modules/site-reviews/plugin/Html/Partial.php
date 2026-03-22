@@ -1,16 +1,16 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Html;
+namespace PsourceLabs\SiteReviews\Html;
 
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 use ReflectionException;
 
 class Partial
@@ -47,7 +47,7 @@ class Partial
 	 */
 	public function render()
 	{
-		$className = sprintf( 'GeminiLabs\SiteReviews\Html\Partials\%s',
+		$className = sprintf( 'PsourceLabs\SiteReviews\Html\Partials\%s',
 			$this->app->make( 'Helper' )->buildClassName( $this->args['partial'] )
 		);
 		$instance = $this->app->make( $className );

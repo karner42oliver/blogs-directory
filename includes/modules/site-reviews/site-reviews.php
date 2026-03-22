@@ -16,8 +16,8 @@ require_once __DIR__ . '/autoload.php';
 require_once __DIR__ . '/compatibility.php';
 require_once __DIR__ . '/helpers.php';
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Providers\MainProvider;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Providers\MainProvider;
 
 $app = App::load();
 

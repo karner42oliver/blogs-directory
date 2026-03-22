@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2017, Paul Ryley
  * @license   GPLv3
  * @since     2.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Database;
+namespace PsourceLabs\SiteReviews\Database;
 
 interface OptionsContract
 {

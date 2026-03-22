@@ -3,17 +3,17 @@
 /**
  * Site Reviews Form widget
  *
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Widgets;
+namespace PsourceLabs\SiteReviews\Widgets;
 
-use GeminiLabs\SiteReviews\Traits\SiteReviewsForm as Common;
-use GeminiLabs\SiteReviews\Widget;
+use PsourceLabs\SiteReviews\Traits\SiteReviewsForm as Common;
+use PsourceLabs\SiteReviews\Widget;
 
 class SiteReviewsForm extends Widget
 {

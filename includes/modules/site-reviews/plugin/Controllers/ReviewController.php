@@ -1,19 +1,19 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Controllers;
+namespace PsourceLabs\SiteReviews\Controllers;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Commands\SubmitReview;
-use GeminiLabs\SiteReviews\Controllers\BaseController;
-use GeminiLabs\SiteReviews\Strings;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Commands\SubmitReview;
+use PsourceLabs\SiteReviews\Controllers\BaseController;
+use PsourceLabs\SiteReviews\Strings;
 use WP_Post;
 use WP_Screen;
 
@@ -291,7 +291,7 @@ class ReviewController extends BaseController
 		$submitReview = new SubmitReview( $validatedRequest );
 
 		// Blacklist validation
-		if( $this->app->make( 'GeminiLabs\SiteReviews\Blacklist' )->isBlacklisted( $submitReview )) {
+		if( $this->app->make( 'PsourceLabs\SiteReviews\Blacklist' )->isBlacklisted( $submitReview )) {
 			$blacklistAction = glsr_get_option( 'reviews-form.blacklist.action' );
 			if( $blacklistAction == 'unapprove' ) {
 				$submitReview->blacklisted = true;
@@ -302,14 +302,6 @@ class ReviewController extends BaseController
 				glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
 				return __( 'Deine Bewertung kann derzeit nicht abgesendet werden.', 'blogs-directory' );
 			}
-		}
-
-		// Akismet validation
-		if( $this->app->make( 'GeminiLabs\SiteReviews\Akismet' )->isSpam( $submitReview )) {
-			$session->set( "{$validatedRequest['form_id']}-errors", [] );
-			glsr_resolve( 'Log\Logger' )->warning( 'Akismet caught a spam submission:' );
-			glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-			return __( 'Deine Bewertung kann derzeit nicht abgesendet werden. Bitte versuche es spaeter erneut.', 'blogs-directory' );
 		}
 
 		return $this->execute( $submitReview );

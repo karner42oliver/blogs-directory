@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Handlers;
+namespace PsourceLabs\SiteReviews\Handlers;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Commands\EnqueueAssets as Command;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Commands\EnqueueAssets as Command;
 
 class EnqueueAssets
 {
@@ -166,7 +166,7 @@ class EnqueueAssets
 	{
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
 
-		return in_array( $page, ['settings', 'help', 'addons'], true );
+		return in_array( $page, ['settings', 'help'], true );
 	}
 
 	/**

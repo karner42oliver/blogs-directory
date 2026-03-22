@@ -2,8 +2,8 @@
 
 defined( 'WPINC' ) || die;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Log\LogLevel;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Log\LogLevel;
 
 /**
  * Global helper to return $app
@@ -29,7 +29,7 @@ function glsr_debug() {
  * @return void
  */
 function glsr_log( $message, $level = 'debug' ) {
-	$levels = array_values((new ReflectionClass( 'GeminiLabs\SiteReviews\Log\LogLevel' ))->getConstants());
+	$levels = array_values((new ReflectionClass( 'PsourceLabs\SiteReviews\Log\LogLevel' ))->getConstants());
 	if( !in_array( $level, $levels )) {
 		$level = LogLevel::DEBUG;
 	}

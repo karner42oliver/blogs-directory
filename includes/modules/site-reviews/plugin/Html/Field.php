@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Html;
+namespace PsourceLabs\SiteReviews\Html;
 
 use Exception;
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 use ReflectionException;
 
 class Field
@@ -54,7 +54,7 @@ class Field
 	/**
 	 * Get a specific Field
 	 *
-	 * @return mixed GeminiLabs\SiteReviews\Html\Fields\*
+	 * @return mixed PsourceLabs\SiteReviews\Html\Fields\*
 	 */
 	public function getField( array $args = [] )
 	{
@@ -62,7 +62,7 @@ class Field
 			$args = $this->args;
 		}
 
-		$className = sprintf( 'GeminiLabs\SiteReviews\Html\Fields\%s', ucfirst( $args['type'] ));
+		$className = sprintf( 'PsourceLabs\SiteReviews\Html\Fields\%s', ucfirst( $args['type'] ));
 
 		if( !class_exists( $className )) {
 			throw new ReflectionException( "Class does not exist: {$className}" );

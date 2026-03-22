@@ -1,25 +1,25 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Controllers;
+namespace PsourceLabs\SiteReviews\Controllers;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Commands\EnqueueAssets;
-use GeminiLabs\SiteReviews\Commands\RegisterPointers;
-use GeminiLabs\SiteReviews\Commands\RegisterPostType;
-use GeminiLabs\SiteReviews\Commands\RegisterShortcodeButtons;
-use GeminiLabs\SiteReviews\Commands\RegisterShortcodes;
-use GeminiLabs\SiteReviews\Commands\RegisterTaxonomy;
-use GeminiLabs\SiteReviews\Commands\RegisterWidgets;
-use GeminiLabs\SiteReviews\Controllers\BaseController;
-use GeminiLabs\SiteReviews\Strings;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Commands\EnqueueAssets;
+use PsourceLabs\SiteReviews\Commands\RegisterPointers;
+use PsourceLabs\SiteReviews\Commands\RegisterPostType;
+use PsourceLabs\SiteReviews\Commands\RegisterShortcodeButtons;
+use PsourceLabs\SiteReviews\Commands\RegisterShortcodes;
+use PsourceLabs\SiteReviews\Commands\RegisterTaxonomy;
+use PsourceLabs\SiteReviews\Commands\RegisterWidgets;
+use PsourceLabs\SiteReviews\Controllers\BaseController;
+use PsourceLabs\SiteReviews\Strings;
 use WP_Admin_Bar;
 use WP_Post;
 
@@ -348,7 +348,6 @@ class MainController extends BaseController
 		$pages = [
 			'settings' => __( 'Einstellungen', 'blogs-directory' ),
 			'help'     => __( 'Hilfe', 'blogs-directory' ),
-			'addons'   => __( 'Erweiterungen', 'blogs-directory' ),
 		];
 
 		$pages = apply_filters( 'site-reviews/addon/submenu/pages', $pages );
@@ -404,18 +403,6 @@ class MainController extends BaseController
 		]);
 
 		$this->execute( $command );
-	}
-
-	/**
-	 * add_submenu_page() callback
-	 *
-	 * @return void
-	 */
-	public function renderAddonsMenu()
-	{
-		$this->renderMenu( 'addons', [
-			'addons' => __( 'Erweiterungen', 'blogs-directory' ),
-		]);
 	}
 
 	/**

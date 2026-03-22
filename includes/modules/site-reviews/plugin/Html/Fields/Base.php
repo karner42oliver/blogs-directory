@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Html\Fields;
+namespace PsourceLabs\SiteReviews\Html\Fields;
 
 use Exception;
-use GeminiLabs\SiteReviews\Html\Normalize;
+use PsourceLabs\SiteReviews\Html\Normalize;
 
 abstract class Base
 {

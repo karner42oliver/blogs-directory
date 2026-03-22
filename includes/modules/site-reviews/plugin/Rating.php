@@ -1,14 +1,6 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2017, Paul Ryley
- * @license   GPLv3
- * @since     2.3.0
- * -------------------------------------------------------------------------------------------------
- */
-
-namespace GeminiLabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
 class Rating
 {

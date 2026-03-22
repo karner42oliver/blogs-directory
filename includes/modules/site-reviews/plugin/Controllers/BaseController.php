@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Controllers;
+namespace PsourceLabs\SiteReviews\Controllers;
 
 use Exception;
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 use InvalidArgumentException;
 use WP_Error;
 
@@ -23,22 +23,22 @@ abstract class BaseController
 	protected $app;
 
 	/**
-	 * @var \GeminiLabs\SiteReviews\Database
+	 * @var \PsourceLabs\SiteReviews\Database
 	 */
 	protected $db;
 
 	/**
-	 * @var \GeminiLabs\SiteReviews\Html
+	 * @var \PsourceLabs\SiteReviews\Html
 	 */
 	protected $html;
 
 	/**
-	 * @var \GeminiLabs\SiteReviews\Log\Logger
+	 * @var \PsourceLabs\SiteReviews\Log\Logger
 	 */
 	protected $log;
 
 	/**
-	 * @var \GeminiLabs\SiteReviews\Notices
+	 * @var \PsourceLabs\SiteReviews\Notices
 	 */
 	protected $notices;
 

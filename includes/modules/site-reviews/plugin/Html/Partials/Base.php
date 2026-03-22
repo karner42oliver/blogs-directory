@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Html\Partials;
+namespace PsourceLabs\SiteReviews\Html\Partials;
 
-use GeminiLabs\SiteReviews\App;
-use GeminiLabs\SiteReviews\Database;
+use PsourceLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\Database;
 
 abstract class Base
 {

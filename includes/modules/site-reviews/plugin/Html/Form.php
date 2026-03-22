@@ -1,16 +1,16 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Html;
+namespace PsourceLabs\SiteReviews\Html;
 
-use GeminiLabs\SiteReviews\App;
+use PsourceLabs\SiteReviews\App;
 
 use Exception;
 
@@ -292,7 +292,7 @@ class Form
 	}
 
 	/**
-	 * @param object $field GeminiLabs\SiteReviews\Html\Fields\*
+	 * @param object $field PsourceLabs\SiteReviews\Html\Fields\*
 	 *
 	 * @return bool|null
 	 */

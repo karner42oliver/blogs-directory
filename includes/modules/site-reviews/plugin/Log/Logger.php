@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package   GeminiLabs\SiteReviews
+ * @package   PsourceLabs\SiteReviews
  * @copyright Copyright (c) 2016, Paul Ryley
  * @license   GPLv3
  * @since     1.0.0
  * -------------------------------------------------------------------------------------------------
  */
 
-namespace GeminiLabs\SiteReviews\Log;
+namespace PsourceLabs\SiteReviews\Log;
 
-use GeminiLabs\SiteReviews\Log\LoggerInterface;
-use GeminiLabs\SiteReviews\Log\LogLevel;
+use PsourceLabs\SiteReviews\Log\LoggerInterface;
+use PsourceLabs\SiteReviews\Log\LogLevel;
 
 class Logger implements LoggerInterface
 {

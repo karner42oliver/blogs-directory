@@ -1,8 +1,8 @@
 <?php
 
-namespace GeminiLabs\SchemaOrg;
+namespace PsourceLabs\SchemaOrg;
 
-use GeminiLabs\SchemaOrg\Unknown;
+use PsourceLabs\SchemaOrg\Unknown;
 
 /**
  * Factory class for all Schema.org types.
