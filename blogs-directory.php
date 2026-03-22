@@ -34,7 +34,42 @@ if ( ! defined( 'BLOGS_DIRECTORY_PLUGIN_DIR' ) ) {
 	define( 'BLOGS_DIRECTORY_PLUGIN_DIR', plugin_dir_path( BLOGS_DIRECTORY_PLUGIN_FILE ) );
 }
 
-if ( ! function_exists( 'glsr_app' ) && file_exists( BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/modules/site-reviews/site-reviews.php' ) ) {
+/**
+ * Liefert den Netzwerk-Modus fuer das eingebettete Site-Reviews-Modul.
+ *
+ * Moegliche Werte: off | allow | force
+ */
+function blogs_directory_get_site_reviews_network_mode() {
+	$mode = (string) get_site_option( 'blogs_directory_site_reviews_mode', 'force' );
+	if ( ! in_array( $mode, array( 'off', 'allow', 'force' ), true ) ) {
+		return 'force';
+	}
+
+	return $mode;
+}
+
+/**
+ * Prueft, ob Site Reviews auf der aktuellen Site aktiv sein soll.
+ */
+function blogs_directory_is_site_reviews_module_enabled() {
+	$mode = blogs_directory_get_site_reviews_network_mode();
+
+	if ( 'off' === $mode ) {
+		return false;
+	}
+
+	if ( 'force' === $mode ) {
+		return true;
+	}
+
+	if ( is_network_admin() ) {
+		return false;
+	}
+
+	return 1 === (int) get_option( 'blogs_directory_site_reviews_enabled', 0 );
+}
+
+if ( blogs_directory_is_site_reviews_module_enabled() && ! function_exists( 'glsr_app' ) && file_exists( BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/modules/site-reviews/site-reviews.php' ) ) {
 	require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/modules/site-reviews/site-reviews.php';
 }
 
@@ -75,6 +110,7 @@ if ( isset($current_blog) && ($current_blog->domain . $current_blog->path == $cu
 
 add_action('network_admin_menu', 'blogs_directory_admin_page');
 add_action('admin_init', 'blogs_directory_save_options');
+add_action('admin_init', 'blogs_directory_register_site_reviews_discussion_setting');
 add_action('admin_menu', 'blogs_directory_blog_avatar_admin_page');
 add_action('admin_enqueue_scripts', 'blogs_directory_blog_avatar_enqueue_assets');
 add_action('admin_init', 'blogs_directory_blog_avatar_handle_actions');

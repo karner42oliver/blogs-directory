@@ -22,6 +22,7 @@ function blogs_directory_site_admin_options() {
     $blogs_directory_avatar_fallback_order      = get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo');
     $blogs_directory_show_site_reviews          = get_site_option('blogs_directory_show_site_reviews', 0);
     $blogs_directory_include_main_site          = (int) get_site_option( 'blogs_directory_include_main_site', 1 );
+	$blogs_directory_site_reviews_mode          = blogs_directory_get_site_reviews_network_mode();
 	?>
 
     <div class="wrap">
@@ -129,6 +130,17 @@ function blogs_directory_site_admin_options() {
                         <span class="description"><?php _e('Zeigt Durchschnitt und Anzahl veroeffentlichter Bewertungen pro Site, falls vorhanden.','blogs-directory'); ?></span>
                     </td>
                 </tr>
+				<tr valign="top">
+					<th width="33%" scope="row"><?php _e('Site Reviews Modulsteuerung','blogs-directory') ?></th>
+					<td>
+						<select name="blogs_directory_site_reviews_mode" id="blogs_directory_site_reviews_mode">
+							<option value="off" <?php selected( $blogs_directory_site_reviews_mode, 'off' ); ?>><?php _e('Aus','blogs-directory'); ?></option>
+							<option value="allow" <?php selected( $blogs_directory_site_reviews_mode, 'allow' ); ?>><?php _e('Netzwerkweit erlauben','blogs-directory'); ?></option>
+							<option value="force" <?php selected( $blogs_directory_site_reviews_mode, 'force' ); ?>><?php _e('Netzwerkweit erzwingen','blogs-directory'); ?></option>
+						</select>
+						<br /><span class="description"><?php _e('Nur bei "Netzwerkweit erlauben" erscheint auf jeder Subsite unter Einstellungen -> Diskussion ein eigener Aktivieren-Schalter.','blogs-directory'); ?></span>
+					</td>
+				</tr>
                 <tr valign="top">
                     <th width="33%" scope="row"><?php _e('Hintergrundfarbe','blogs-directory') ?></th>
                     <td>
@@ -241,6 +253,10 @@ function blogs_directory_save_options() {
     $show_site_reviews = isset( $_POST['blogs_directory_show_site_reviews'] ) ? 1 : 0;
     $include_main_site = isset( $_POST['blogs_directory_include_main_site'] ) ? 1 : 0;
 
+    $allowed_site_reviews_modes = array( 'off', 'allow', 'force' );
+    $site_reviews_mode_raw = isset( $_POST['blogs_directory_site_reviews_mode'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_site_reviews_mode'] ) ) : 'force';
+    $site_reviews_mode = in_array( $site_reviews_mode_raw, $allowed_site_reviews_modes, true ) ? $site_reviews_mode_raw : 'force';
+
     $allowed_fallback_orders = array( 'site_icon_logo', 'logo_site_icon' );
     $fallback_order_raw = isset( $_POST['blogs_directory_avatar_fallback_order'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_avatar_fallback_order'] ) ) : 'site_icon_logo';
     $avatar_fallback_order = in_array( $fallback_order_raw, $allowed_fallback_orders, true ) ? $fallback_order_raw : 'site_icon_logo';
@@ -257,6 +273,7 @@ function blogs_directory_save_options() {
     update_site_option( 'blogs_directory_include_main_site', $include_main_site );
 	update_site_option( 'blogs_directory_show_description', $show_description );
     update_site_option( 'blogs_directory_show_site_reviews', $show_site_reviews );
+    update_site_option( 'blogs_directory_site_reviews_mode', $site_reviews_mode );
     update_site_option( 'blogs_directory_avatar_fallback_order', $avatar_fallback_order );
 	update_site_option( 'blogs_directory_title_blogs_page', $blogs_directory_title_blogs_page );
 
@@ -275,4 +292,56 @@ function blogs_directory_save_options() {
 
 	wp_safe_redirect( add_query_arg( array( 'page' => 'blog-directory-settings', 'updated' => 'true', 'dmsg' => 'settings-saved' ), network_admin_url( 'admin.php' ) ) );
 	exit;
+}
+
+/**
+ * Sanitize-Callback fuer den Subsite-Schalter auf der Diskussionsseite.
+ */
+function blogs_directory_sanitize_site_reviews_enabled( $value ) {
+    return 1 === (int) $value ? 1 : 0;
+}
+
+/**
+ * Rendert den Site-Reviews Schalter auf Einstellungen -> Diskussion.
+ */
+function blogs_directory_render_site_reviews_discussion_field() {
+    $enabled = (int) get_option( 'blogs_directory_site_reviews_enabled', 0 );
+    ?>
+    <label for="blogs_directory_site_reviews_enabled">
+        <input type="checkbox" id="blogs_directory_site_reviews_enabled" name="blogs_directory_site_reviews_enabled" value="1" <?php checked( $enabled, 1 ); ?> />
+        <?php _e( 'Site Reviews auf dieser Subsite aktivieren', 'blogs-directory' ); ?>
+    </label>
+    <p class="description"><?php _e( 'Diese Option ist nur sichtbar, wenn der Netzwerkmodus auf "Netzwerkweit erlauben" steht.', 'blogs-directory' ); ?></p>
+    <?php
+}
+
+/**
+ * Registriert den Subsite-Schalter auf Optionen -> Diskussion.
+ */
+function blogs_directory_register_site_reviews_discussion_setting() {
+    if ( is_network_admin() ) {
+        return;
+    }
+
+    if ( 'allow' !== blogs_directory_get_site_reviews_network_mode() ) {
+        return;
+    }
+
+    register_setting(
+        'discussion',
+        'blogs_directory_site_reviews_enabled',
+        array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'blogs_directory_sanitize_site_reviews_enabled',
+            'default'           => 0,
+        )
+    );
+
+    add_settings_field(
+        'blogs_directory_site_reviews_enabled',
+        __( 'Site Reviews Modul', 'blogs-directory' ),
+        'blogs_directory_render_site_reviews_discussion_field',
+        'discussion',
+        'default'
+    );
 }
