@@ -389,9 +389,7 @@ class Database implements OptionsContract
 			'title'       => '',
 			'url'         => '',
 		];
-		return !empty( $meta )
-			? shortcode_atts( $defaults, $meta )
-			: [];
+		return shortcode_atts( $defaults, $meta );
 	}
 
 	/**

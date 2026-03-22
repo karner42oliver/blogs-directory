@@ -76,7 +76,9 @@ if ( isset($current_blog) && ($current_blog->domain . $current_blog->path == $cu
 add_action('network_admin_menu', 'blogs_directory_admin_page');
 add_action('admin_init', 'blogs_directory_save_options');
 add_action('admin_menu', 'blogs_directory_blog_avatar_admin_page');
+add_action('admin_enqueue_scripts', 'blogs_directory_blog_avatar_enqueue_assets');
 add_action('admin_init', 'blogs_directory_blog_avatar_handle_actions');
+add_action('wp_ajax_blogs_directory_blog_avatar', 'blogs_directory_blog_avatar_ajax');
 
 //------------------------------------------------------------------------//
 //---Functions------------------------------------------------------------//

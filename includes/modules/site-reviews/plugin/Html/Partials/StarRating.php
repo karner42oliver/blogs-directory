@@ -45,7 +45,10 @@ class StarRating extends Base
 		}
 		$star = $this->setForAdmin( ' star star%s', '%s' );
 		$star = sprintf( '<span class="glsr-star%s"></span>', $star );
-		$roundedRating = floor( round( $this->args['rating'], 1 ) * 2 ) / 2;
+		$rawRating = isset( $this->args['rating'] ) ? $this->args['rating'] : 0;
+		$numericRating = is_numeric( $rawRating ) ? (float) $rawRating : 0.0;
+		$numericRating = max( 0.0, min( (float) $numberOfStars, $numericRating ) );
+		$roundedRating = floor( round( $numericRating, 1 ) * 2 ) / 2;
 		for( $i = 0; $i < $numberOfStars; $i++ ) {
 			if( $roundedRating == ( $i + 0.5 )) {
 				$rating .= sprintf( $star, '-half' );

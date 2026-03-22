@@ -34,16 +34,21 @@ function blogs_directory_output($content) {
  * Lädt Verzeichnisoptionen zentral, damit der Output-Dispatcher schlank bleibt.
  */
 function blogs_directory_get_output_settings() {
+	$background = sanitize_hex_color( get_site_option('blogs_directory_background_color', '#F2F2EA') );
+	$alternate_background = sanitize_hex_color( get_site_option('blogs_directory_alternate_background_color', '#FFFFFF') );
+	$border = sanitize_hex_color( get_site_option('blogs_directory_border_color', '#CFD0CB') );
+
 	return array(
 		'blogs_directory_sort_by'                    => get_site_option('blogs_directory_sort_by', 'alphabetically'),
 		'blogs_directory_per_page'                   => get_site_option('blogs_directory_per_page', '10'),
-		'blogs_directory_background_color'           => get_site_option('blogs_directory_background_color', '#F2F2EA'),
-		'blogs_directory_alternate_background_color' => get_site_option('blogs_directory_alternate_background_color', '#FFFFFF'),
-		'blogs_directory_border_color'               => get_site_option('blogs_directory_border_color', '#CFD0CB'),
+		'blogs_directory_background_color'           => $background ? $background : '#F2F2EA',
+		'blogs_directory_alternate_background_color' => $alternate_background ? $alternate_background : '#FFFFFF',
+		'blogs_directory_border_color'               => $border ? $border : '#CFD0CB',
 		'blogs_directory_title_blogs_page'           => get_site_option('blogs_directory_title_blogs_page'),
 		'blogs_directory_show_description'           => get_site_option('blogs_directory_show_description'),
 		'blogs_directory_avatar_fallback_order'      => get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo'),
 		'blogs_directory_show_site_reviews'          => (int) get_site_option('blogs_directory_show_site_reviews', 0),
+		'blogs_directory_include_main_site'          => (int) get_site_option('blogs_directory_include_main_site', 1),
 		'blogs_directory_hide_blogs'                 => get_site_option( 'blogs_directory_hide_blogs' ),
 	);
 }
@@ -135,17 +140,6 @@ function blogs_directory_get_custom_blog_avatar_url( $blog_id, $size ) {
 
 	$size = blogs_directory_map_avatar_size( $size );
 
-	if ( function_exists( 'get_blog_avatar_url' ) ) {
-		$blank_url = includes_url( 'images/blank.gif' );
-		$avatar_url = get_blog_avatar_url( $blog_id, $size, 'blank' );
-		$blank_compare = strtok( (string) $blank_url, '?' );
-		$avatar_compare = strtok( (string) $avatar_url, '?' );
-
-		if ( ! empty( $avatar_url ) && $avatar_compare !== $blank_compare ) {
-			return $avatar_url;
-		}
-	}
-
 	$upload_dir = blogs_directory_get_avatars_upload_dir();
 	if ( empty( $upload_dir['basedir'] ) || empty( $upload_dir['baseurl'] ) ) {
 		return '';
@@ -159,13 +153,16 @@ function blogs_directory_get_custom_blog_avatar_url( $blog_id, $size ) {
 	$folder = substr( md5( (string) $blog_id ), 0, 3 );
 	$sizes = array( $size, 16, 32, 48, 96, 128, 192, 256 );
 	$sizes = array_values( array_unique( array_map( 'absint', $sizes ) ) );
+	$extensions = array( 'png', 'jpg', 'jpeg', 'gif', 'webp' );
 
 	foreach ( $sizes as $candidate_size ) {
-		$relative_path = 'avatars/blog/' . $folder . '/blog-' . $blog_id . '-' . $candidate_size . '.png';
-		$file_path = $avatar_dir . 'blog-' . $blog_id . '-' . $candidate_size . '.png';
+		foreach ( $extensions as $extension ) {
+			$filename = 'blog-' . $blog_id . '-' . $candidate_size . '.' . $extension;
+			$file_path = $avatar_dir . $filename;
 
-		if ( is_file( $file_path ) ) {
-			return trailingslashit( $upload_dir['baseurl'] ) . $relative_path;
+			if ( is_file( $file_path ) ) {
+				return trailingslashit( $upload_dir['baseurl'] ) . 'avatars/blog/' . $folder . '/' . $filename;
+			}
 		}
 	}
 
@@ -186,6 +183,13 @@ function blogs_directory_get_blog_branding_url( $blog_id, $size, $fallback_order
 	switch_to_blog( $blog_id );
 
 	$site_icon_url = get_site_icon_url( $size );
+	if ( empty( $site_icon_url ) ) {
+		$site_icon_id = absint( get_option( 'site_icon' ) );
+		if ( $site_icon_id > 0 ) {
+			$site_icon_url = wp_get_attachment_image_url( $site_icon_id, array( $size, $size ) );
+		}
+	}
+
 	$logo_url = '';
 	if ( function_exists( 'get_theme_mod' ) ) {
 		$custom_logo_id = absint( get_theme_mod( 'custom_logo' ) );
@@ -198,14 +202,50 @@ function blogs_directory_get_blog_branding_url( $blog_id, $size, $fallback_order
 	}
 
 	if ( 'logo_site_icon' === $fallback_order ) {
-		$branding_url = ! empty( $logo_url ) ? $logo_url : $site_icon_url;
+		if ( ! empty( $logo_url ) ) {
+			$branding_url = $logo_url;
+		} elseif ( ! empty( $site_icon_url ) ) {
+			$branding_url = $site_icon_url;
+		} else {
+			$branding_url = '';
+		}
 	} else {
-		$branding_url = ! empty( $site_icon_url ) ? $site_icon_url : $logo_url;
+		if ( ! empty( $site_icon_url ) ) {
+			$branding_url = $site_icon_url;
+		} elseif ( ! empty( $logo_url ) ) {
+			$branding_url = $logo_url;
+		} else {
+			$branding_url = '';
+		}
 	}
 
 	restore_current_blog();
 
 	return $branding_url;
+}
+
+/**
+ * Liefert den nativen anonymen Default-Avatar als letzten Fallback.
+ */
+function blogs_directory_get_default_avatar_url( $size ) {
+	$size = blogs_directory_map_avatar_size( $size );
+
+	if ( function_exists( 'get_avatar_url' ) ) {
+		$avatar_url = get_avatar_url(
+			0,
+			array(
+				'size'          => $size,
+				'default'       => 'mystery',
+				'force_default' => true,
+			)
+		);
+
+		if ( ! empty( $avatar_url ) ) {
+			return $avatar_url;
+		}
+	}
+
+	return includes_url( 'images/blank.gif' );
 }
 
 /**
@@ -219,7 +259,7 @@ function blogs_directory_get_blog_avatar_html( $blog_id, $size, $alt, $fallback_
 	}
 
 	if ( empty( $avatar_url ) ) {
-		return '';
+		$avatar_url = blogs_directory_get_default_avatar_url( $size );
 	}
 
 	$alt = '' !== $alt ? $alt : __( 'Blog-Avatar', 'blogs-directory' );
@@ -231,6 +271,8 @@ function blogs_directory_get_blog_avatar_html( $blog_id, $size, $alt, $fallback_
  * Holt Bewertungsdurchschnitt und Anzahl aus Site Reviews pro Blog.
  */
 function blogs_directory_get_site_reviews_summary( $blog_id ) {
+	static $runtime_cache = array();
+
 	$blog_id = absint( $blog_id );
 	if ( $blog_id < 1 ) {
 		return array(
@@ -239,9 +281,14 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 		);
 	}
 
+	if ( isset( $runtime_cache[ $blog_id ] ) ) {
+		return $runtime_cache[ $blog_id ];
+	}
+
 	$cache_key = 'blogs_directory_reviews_' . $blog_id;
 	$cached = get_site_transient( $cache_key );
 	if ( is_array( $cached ) && isset( $cached['count'], $cached['average'] ) ) {
+		$runtime_cache[ $blog_id ] = $cached;
 		return $cached;
 	}
 
@@ -272,6 +319,7 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 	);
 
 	set_site_transient( $cache_key, $result, 15 * MINUTE_IN_SECONDS );
+	$runtime_cache[ $blog_id ] = $result;
 
 	return $result;
 }
@@ -300,7 +348,7 @@ function blogs_directory_get_site_reviews_html( $blog_id ) {
  * Rendert die Landing-Seite des Blogs-Verzeichnisses.
  */
 function blogs_directory_render_landing_content( $content, $blogs_directory, $settings ) {
-	global $wpdb;
+	global $wpdb, $current_site;
 
 	$search_form_content = blogs_directory_search_form_output('', $blogs_directory['phrase']);
 	$navigation_content = blogs_directory_landing_navigation_output('', $settings['blogs_directory_per_page'], $blogs_directory['page']);
@@ -311,7 +359,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 	$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="" class="blogs_directory_table">';
 		$content .= '<tr>';
 			$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="10%"> </th>';
-			$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><h2>' .  $settings['blogs_directory_title_blogs_page'] . '</h2></center></th>';
+			$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><h2>' .  esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</h2></center></th>';
 		$content .= '</tr>';
 		//=================================//
 		$tic_toc = 'toc';
@@ -324,7 +372,10 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 			$start = $math;
 		}
 
-		$query = "SELECT * FROM " . $wpdb->base_prefix . "blogs WHERE spam = 0 AND deleted = 0 AND archived = '0' AND blog_id != 1";
+		$query = "SELECT * FROM " . $wpdb->base_prefix . "blogs WHERE spam = 0 AND deleted = 0 AND archived = '0'";
+		if ( empty( $settings['blogs_directory_include_main_site'] ) ) {
+			$query .= $wpdb->prepare( " AND blog_id != %d", (int) $current_site->id );
+		}
 		if ( isset( $settings['blogs_directory_hide_blogs']['private'] ) && 1 == $settings['blogs_directory_hide_blogs']['private'] ) {
 			$query .= " AND public = 1";
 		}
@@ -362,6 +413,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 
 				//=============================//
 				$blog_title         = get_blog_option( $blog['blog_id'], 'blogname', $blog['domain'] . $blog['path'] );
+				$safe_blog_title    = esc_html( $blog_title );
 
 				if ($tic_toc == 'toc'){
 					$tic_toc = 'tic';
@@ -374,7 +426,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 					$bg_color = $settings['blogs_directory_background_color'];
 				}
 				//=============================//
-				$blog_url = 'http://' . $blog['domain'] . $blog['path'];
+				$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 				$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog_title, $settings['blogs_directory_avatar_fallback_order'] );
 				$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
 
@@ -385,7 +437,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 						$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px;" valign="top" width="10%"></td>';
 					}
 					$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
-					$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . $blog_title . '</a><br />';
+					$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . $safe_blog_title . '</a><br />';
 					if ( '' !== $site_reviews_html ) {
 						$content .= $site_reviews_html . '<br />';
 					}
@@ -393,7 +445,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
                     //show description for blog
                     if ( 1 == $settings['blogs_directory_show_description'] ) {
                         $blogdescription    = get_blog_option( $blog['blog_id'], 'blogdescription', $blog['domain'] . $blog['path'] );
-                        $content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . $blogdescription . '</span>';
+						$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . esc_html( $blogdescription ) . '</span>';
                     }
 
 					$content .= '</td>';
@@ -453,7 +505,7 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
             if ( blogs_directory_hide_some_blogs( $blog['blog_id'] ) )
                 continue;
 
-            if ( $current_site->id != $blog['blog_id'] ) {
+			if ( ! empty( $settings['blogs_directory_include_main_site'] ) || (int) $current_site->id !== (int) $blog['blog_id'] ) {
 				$search_arr = explode( ' ', $blogs_directory['phrase'] );
 
 				$query      = "SELECT option_name FROM {$wpdb->base_prefix}{$blog['blog_id']}_options WHERE option_name IN ('blogname', 'blogdescription')";
@@ -501,17 +553,17 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 		}
 	}
 
+	$blogs_total = count( $blogs );
+	$per_page = max( 1, absint( $settings['blogs_directory_per_page'] ) );
+	$current_page = max( 1, absint( $blogs_directory['page'] ) );
+	$start_index = ( $current_page - 1 ) * $per_page;
+	$blogs = array_slice( $blogs, $start_index, $per_page );
+
 	//=====================================//
 	$search_form_content = blogs_directory_search_form_output('', $blogs_directory['phrase']);
 	if ( !empty( $blogs ) ) {
-		if ( count( $blogs ) < $settings['blogs_directory_per_page'] ) {
-			$next = 'no';
-		} else {
-			$next = 'yes';
-		}
-
-        //since it broken because it always displays all, i will disable pagination
-        $next = 'no';
+		$has_next = $blogs_total > ( $start_index + count( $blogs ) );
+		$next = $has_next ? 'yes' : 'no';
 		$navigation_content = blogs_directory_search_navigation_output('', $settings['blogs_directory_per_page'], $blogs_directory['page'], $blogs_directory['phrase'], $next);
 	}
 	$content .= $search_form_content;
@@ -523,14 +575,14 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 	$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="" class="blogs_directory_search_table">';
 	$content .= '<tr>';
 	$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="10%"> </td>';
-	$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' .  $settings['blogs_directory_title_blogs_page'] . '</strong></center></td>';
+	$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' .  esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</strong></center></td>';
 	$content .= '</tr>';
 	//=================================//
 	$tic_toc = 'toc';
 	//=================================//
 	if ( !empty( $blogs ) ) {
 		foreach ($blogs as $blog){
-			$blog_url = 'http://' . $blog['domain'] . $blog['path'];
+			$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 			$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog['blogname'], $settings['blogs_directory_avatar_fallback_order'] );
 			$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
 
@@ -553,11 +605,11 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 				$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px;" valign="top" width="10%"></td>';
 			}
 			$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
-			$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . $blog['blogname'] . '</a><br />';
+			$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . esc_html( $blog['blogname'] ) . '</a><br />';
 			if ( '' !== $site_reviews_html ) {
 				$content .= $site_reviews_html . '<br />';
 			}
-			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . $blog['blogdescription'] . '</span>';
+			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . esc_html( $blog['blogdescription'] ) . '</span>';
 			$content .= '</td>';
 			$content .= '</tr>';
 		}

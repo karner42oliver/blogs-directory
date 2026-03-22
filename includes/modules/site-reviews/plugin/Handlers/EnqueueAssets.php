@@ -66,11 +66,18 @@ class EnqueueAssets
 			$command->version
 		);
 
-		if( !$screen || !( $screen->post_type == App::POST_TYPE
-			|| $screen->base == 'post'
-			|| $screen->id == 'dashboard'
-			|| $screen->id == 'widgets'
-		))return;
+		if( !$screen || $screen->post_type != App::POST_TYPE )return;
+
+		// Avoid JS conflicts on Add New screens where media-grid may initialize before fields exist.
+		if(
+			$screen->post_type == App::POST_TYPE
+			&& (
+				( $screen->base == 'post' && empty( $_GET['post'] ))
+				|| $screen->base == 'post-new'
+			)
+		) {
+			return;
+		}
 
 		wp_enqueue_script(
 			$command->handle,

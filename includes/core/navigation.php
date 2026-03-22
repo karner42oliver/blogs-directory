@@ -6,33 +6,52 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function blogs_directory_search_form_output($content, $phrase) {
 	global $wpdb, $current_site, $blogs_directory_base;
+	$phrase = sanitize_text_field( (string) $phrase );
+	$search_base_url = home_url( trailingslashit( $blogs_directory_base ) . 'search/' );
 
 	if ( !empty( $phrase ) ) {
-		$content .= '<form action="' . $current_site->path . $blogs_directory_base . '/search/' . urlencode( $phrase ) . '/" method="post">';
+		$content .= '<form action="' . esc_url( $search_base_url . rawurlencode( $phrase ) . '/' ) . '" method="post">';
 	} else {
-		$content .= '<form action="' . $current_site->path . $blogs_directory_base . '/search/" method="post">';
+		$content .= '<form action="' . esc_url( $search_base_url ) . '" method="post">';
 	}
 		$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor=""  class="blogs_directory_search_table">';
 		$content .= '<tr>';
 		    $content .= '<td style="font-size:12px; text-align:left;" width="80%">';
-				$content .= '<input name="phrase" style="width: 100%;" type="text" value="' . $phrase . '">';
+				$content .= '<input name="phrase" style="width: 100%;" type="text" value="' . esc_attr( $phrase ) . '">';
 			$content .= '</td>';
 			$content .= '<td style="font-size:12px; text-align:right;" width="20%">';
 				$content .= '<input name="Submit" value="' . __('Suche','blogs-directory') . '" type="submit">';
 			$content .= '</td>';
 		$content .= '</tr>';
 		$content .= '</table>';
-		$content .= wp_nonce_field('search-sites','_wp_nonce', $_SERVER['PHP_SELF'], false);
+		$content .= wp_nonce_field( 'search-sites', '_wp_nonce', true, false );
 	$content .= '</form>';
 	return $content;
 }
 
 function blogs_directory_search_navigation_output($content, $per_page, $page, $phrase, $next){
 	global $wpdb, $current_site, $blogs_directory_base;
+	$phrase = sanitize_text_field( (string) $phrase );
+	$page = max( 1, absint( $page ) );
+	$search_base_url = home_url( trailingslashit( $blogs_directory_base ) . 'search/' );
+	$include_main_site = (int) get_site_option( 'blogs_directory_include_main_site', 1 );
+	$main_blog_id = (int) $current_site->id;
 	if ( is_subdomain_install() ) {
-		$blog_count = $wpdb->get_var( $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->base_prefix . "blogs WHERE ( domain LIKE '%%%s%%' ) AND spam != 1 AND deleted != 1 AND blog_id != 1", $phrase) );
+		$query = "SELECT COUNT(*) FROM " . $wpdb->base_prefix . "blogs WHERE ( domain LIKE %s ) AND spam != 1 AND deleted != 1";
+		$params = array( '%' . $wpdb->esc_like( $phrase ) . '%' );
+		if ( ! $include_main_site ) {
+			$query .= " AND blog_id != %d";
+			$params[] = $main_blog_id;
+		}
+		$blog_count = $wpdb->get_var( $wpdb->prepare( $query, $params ) );
 	} else {
-		$blog_count = $wpdb->get_var( $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->base_prefix . "blogs WHERE ( path LIKE '%%%s%%' ) AND spam != 1 AND deleted != 1 AND blog_id != 1", $phrase) );
+		$query = "SELECT COUNT(*) FROM " . $wpdb->base_prefix . "blogs WHERE ( path LIKE %s ) AND spam != 1 AND deleted != 1";
+		$params = array( '%' . $wpdb->esc_like( $phrase ) . '%' );
+		if ( ! $include_main_site ) {
+			$query .= " AND blog_id != %d";
+			$params[] = $main_blog_id;
+		}
+		$blog_count = $wpdb->get_var( $wpdb->prepare( $query, $params ) );
 	}
 	$blog_count = apply_filters( 'blogs_directory_blogs_count', $blog_count - 1 );
 
@@ -55,7 +74,7 @@ function blogs_directory_search_navigation_output($content, $per_page, $page, $p
 			//$content .= __('Previous','blogs-directory');
 		} else {
 		$previous_page = $page - 1;
-		$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $blogs_directory_base . '/search/' . urlencode( $phrase ) . '/' . $previous_page . '/">&laquo; ' . __('Zurück','blogs-directory') . '</a>';
+		$content .= '<a style="text-decoration:none;" href="' . esc_url( $search_base_url . rawurlencode( $phrase ) . '/' . $previous_page . '/' ) . '">&laquo; ' . esc_html__( 'Zurück', 'blogs-directory' ) . '</a>';
 		}
 	//============================================================================//
 	}
@@ -71,7 +90,7 @@ function blogs_directory_search_navigation_output($content, $per_page, $page, $p
 					//$content .= __('Next','blogs-directory');
 				} else {
 					$next_page = $page + 1;
-				$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $blogs_directory_base . '/search/' . urlencode( $phrase ) . '/' . $next_page . '/">' . __('Weiter','blogs-directory') . ' &raquo;</a>';
+					$content .= '<a style="text-decoration:none;" href="' . esc_url( $search_base_url . rawurlencode( $phrase ) . '/' . $next_page . '/' ) . '">' . esc_html__( 'Weiter', 'blogs-directory' ) . ' &raquo;</a>';
 				}
 			}
 		}
@@ -85,10 +104,16 @@ function blogs_directory_search_navigation_output($content, $per_page, $page, $p
 
 function blogs_directory_landing_navigation_output($content, $per_page, $page){
 	global $wpdb, $current_site, $blogs_directory_base;
+	$page = max( 1, absint( $page ) );
+	$base_url = home_url( trailingslashit( $blogs_directory_base ) );
 
 	$blogs_directory_hide_blogs = get_site_option( 'blogs_directory_hide_blogs');
+	$include_main_site = (int) get_site_option( 'blogs_directory_include_main_site', 1 );
 
-	$query = "SELECT COUNT(*) FROM " . $wpdb->base_prefix . "blogs WHERE spam = 0 AND deleted = 0 AND archived = '0' AND blog_id != 1";
+	$query = "SELECT COUNT(*) FROM " . $wpdb->base_prefix . "blogs WHERE spam = 0 AND deleted = 0 AND archived = '0'";
+	if ( ! $include_main_site ) {
+		$query .= $wpdb->prepare( " AND blog_id != %d", (int) $current_site->id );
+	}
 	if ( isset( $blogs_directory_hide_blogs['private'] ) && 1 == $blogs_directory_hide_blogs['private'] ) {
 		$query .= " AND public = 1";
 	}
@@ -116,7 +141,7 @@ function blogs_directory_landing_navigation_output($content, $per_page, $page){
 			//$content .= __('Previous','blogs-directory');
 		} else {
 		$previous_page = $page - 1;
-		$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $blogs_directory_base . '/' . $previous_page . '/">&laquo; ' . __('Zurück','blogs-directory') . '</a>';
+		$content .= '<a style="text-decoration:none;" href="' . esc_url( $base_url . $previous_page . '/' ) . '">&laquo; ' . esc_html__( 'Zurück', 'blogs-directory' ) . '</a>';
 		}
 	//============================================================================//
 	}
@@ -131,7 +156,7 @@ function blogs_directory_landing_navigation_output($content, $per_page, $page){
 				//$content .= __('Next','blogs-directory');
 			} else {
 				$next_page = $page + 1;
-			$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $blogs_directory_base . '/' . $next_page . '/">' . __('Weiter','blogs-directory') . ' &raquo;</a>';
+			$content .= '<a style="text-decoration:none;" href="' . esc_url( $base_url . $next_page . '/' ) . '">' . esc_html__( 'Weiter', 'blogs-directory' ) . ' &raquo;</a>';
 			}
 		}
 	//============================================================================//

@@ -121,7 +121,11 @@ class Router
 	 */
 	protected function normalizeAjaxRequest()
 	{
-		$request = $_REQUEST['request'];
+		$request = isset( $_REQUEST['request'] ) ? $_REQUEST['request'] : null;
+
+		if( !is_array( $request ) ) {
+			wp_die();
+		}
 
 		// All ajax requests are triggered by a single action hook,
 		// each route is determined by the request["action"].

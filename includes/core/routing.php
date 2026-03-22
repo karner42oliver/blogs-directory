@@ -39,9 +39,30 @@ function blogs_directory_flush_rewrite_rules() {
 function blogs_directory_page_setup() {
 	global $wpdb, $user_ID, $blogs_directory_base;
 	if ( get_site_option('blogs_directory_page_setup') != 'complete'.$blogs_directory_base && is_super_admin() ) {
-		$page_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->posts . " WHERE post_name = '" . $blogs_directory_base . "' AND post_type = 'page'");
+		$page_count = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
+				$blogs_directory_base,
+				'page'
+			)
+		);
 		if ( $page_count < 1 ) {
-			$wpdb->query( "INSERT INTO " . $wpdb->posts . " ( post_author, post_date, post_date_gmt, post_content, post_title, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count ) VALUES ( '" . $user_ID . "', '" . current_time( 'mysql' ) . "', '" . current_time( 'mysql' ) . "', '', '" . __('Sites') . "', '', 'publish', 'closed', 'closed', '', '" . $blogs_directory_base . "', '', '', '" . current_time( 'mysql' ) . "', '" . current_time( 'mysql' ) . "', '', 0, '', 0, 'page', '', 0 )" );
+			wp_insert_post(
+				array(
+					'post_author'      => (int) $user_ID,
+					'post_date'        => current_time( 'mysql' ),
+					'post_date_gmt'    => current_time( 'mysql', true ),
+					'post_title'       => __( 'Sites', 'blogs-directory' ),
+					'post_status'      => 'publish',
+					'comment_status'   => 'closed',
+					'ping_status'      => 'closed',
+					'post_name'        => $blogs_directory_base,
+					'post_modified'    => current_time( 'mysql' ),
+					'post_modified_gmt'=> current_time( 'mysql', true ),
+					'post_type'        => 'page',
+				),
+				true
+			);
 		}
 		update_site_option('blogs_directory_page_setup', 'complete'.$blogs_directory_base);
 	}
@@ -61,7 +82,7 @@ function blogs_directory_rewrite($wp_rewrite){
 
 function blogs_directory_url_parse(){
 	global $wpdb, $current_site, $blogs_directory_base;
-	$blogs_directory_url = $_SERVER['REQUEST_URI'];
+	$blogs_directory_url = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( (string) $_SERVER['REQUEST_URI'] ) : '';
 	if ( $current_site->path != '/' ) {
 		$blogs_directory_url = str_replace('/' . $current_site->path . '/', '', $blogs_directory_url);
 		$blogs_directory_url = str_replace($current_site->path . '/', '', $blogs_directory_url);
@@ -95,22 +116,23 @@ function blogs_directory_url_parse(){
 		}
 	} else if ( $blogs_directory_1 == 'search' ) {
 		//search
-		if (wp_verify_nonce($_POST['_wp_nonce'], 'search-sites')) {
+		$nonce = isset( $_POST['_wp_nonce'] ) ? wp_unslash( $_POST['_wp_nonce'] ) : '';
+		if ( wp_verify_nonce( $nonce, 'search-sites' ) ) {
 				$page_type = 'search';
-				$phrase = isset( $_POST['phrase'] ) ? $_POST['phrase'] : '';
+				$phrase = isset( $_POST['phrase'] ) ? sanitize_text_field( wp_unslash( $_POST['phrase'] ) ) : '';
 				if ( empty( $phrase ) ) {
-					$phrase = $blogs_directory_2;
-					$page = $blogs_directory_3;
+					$phrase = sanitize_text_field( urldecode( $blogs_directory_2 ) );
+					$page = absint( $blogs_directory_3 );
 					if ( empty( $page ) ) {
 						$page = 1;
 					}
 				} else {
-					$page = $blogs_directory_3;
+					$page = absint( $blogs_directory_3 );
 					if ( empty( $page ) ) {
 						$page = 1;
 					}
 				}
-				$phrase = urldecode( $phrase );
+				$phrase = sanitize_text_field( urldecode( $phrase ) );
 		}
 	}
 

@@ -21,20 +21,22 @@ function blogs_directory_site_admin_options() {
 	$blogs_directory_show_description           = get_site_option('blogs_directory_show_description');
     $blogs_directory_avatar_fallback_order      = get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo');
     $blogs_directory_show_site_reviews          = get_site_option('blogs_directory_show_site_reviews', 0);
+    $blogs_directory_include_main_site          = (int) get_site_option( 'blogs_directory_include_main_site', 1 );
 	?>
 
     <div class="wrap">
     <?php
     //Display status message
     if ( isset( $_GET['updated'] ) ) {
-		switch ($_GET['dmsg']) {
+        $dmsg = isset( $_GET['dmsg'] ) ? sanitize_key( wp_unslash( $_GET['dmsg'] ) ) : '';
+        switch ( $dmsg ) {
 				case 'settings-saved':
 						$msg = __( 'Einstellungen gespeichert.', 'blogs-directory' );
 						break;
 				default:
-						$msg = sprintf(__( 'Fehler: %s', 'blogs-directory' ), base64_encode($_GET['dmsg']));;
+                        $msg = __( 'Fehler beim Speichern der Einstellungen.', 'blogs-directory' );
 		}
-        ?><div id="message" class="updated fade"><p><?php echo $msg; ?></p></div><?php
+        ?><div id="message" class="updated fade"><p><?php echo esc_html( $msg ); ?></p></div><?php
     }
     ?>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -47,8 +49,8 @@ function blogs_directory_site_admin_options() {
             <?php _e('Verzeichnis ansehen', 'blogs-directory') ?> ↗
         </a>
     </div>
-    <form method="post" name="" >
-		<?php wp_nonce_field('save-site-directory', '_wp_nonce', $_SERVER['PHP_SELF']); ?>
+        <form method="post" name="" >
+		<?php wp_nonce_field( 'save-site-directory', '_wp_nonce' ); ?>
 		<table class="form-table">
             <tr valign="top">
             <th width="33%" scope="row"><?php _e('Sortiert nach','blogs-directory') ?></th>
@@ -89,9 +91,16 @@ function blogs_directory_site_admin_options() {
             </td>
             </tr>
                 <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Hauptseite anzeigen','blogs-directory') ?></th>
+                    <td>
+                        <input name="blogs_directory_include_main_site" id="blogs_directory_include_main_site" type="checkbox" value="1" <?php checked( $blogs_directory_include_main_site, 1 ); ?> />
+                        <label for="blogs_directory_include_main_site"><?php _e('Zeige die Netzwerk-Hauptseite im Verzeichnis an','blogs-directory') ?></label><br />
+                    </td>
+                </tr>
+                <tr valign="top">
                     <th width="33%" scope="row"><?php _e('Titel der Verzeichnis Seite','blogs-directory') ?></th>
                     <td>
-                        <input name="blogs_directory_title_blogs_page" type="text" id="blogs_directory_title_blogs_page" value="<?php echo ( isset( $blogs_directory_title_blogs_page ) && '' != $blogs_directory_title_blogs_page ) ? $blogs_directory_title_blogs_page : 'Netzwerkseiten'; ?>" size="20" />
+                        <input name="blogs_directory_title_blogs_page" type="text" id="blogs_directory_title_blogs_page" value="<?php echo esc_attr( ( isset( $blogs_directory_title_blogs_page ) && '' != $blogs_directory_title_blogs_page ) ? $blogs_directory_title_blogs_page : 'Netzwerkseiten' ); ?>" size="20" />
                         <br /><span class="description"><?php _e('Standard','blogs-directory') ?>: "Netzwerkseiten"</span>
                     </td>
                 </tr>
@@ -230,6 +239,7 @@ function blogs_directory_save_options() {
 
 	$show_description = isset( $_POST['blogs_directory_show_description'] ) ? 1 : 0;
     $show_site_reviews = isset( $_POST['blogs_directory_show_site_reviews'] ) ? 1 : 0;
+    $include_main_site = isset( $_POST['blogs_directory_include_main_site'] ) ? 1 : 0;
 
     $allowed_fallback_orders = array( 'site_icon_logo', 'logo_site_icon' );
     $fallback_order_raw = isset( $_POST['blogs_directory_avatar_fallback_order'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_avatar_fallback_order'] ) ) : 'site_icon_logo';
@@ -244,13 +254,20 @@ function blogs_directory_save_options() {
 	update_site_option( 'blogs_directory_alternate_background_color', $alternate_background_color );
 	update_site_option( 'blogs_directory_border_color', $border_color );
 	update_site_option( 'blogs_directory_hide_blogs', $hide_blogs );
+    update_site_option( 'blogs_directory_include_main_site', $include_main_site );
 	update_site_option( 'blogs_directory_show_description', $show_description );
     update_site_option( 'blogs_directory_show_site_reviews', $show_site_reviews );
     update_site_option( 'blogs_directory_avatar_fallback_order', $avatar_fallback_order );
 	update_site_option( 'blogs_directory_title_blogs_page', $blogs_directory_title_blogs_page );
 
 	global $wpdb, $blogs_directory_base;
-	$page_count = $wpdb->get_var( "SELECT COUNT(*) FROM " . $wpdb->posts . " WHERE post_name = '" . $blogs_directory_base . "' AND post_type = 'page'" );
+    $page_count = (int) $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
+            $blogs_directory_base,
+            'page'
+        )
+    );
 
 	if ( 1 == $page_count ) {
 		$wpdb->query( $wpdb->prepare( "UPDATE " . $wpdb->posts . " SET post_title = %s WHERE post_name = %s AND post_type = 'page'", $blogs_directory_title_blogs_page, $blogs_directory_base ) );
