@@ -199,11 +199,11 @@ class ReviewController extends BaseController
 	public function modifyUpdateMessagesBulk( array $messages, array $counts )
 	{
 		$messages[ App::POST_TYPE ] = [
-			'updated'   => _n( '%s review updated.', '%s reviews updated.', $counts['updated'], 'blogs-directory' ),
-			'locked'    => _n( '%s review not updated, somebody is editing it.', '%s reviews not updated, somebody is editing them.', $counts['locked'], 'blogs-directory' ),
-			'deleted'   => _n( '%s review permanently deleted.', '%s reviews permanently deleted.', $counts['deleted'], 'blogs-directory' ),
-			'trashed'   => _n( '%s review moved to the Trash.', '%s reviews moved to the Trash.', $counts['trashed'], 'blogs-directory' ),
-			'untrashed' => _n( '%s review restored from the Trash.', '%s reviews restored from the Trash.', $counts['untrashed'], 'blogs-directory' ),
+			'updated'   => _n( '%s Bewertung aktualisiert.', '%s Bewertungen aktualisiert.', $counts['updated'], 'blogs-directory' ),
+			'locked'    => _n( '%s Bewertung nicht aktualisiert, jemand bearbeitet sie gerade.', '%s Bewertungen nicht aktualisiert, jemand bearbeitet sie gerade.', $counts['locked'], 'blogs-directory' ),
+			'deleted'   => _n( '%s Bewertung dauerhaft geloescht.', '%s Bewertungen dauerhaft geloescht.', $counts['deleted'], 'blogs-directory' ),
+			'trashed'   => _n( '%s Bewertung in den Papierkorb verschoben.', '%s Bewertungen in den Papierkorb verschoben.', $counts['trashed'], 'blogs-directory' ),
+			'untrashed' => _n( '%s Bewertung aus dem Papierkorb wiederhergestellt.', '%s Bewertungen aus dem Papierkorb wiederhergestellt.', $counts['untrashed'], 'blogs-directory' ),
 		];
 
 		return $messages;
@@ -257,7 +257,7 @@ class ReviewController extends BaseController
 		// Validation
 		$validatedRequest = $this->validateSubmittedReview( $request );
 		if( !is_array( $validatedRequest )) {
-			return __( 'Please fix the submission errors.', 'blogs-directory' );
+			return __( 'Bitte korrigiere die Fehler im Formular.', 'blogs-directory' );
 		}
 		// Custom validation
 		$customValidation = apply_filters( 'site-reviews/validate/review/submission', true, $validatedRequest );
@@ -266,14 +266,14 @@ class ReviewController extends BaseController
 			$session->set( "{$validatedRequest['form_id']}-values", $validatedRequest );
 			return is_string( $customValidation )
 				? $customValidation
-				: __( 'The review submission failed. Please notify the site administrator.', 'blogs-directory' );
+				: __( 'Das Absenden der Bewertung ist fehlgeschlagen. Bitte informiere den Website-Administrator.', 'blogs-directory' );
 		}
 		// Honeypot validation
 		if( !empty( $validatedRequest['gotcha'] )) {
 			$session->set( "{$validatedRequest['form_id']}-errors", [] );
 			glsr_resolve( 'Log\Logger' )->warning( 'The Honeypot caught a bad submission:' );
 			glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-			return __( 'The review submission failed. Please notify the site administrator.', 'blogs-directory' );
+			return __( 'Das Absenden der Bewertung ist fehlgeschlagen. Bitte informiere den Website-Administrator.', 'blogs-directory' );
 		}
 		// reCAPTCHA validation
 		$validateRecaptcha = $this->validateRecaptcha();
@@ -285,7 +285,7 @@ class ReviewController extends BaseController
 		if( !$validateRecaptcha ) {
 			$session->set( "{$validatedRequest['form_id']}-errors", [] );
 			$session->set( "{$validatedRequest['form_id']}-recaptcha", 'reset' );
-			return __( 'The reCAPTCHA verification failed. Please notify the site administrator.', 'blogs-directory' );
+			return __( 'Die reCAPTCHA-Pruefung ist fehlgeschlagen. Bitte informiere den Website-Administrator.', 'blogs-directory' );
 		}
 
 		$submitReview = new SubmitReview( $validatedRequest );
@@ -300,7 +300,7 @@ class ReviewController extends BaseController
 				$session->set( "{$validatedRequest['form_id']}-errors", [] );
 				glsr_resolve( 'Log\Logger' )->warning( 'Blacklisted submission detected:' );
 				glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-				return __( 'Your review cannot be submitted at this time.', 'blogs-directory' );
+				return __( 'Deine Bewertung kann derzeit nicht abgesendet werden.', 'blogs-directory' );
 			}
 		}
 
@@ -309,7 +309,7 @@ class ReviewController extends BaseController
 			$session->set( "{$validatedRequest['form_id']}-errors", [] );
 			glsr_resolve( 'Log\Logger' )->warning( 'Akismet caught a spam submission:' );
 			glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-			return __( 'Your review cannot be submitted at this time. Please try again later.', 'blogs-directory' );
+			return __( 'Deine Bewertung kann derzeit nicht abgesendet werden. Bitte versuche es spaeter erneut.', 'blogs-directory' );
 		}
 
 		return $this->execute( $submitReview );
@@ -691,7 +691,7 @@ class ReviewController extends BaseController
 		}
 
 		if( empty( $request['title'] )) {
-			$request['title'] = __( 'No Title', 'blogs-directory' );
+			$request['title'] = __( 'Kein Titel', 'blogs-directory' );
 		}
 
 		return array_merge( $defaults, $request );

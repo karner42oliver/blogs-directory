@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     1.0.0
- * -------------------------------------------------------------------------------------------------
- */
-
 namespace GeminiLabs\SiteReviews;
 
 use GeminiLabs\SiteReviews\App;
@@ -342,7 +334,7 @@ class Database implements OptionsContract
 				? $labels[$key]
 				: ucfirst( $key );
 
-			$value = sprintf( __( '%s reviews', 'blogs-directory' ), $type );
+			$value = sprintf( __( '%s Bewertungen', 'blogs-directory' ), $type );
 		});
 		return $types;
 	}
@@ -373,7 +365,7 @@ class Database implements OptionsContract
 	public function normalizeMeta( array $meta )
 	{
 		$defaults = [
-			'author'      => __( 'Anonymous', 'blogs-directory' ),
+			'author'      => __( 'Anonym', 'blogs-directory' ),
 			'assigned_to' => '',
 			'avatar'      => '',
 			'content'     => '',

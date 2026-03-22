@@ -36,7 +36,7 @@ class SubmitReview
 		glsr_resolve( 'Database' )->setReviewMeta( $post_id, $command->category );
 		$this->sendNotification( $post_id, $command );
 		$successMessage = apply_filters( 'site-reviews/local/review/submitted/message',
-			__( 'Your review has been submitted!', 'blogs-directory' ),
+			__( 'Deine Bewertung wurde abgesendet!', 'blogs-directory' ),
 			$command
 		);
 		do_action( 'site-reviews/local/review/submitted', $successMessage, $command );
@@ -90,7 +90,7 @@ class SubmitReview
 		if( $command->author ) {
 			$fields[] = ['value' => trim( $command->author.$command->email.' - '.$command->ipAddress )];
 		}
-		$fields[] = ['value' => sprintf( '<%s|%s>', $args['notification_link'], __( 'View Review', 'blogs-directory' ))];
+		$fields[] = ['value' => sprintf( '<%s|%s>', $args['notification_link'], __( 'Bewertung anzeigen', 'blogs-directory' ))];
 		return json_encode([
 			'icon_url' => glsr_app()->url.'assets/img/icon.png',
 			'username' => glsr_app()->name,
@@ -113,8 +113,8 @@ class SubmitReview
 		if( !in_array( $notificationType, ['default','custom','webhook'] ))return;
 		$assignedToTitle = get_the_title( (int) $command->assignedTo );
 		$notificationSubject = _nx(
-			'New %s-star review',
-			'New %s-star review of: %s',
+			'Neue %s-Sterne-Bewertung',
+			'Neue %s-Sterne-Bewertung von: %s',
 			(int) empty( $assignedToTitle ),
 			'The text is different depending on whether or not the review has been assigned to a post.',
 			'blogs-directory'
@@ -145,10 +145,10 @@ class SubmitReview
 			? $this->createEmailNotification( $command, $args )->send()
 			: false;
 		if( !is_bool( $result )) {
-			glsr_log( __( 'Email notification was not sent: missing email, subject, or message.', 'blogs-directory' ), 'error' );
+			glsr_log( __( 'E-Mail-Benachrichtigung wurde nicht gesendet: E-Mail, Betreff oder Nachricht fehlt.', 'blogs-directory' ), 'error' );
 		}
 		if( $result === false ) {
-			glsr_log( __( 'Email notification was not sent: wp_mail() failed.', 'blogs-directory' ), 'error' );
+			glsr_log( __( 'E-Mail-Benachrichtigung wurde nicht gesendet: wp_mail() ist fehlgeschlagen.', 'blogs-directory' ), 'error' );
 		}
 		return (bool) $result;
 	}

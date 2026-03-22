@@ -29,13 +29,13 @@ class SiteReviewsForm extends Widget
 	public function form( $instance )
 	{
 		$args = $this->normalize( $instance, [
-			'description' => sprintf( __( 'Your email address will not be published. Required fields are marked %s*%s', 'blogs-directory' ), '<span>', '</span>' ),
+			'description' => sprintf( __( 'Deine E-Mail-Adresse wird nicht veroeffentlicht. Pflichtfelder sind mit %s*%s markiert.', 'blogs-directory' ), '<span>', '</span>' ),
 		]);
 
 		$this->create_field([
 			'type'  => 'text',
 			'name'  => 'title',
-			'label' => __( 'Title', 'blogs-directory' ),
+			'label' => __( 'Titel', 'blogs-directory' ),
 			'value' => $args['title'],
 		]);
 
@@ -43,32 +43,32 @@ class SiteReviewsForm extends Widget
 			'type'  => 'textarea',
 			'name'  => 'description',
 			'class' => 'widefat',
-			'label' => __( 'Description', 'blogs-directory' ),
+			'label' => __( 'Beschreibung', 'blogs-directory' ),
 			'value' => $args['description'],
 		]);
 
 		$this->create_field([
 			'type'  => 'select',
 			'name'  => 'category',
-			'label' => __( 'Automatically assign a category', 'blogs-directory' ),
+			'label' => __( 'Kategorie automatisch zuweisen', 'blogs-directory' ),
 			'value' => $args['category'],
-			'options' => ['' => __( 'Do not assign a category', 'blogs-directory' ) ] + glsr_resolve( 'Database' )->getTerms(),
+			'options' => ['' => __( 'Keine Kategorie zuweisen', 'blogs-directory' ) ] + glsr_resolve( 'Database' )->getTerms(),
 			'class' => 'widefat',
 		]);
 
 		$this->create_field([
 			'type'    => 'text',
 			'name'    => 'assign_to',
-			'label'   => __( 'Assign reviews to a custom page/post ID', 'blogs-directory' ),
+			'label'   => __( 'Bewertungen einer benutzerdefinierten Seiten-/Beitrags-ID zuweisen', 'blogs-directory' ),
 			'value'   => $args['assign_to'],
 			'default' => '',
-			'description' => sprintf( __( 'You may also enter %s to assign to the current post.', 'blogs-directory' ), '<code>post_id</code>' ),
+			'description' => sprintf( __( 'Du kannst auch %s eingeben, um der aktuellen Seite zuzuweisen.', 'blogs-directory' ), '<code>post_id</code>' ),
 		]);
 
 		$this->create_field([
 			'type'  => 'text',
 			'name'  => 'class',
-			'label' => __( 'Enter any custom CSS classes here', 'blogs-directory' ),
+			'label' => __( 'Eigene CSS-Klassen hier eingeben', 'blogs-directory' ),
 			'value' => $args['class'],
 		]);
 
@@ -77,10 +77,10 @@ class SiteReviewsForm extends Widget
 			'name'  => 'hide',
 			'value' => $args['hide'],
 			'options' => [
-				'email' => __( 'Hide the email field', 'blogs-directory' ),
-				'name'  => __( 'Hide the name field', 'blogs-directory' ),
-				'terms' => __( 'Hide the terms field', 'blogs-directory' ),
-				'title' => __( 'Hide the title field', 'blogs-directory' ),
+				'email' => __( 'E-Mail-Feld ausblenden', 'blogs-directory' ),
+				'name'  => __( 'Namensfeld ausblenden', 'blogs-directory' ),
+				'terms' => __( 'AGB-Feld ausblenden', 'blogs-directory' ),
+				'title' => __( 'Titelfeld ausblenden', 'blogs-directory' ),
 			],
 		]);
 	}

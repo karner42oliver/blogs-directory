@@ -1,21 +1,23 @@
 <?php defined( 'WPINC' ) || die; ?>
 
-<p>The following helper functions will only work if the <?= glsr_app()->name; ?> plugin is active. If you use any of them in a theme, make sure you add <a href="https://php.net/manual/en/function.function-exists.php">function_exists</a> checks to your theme's <code>functions.php</code> file for each helper function you use.</p>
+<div class="glsr-help-grid">
+
+<p class="glsr-help-intro">Die folgenden Helper-Funktionen funktionieren nur, wenn das Plugin <?= glsr_app()->name; ?> aktiv ist. Wenn du sie im Theme nutzt, pruefe sie vorher mit <a href="https://php.net/manual/en/function.function-exists.php">function_exists</a> in deiner <code>functions.php</code>.</p>
 
 <div class="glsr-card card">
-	<h3>Global helper to get a single review</h3>
+	<h3>Globaler Helper fuer eine einzelne Bewertung</h3>
 	<pre><code>glsr_get_review( $post_id );</code></pre>
-	<p>The <code>$post_id</code> variable is required and is the post_id of the review you want to get.</p>
-	<p><strong>Helpful Tip:</strong></p>
-	<p>You can use the following code to view all available values in the review object that is returned.</p>
+	<p>Die Variable <code>$post_id</code> ist erforderlich und entspricht der ID der Bewertung.</p>
+	<p><strong>Tipp:</strong></p>
+	<p>Mit folgendem Code kannst du alle verfuegbaren Werte im Rueckgabeobjekt ansehen.</p>
 	<pre><code>glsr_debug( glsr_get_review( $post_id ));</code></pre>
 </div>
 
 <div class="glsr-card card">
-	<h3>Global helper to get an array of reviews</h3>
+	<h3>Globaler Helper fuer ein Bewertungs-Array</h3>
 	<pre><code>glsr_get_reviews( $args );</code></pre>
-	<p>The <code>$args</code> variable is optional, but if included it must be an array.</p>
-	<p><strong>Default Usage:</strong></p>
+	<p>Die Variable <code>$args</code> ist optional, muss aber ein Array sein.</p>
+	<p><strong>Standardverwendung:</strong></p>
 	<pre><code>glsr_get_reviews([
 	'assigned_to' => '',
 	'category' => '',
@@ -28,7 +30,7 @@
 	'rating' => 1,
 	'type' => '',
 ]);</code></pre>
-	<p><strong>Example:</strong></p>
+	<p><strong>Beispiel:</strong></p>
 	<pre><code>$reviews = glsr_get_reviews([
 	"count"  => -1,
 	"rating" => 1,
@@ -40,12 +42,12 @@ foreach( $reviews as $review ) {
 </div>
 
 <div class="glsr-card card">
-	<h3>Global helper to get a plugin option</h3>
+	<h3>Globaler Helper fuer eine Plugin-Option</h3>
 	<pre><code>glsr_get_option( $option_path, $fallback );</code></pre>
-	<p>The <code>$option_path</code> variable is required and is the dot-notation path of the option you want to get. You build a dot-notation string by using the array keys leading up to the value you wish to get.</p>
-	<p>The <code>$fallback</code> variable is what you want to return if the option is not found or is empty. Default is an empty string.</p>
-	<p><strong>Example:</strong></p>
-	<p><code>"general.require.login"</code> will get the value of the "Require Login" setting which is stored in the settings array as shown below:</p>
+	<p><code>$option_path</code> ist erforderlich und nutzt Punkt-Notation zum gewuenschten Wert.</p>
+	<p><code>$fallback</code> ist der Rueckgabewert, wenn die Option nicht existiert oder leer ist. Standard ist ein leerer String.</p>
+	<p><strong>Beispiel:</strong></p>
+	<p><code>"general.require.login"</code> liefert den Wert der Einstellung "Login erforderlich" aus dem Settings-Array:</p>
 	<pre><code>[
 	"general" => [
 		"require" => [
@@ -54,29 +56,31 @@ foreach( $reviews as $review ) {
 		],
 	],
 ]</code></pre>
-	<p><strong>Helpful Tip:</strong></p>
-	<p>You can use the following code to view the whole plugin settings array, this will help you figure out which dot-notation path to use.</p>
+	<p><strong>Tipp:</strong></p>
+	<p>Mit dem folgenden Aufruf kannst du das komplette Settings-Array sehen und den passenden Pfad leichter finden.</p>
 	<pre><code>glsr_debug( glsr_get_options() );</code></pre>
 </div>
 
 <div class="glsr-card card">
-	<h3>Global helper to get an array of all plugin options</h3>
+	<h3>Globaler Helper fuer alle Plugin-Optionen</h3>
 	<pre><code>glsr_get_options();</code></pre>
 </div>
 
 <div class="glsr-card card">
-	<h3>Global helper to debug variables</h3>
+	<h3>Globaler Helper zum Debuggen von Variablen</h3>
 	<pre><code>glsr_debug( $variable, ... );</code></pre>
-	<p>This function prints one or more variables (strings, arrays, objects, etc.) to the screen in human-readable format. You can include as many variables as you want separated by commas.</p>
-	<p><strong>Example:</strong></p>
+	<p>Diese Funktion gibt eine oder mehrere Variablen (Strings, Arrays, Objekte usw.) lesbar aus. Mehrere Werte trennst du mit Komma.</p>
+	<p><strong>Beispiel:</strong></p>
 	<pre><code>glsr_debug( $var1, $var2, $var3 );</code></pre>
 </div>
 
 <div class="glsr-card card">
-	<h3>Global helper to log variables</h3>
+	<h3>Globaler Helper zum Loggen</h3>
 	<pre><code>glsr_log( $message, $level );</code></pre>
-	<p>This function logs a variable if logging is enabled.</p>
-	<p><code>$level</code> is optional and defaults to "debug". Available logging levels are: "emergency", "alert", "critical", "error", "warning", "notice", "info", and "debug".</p>
-	<p><strong>Example:</strong></p>
+	<p>Diese Funktion schreibt einen Eintrag ins Log, wenn Logging aktiviert ist.</p>
+	<p><code>$level</code> ist optional, Standard ist "debug". Verfuegbare Stufen: "emergency", "alert", "critical", "error", "warning", "notice", "info", "debug".</p>
+	<p><strong>Beispiel:</strong></p>
 	<pre><code>glsr_log( $log_this_variable );</code></pre>
+</div>
+
 </div>

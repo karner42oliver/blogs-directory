@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2017, Paul Ryley
- * @license   GPLv3
- * @since     2.12.0
- * -------------------------------------------------------------------------------------------------
- */
-
 namespace GeminiLabs\SiteReviews;
 
 use GeminiLabs\SiteReviews\Commands\SubmitReview;

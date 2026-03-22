@@ -87,6 +87,22 @@
   min-height: 180px;
 }
 
+.glsr-modern-admin .glsr-help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.glsr-modern-admin .glsr-help-grid > .glsr-help-intro {
+  grid-column: 1 / -1;
+}
+
+.glsr-modern-admin .glsr-help-grid .glsr-card.card {
+  margin: 0;
+  height: 100%;
+}
+
 .glsr-modern-admin.is-loading .glsr-tab-content {
   opacity: 0.62;
   transition: opacity 0.16s ease;
@@ -124,5 +140,10 @@
 
   .glsr-modern-admin .glsr-tab-content {
     padding: 14px;
+  }
+
+  .glsr-modern-admin .glsr-help-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }

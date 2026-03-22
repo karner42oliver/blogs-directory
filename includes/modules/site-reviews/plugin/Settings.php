@@ -158,57 +158,57 @@ class Settings
 		$this->html->createForm( $formId, [
 			'action' => admin_url( 'options.php' ),
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'blogs-directory' ),
+			'submit' => __( 'Einstellungen speichern', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'yesno_inline',
 			'name'    => 'require.approval',
-			'label'   => __( 'Require approval', 'blogs-directory' ),
+			'label'   => __( 'Freigabe erforderlich', 'blogs-directory' ),
 			'default' => 'yes',
-			'desc'    => __( 'Set the status of new review submissions to pending.', 'blogs-directory' ),
+			'desc'    => __( 'Neue Bewertungen werden zuerst auf ausstehend gesetzt.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'require.login',
-			'label' => __( 'Require login', 'blogs-directory' ),
-			'desc'  => __( 'Only allow review submissions from registered users.', 'blogs-directory' ),
+			'label' => __( 'Login erforderlich', 'blogs-directory' ),
+			'desc'  => __( 'Nur registrierte Benutzer duerfen Bewertungen absenden.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'yesno_inline',
 			'name'    => 'require.login_register',
-			'label'   => __( 'Show registration link', 'blogs-directory' ),
+			'label'   => __( 'Registrierungslink anzeigen', 'blogs-directory' ),
 			'depends' => [
 				'require.login' => 'yes',
 			],
-			'desc' => sprintf( __( 'Show a link for a new user to register. The %s Membership option must be enabled in General Settings for this to work.', 'blogs-directory' ),
-				sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php' ), __( 'Anyone can register', 'blogs-directory' ))
+			'desc' => sprintf( __( 'Zeigt einen Link zur Registrierung neuer Benutzer. Dafuer muss die Option %s in den allgemeinen Einstellungen aktiviert sein.', 'blogs-directory' ),
+				sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php' ), __( 'Jeder kann sich registrieren', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'radio',
 			'name'    => 'notification',
-			'label'   => __( 'Notifications', 'blogs-directory' ),
+			'label'   => __( 'Benachrichtigungen', 'blogs-directory' ),
 			'default' => 'none',
 			'options' => [
-				'none'    => __( 'Do not send review notifications', 'blogs-directory' ),
-				'default' => __( 'Send to administrator', 'blogs-directory' ) . sprintf( ' <code>%s</code>', (string) get_option( 'admin_email' )),
-				'custom'  => __( 'Send to one or more email addresses', 'blogs-directory' ),
-				'webhook' => sprintf( __( 'Send to %s', 'blogs-directory' ), '<a href="https://slack.com/">Slack</a>' ),
+				'none'    => __( 'Keine Bewertungs-Benachrichtigungen senden', 'blogs-directory' ),
+				'default' => __( 'An Administrator senden', 'blogs-directory' ) . sprintf( ' <code>%s</code>', (string) get_option( 'admin_email' )),
+				'custom'  => __( 'An eine oder mehrere E-Mail-Adressen senden', 'blogs-directory' ),
+				'webhook' => sprintf( __( 'An %s senden', 'blogs-directory' ), '<a href="https://slack.com/">Slack</a>' ),
 			],
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'text',
 			'name'    => 'notification_email',
-			'label'   => __( 'Send notification emails to', 'blogs-directory' ),
+			'label'   => __( 'Benachrichtigungs-E-Mails senden an', 'blogs-directory' ),
 			'depends' => [
 				'notification' => 'custom',
 			],
-			'placeholder' => __( 'Separate multiple emails with a comma', 'blogs-directory' ),
+			'placeholder' => __( 'Mehrere E-Mail-Adressen mit Komma trennen', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
@@ -218,7 +218,7 @@ class Settings
 			'depends' => [
 				'notification' => 'webhook',
 			],
-			'desc' => sprintf( __( 'To send notifications to Slack, create a new %s and then paste the provided Webhook URL in the field above.', 'blogs-directory' ),
+			'desc' => sprintf( __( 'Um Benachrichtigungen an Slack zu senden, erstelle einen neuen %s und fuege danach die Webhook-URL oben ein.', 'blogs-directory' ),
 				sprintf( '<a href="%s">%s</a>', esc_url( 'https://slack.com/apps/new/A0F7XDUAZ-incoming-webhooks' ), __( 'Incoming WebHook', 'blogs-directory' ))
 			),
 		]);
@@ -226,22 +226,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'    => 'code',
 			'name'    => 'notification_message',
-			'label'   => __( 'Notification template', 'blogs-directory' ),
+			'label'   => __( 'Benachrichtigungs-Template', 'blogs-directory' ),
 			'rows'    => 10,
 			'depends' => [
 				'notification' => ['custom', 'default', 'webhook'],
 			],
 			'default' => $this->html->renderTemplate( 'email/templates/review-notification', [] ),
-			'desc' => 'To restore the default text, save an empty template.
-				If you are sending notifications to Slack then this template will only be used as a fallback in the event that <a href="https://api.slack.com/docs/attachments">Message Attachments</a> have been disabled.<br>
-				Available template tags:<br>
-				<code>{review_rating}</code> - The review rating number (1-5)<br>
-				<code>{review_title}</code> - The review title<br>
-				<code>{review_content}</code> - The review content<br>
-				<code>{review_author}</code> - The review author<br>
-				<code>{review_email}</code> - The email of the review author<br>
-				<code>{review_ip}</code> - The IP address of the review author<br>
-				<code>{review_link}</code> - The link to edit/view a review',
+			'desc' => 'Um den Standardtext wiederherzustellen, speichere ein leeres Template.
+				Wenn du Benachrichtigungen an Slack sendest, wird dieses Template nur als Rueckfall genutzt, falls <a href="https://api.slack.com/docs/attachments">Message Attachments</a> deaktiviert sind.<br>
+				Verfuegbare Template-Tags:<br>
+				<code>{review_rating}</code> - Die Bewertungszahl (1-5)<br>
+				<code>{review_title}</code> - Der Bewertungstitel<br>
+				<code>{review_content}</code> - Der Bewertungsinhalt<br>
+				<code>{review_author}</code> - Der Autor der Bewertung<br>
+				<code>{review_email}</code> - Die E-Mail des Bewertungsautors<br>
+				<code>{review_ip}</code> - Die IP-Adresse des Bewertungsautors<br>
+				<code>{review_link}</code> - Der Link zum Bearbeiten/Anzeigen der Bewertung',
 		]);
 	}
 
@@ -255,30 +255,30 @@ class Settings
 		$this->html->createForm( $formId, [
 			'action' => admin_url( 'options.php' ),
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'blogs-directory' ),
+			'submit' => __( 'Einstellungen speichern', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'date.format',
-			'label' => __( 'Date Format', 'blogs-directory' ),
+			'label' => __( 'Datumsformat', 'blogs-directory' ),
 			'options' => [
-				'default' => __( 'Use the default date format', 'blogs-directory' ),
-				'relative' => __( 'Use a relative date format', 'blogs-directory' ),
-				'custom' => __( 'Use a custom date format', 'blogs-directory' ),
+				'default' => __( 'Standard-Datumsformat verwenden', 'blogs-directory' ),
+				'relative' => __( 'Relatives Datumsformat verwenden', 'blogs-directory' ),
+				'custom' => __( 'Eigenes Datumsformat verwenden', 'blogs-directory' ),
 			],
-			'desc'  => sprintf( __( 'The default date format is the one set in your %s.', 'blogs-directory' ),
-				sprintf( '<a href="%s">%s<a>', get_admin_url( null, 'options-general.php' ), __( 'WordPress settings', 'blogs-directory' ))
+			'desc'  => sprintf( __( 'Das Standard-Datumsformat entspricht dem Wert in deinen %s.', 'blogs-directory' ),
+				sprintf( '<a href="%s">%s<a>', get_admin_url( null, 'options-general.php' ), __( 'WordPress-Einstellungen', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'text',
 			'name'    => 'date.custom',
-			'label'   => __( 'Custom Date Format', 'blogs-directory' ),
+			'label'   => __( 'Eigenes Datumsformat', 'blogs-directory' ),
 			'default' => get_option( 'date_format' ),
-			'desc'    => sprintf( __( 'Enter a custom date format (%s).', 'blogs-directory' ),
-				sprintf( '<a href="https://codex.wordpress.org/Formatting_Date_and_Time">%s</a>', __( 'documentation on date and time formatting', 'blogs-directory' ))
+			'desc'    => sprintf( __( 'Trag ein eigenes Datumsformat ein (%s).', 'blogs-directory' ),
+				sprintf( '<a href="https://codex.wordpress.org/Formatting_Date_and_Time">%s</a>', __( 'Dokumentation zu Datums- und Zeitformaten', 'blogs-directory' ))
 			),
 			'depends' => [
 				'date.format' => 'custom',
@@ -288,15 +288,15 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'assigned_links.enabled',
-			'label' => __( 'Enable Assigned Links', 'blogs-directory' ),
-			'desc'  => __( 'Display a link to the assigned post of a review.', 'blogs-directory' ),
+			'label' => __( 'Zugewiesene Links aktivieren', 'blogs-directory' ),
+			'desc'  => __( 'Zeigt einen Link zum zugewiesenen Beitrag einer Bewertung.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'avatars.enabled',
-			'label' => __( 'Enable Avatars', 'blogs-directory' ),
-			'desc'  => sprintf( __( 'Display reviewer avatars. These are generated from the email address of the reviewer using %s.', 'blogs-directory' ),
+			'label' => __( 'Avatare aktivieren', 'blogs-directory' ),
+			'desc'  => sprintf( __( 'Zeigt Avatare der Bewerter. Diese werden aus der E-Mail-Adresse ueber %s erzeugt.', 'blogs-directory' ),
 				sprintf( '<a href="https://gravatar.com">%s</a>', __( 'Gravatar', 'blogs-directory' ))
 			),
 		]);
@@ -304,16 +304,16 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'excerpt.enabled',
-			'label' => __( 'Enable Excerpts', 'blogs-directory' ),
-			'desc'  => __( 'Display an excerpt instead of the full review.', 'blogs-directory' ),
+			'label' => __( 'Auszuege aktivieren', 'blogs-directory' ),
+			'desc'  => __( 'Zeigt einen Auszug statt der vollstaendigen Bewertung.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'number',
 			'name'    => 'excerpt.length',
-			'label'   => __( 'Excerpt Length', 'blogs-directory' ),
+			'label'   => __( 'Laenge des Auszugs', 'blogs-directory' ),
 			'default' => '55',
-			'desc'    => __( 'Set the excerpt word length.', 'blogs-directory' ),
+			'desc'    => __( 'Legt die Wortanzahl fuer den Auszug fest.', 'blogs-directory' ),
 			'depends' => [
 				'excerpt.enabled' => 'yes',
 			],
@@ -322,57 +322,57 @@ class Settings
 		$this->html->addfield( $formId, [
 			'type'  => 'heading',
 			'value' => __( 'Rich Snippets (schema.org)', 'blogs-directory' ),
-			'desc'  => __( 'Review snippets appear in Google Search results and include the star rating and other summary info from your reviews.', 'blogs-directory' ),
+			'desc'  => __( 'Bewertungs-Snippets erscheinen in Google-Suchergebnissen und enthalten Sternebewertung sowie weitere Zusammenfassungsdaten.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.type.default',
-			'label' => __( 'Default Schema Type', 'blogs-directory' ),
+			'label' => __( 'Standard-Schema-Typ', 'blogs-directory' ),
 			'default' => 'LocalBusiness',
 			'options' => [
-				'LocalBusiness' => __( 'Local Business', 'blogs-directory' ),
-				'Product' => __( 'Product', 'blogs-directory' ),
-				'custom' => __( 'Custom', 'blogs-directory' ),
+				'LocalBusiness' => __( 'Lokales Unternehmen', 'blogs-directory' ),
+				'Product' => __( 'Produkt', 'blogs-directory' ),
+				'custom' => __( 'Benutzerdefiniert', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default schema type for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
+			'desc' => sprintf( __( 'Das ist der Standard-Schema-Typ fuer das bewertete Element. Du kannst ihn pro Beitrag/Seite ueberschreiben, indem du einen %s-Metawert mit %s setzt.', 'blogs-directory' ),
 				'<code>schema_type</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Benutzerdefinierte Felder', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.type.custom',
-			'label' => __( 'Custom Schema Type', 'blogs-directory' ),
+			'label' => __( 'Benutzerdefinierter Schema-Typ', 'blogs-directory' ),
 			'depends' => [
 				'schema.type.default' => 'custom',
 			],
 			'desc' => sprintf(
-				__( 'Google supports review ratings for the following schema content types: Local businesses, Movies, Books, Music, and Products. %s', 'blogs-directory' ),
-				sprintf( '<a href="https://schema.org/docs/schemas.html">%s</a>', __( 'View more information on schema types here.', 'blogs-directory' ))
+				__( 'Google unterstuetzt Bewertungs-Sterne fuer folgende Schema-Inhaltstypen: lokale Unternehmen, Filme, Buecher, Musik und Produkte. %s', 'blogs-directory' ),
+				sprintf( '<a href="https://schema.org/docs/schemas.html">%s</a>', __( 'Mehr Infos zu Schema-Typen findest du hier.', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.name.default',
-			'label' => __( 'Default Name', 'blogs-directory' ),
+			'label' => __( 'Standardname', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the assigned or current page title', 'blogs-directory' ),
-				'custom' => __( 'Enter a custom title', 'blogs-directory' ),
+				'post' => __( 'Titel der zugewiesenen oder aktuellen Seite verwenden', 'blogs-directory' ),
+				'custom' => __( 'Eigenen Titel eingeben', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default name of the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
+			'desc' => sprintf( __( 'Das ist der Standardname des bewerteten Elements. Du kannst ihn pro Beitrag/Seite ueberschreiben, indem du einen %s-Metawert mit %s setzt.', 'blogs-directory' ),
 				'<code>schema_name</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Benutzerdefinierte Felder', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.name.custom',
-			'label' => __( 'Custom Name', 'blogs-directory' ),
+			'label' => __( 'Benutzerdefinierter Name', 'blogs-directory' ),
 			'depends' => [
 				'schema.name.default' => 'custom',
 			],
@@ -381,22 +381,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.description.default',
-			'label' => __( 'Default Description', 'blogs-directory' ),
+			'label' => __( 'Standardbeschreibung', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the assigned or current page excerpt', 'blogs-directory' ),
-				'custom' => __( 'Enter a custom description', 'blogs-directory' ),
+				'post' => __( 'Auszug der zugewiesenen oder aktuellen Seite verwenden', 'blogs-directory' ),
+				'custom' => __( 'Eigene Beschreibung eingeben', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default description for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
+			'desc' => sprintf( __( 'Das ist die Standardbeschreibung fuer das bewertete Element. Du kannst sie pro Beitrag/Seite ueberschreiben, indem du einen %s-Metawert mit %s setzt.', 'blogs-directory' ),
 				'<code>schema_description</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Benutzerdefinierte Felder', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.description.custom',
-			'label' => __( 'Custom Description', 'blogs-directory' ),
+			'label' => __( 'Benutzerdefinierte Beschreibung', 'blogs-directory' ),
 			'depends' => [
 				'schema.description.default' => 'custom',
 			],
@@ -405,22 +405,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.url.default',
-			'label' => __( 'Default URL', 'blogs-directory' ),
+			'label' => __( 'Standard-URL', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the assigned or current page URL', 'blogs-directory' ),
-				'custom' => __( 'Enter a custom URL', 'blogs-directory' ),
+				'post' => __( 'URL der zugewiesenen oder aktuellen Seite verwenden', 'blogs-directory' ),
+				'custom' => __( 'Eigene URL eingeben', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default URL for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
+			'desc' => sprintf( __( 'Das ist die Standard-URL fuer das bewertete Element. Du kannst sie pro Beitrag/Seite ueberschreiben, indem du einen %s-Metawert mit %s setzt.', 'blogs-directory' ),
 				'<code>schema_url</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Benutzerdefinierte Felder', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.url.custom',
-			'label' => __( 'Custom URL', 'blogs-directory' ),
+			'label' => __( 'Benutzerdefinierte URL', 'blogs-directory' ),
 			'depends' => [
 				'schema.url.default' => 'custom',
 			],
@@ -429,22 +429,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.image.default',
-			'label' => __( 'Default Image', 'blogs-directory' ),
+			'label' => __( 'Standardbild', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the featured image of the assigned or current page', 'blogs-directory' ),
-				'custom' => __( 'Enter a custom image URL', 'blogs-directory' ),
+				'post' => __( 'Beitragsbild der zugewiesenen oder aktuellen Seite verwenden', 'blogs-directory' ),
+				'custom' => __( 'Eigene Bild-URL eingeben', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default image for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
+			'desc' => sprintf( __( 'Das ist das Standardbild fuer das bewertete Element. Du kannst es pro Beitrag/Seite ueberschreiben, indem du einen %s-Metawert mit %s setzt.', 'blogs-directory' ),
 				'<code>schema_image</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Benutzerdefinierte Felder', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.image.custom',
-			'label' => __( 'Custom Image URL', 'blogs-directory' ),
+			'label' => __( 'Benutzerdefinierte Bild-URL', 'blogs-directory' ),
 			'depends' => [
 				'schema.image.default' => 'custom',
 			],
@@ -461,50 +461,50 @@ class Settings
 		$this->html->createForm( $formId, [
 			'action' => admin_url( 'options.php' ),
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'blogs-directory' ),
+			'submit' => __( 'Einstellungen speichern', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'checkbox',
 			'name'    => 'required',
-			'label'   => __( 'Required Fields', 'blogs-directory' ),
+			'label'   => __( 'Pflichtfelder', 'blogs-directory' ),
 			'default' => ['title','content','name','email'],
 			'options' => [
-				'title' => __( 'Title', 'blogs-directory' ),
-				'content' => __( 'Review', 'blogs-directory' ),
+				'title' => __( 'Titel', 'blogs-directory' ),
+				'content' => __( 'Bewertung', 'blogs-directory' ),
 				'name' => __( 'Name', 'blogs-directory' ),
-				'email' => __( 'Email', 'blogs-directory' ),
+				'email' => __( 'E-Mail', 'blogs-directory' ),
 			],
 		]);
 
 		$this->addSetting( $formId, [
 			'type' => 'yesno_inline',
 			'name' => 'akismet',
-			'label' => __( 'Enable Akismet Integration', 'blogs-directory' ),
+			'label' => __( 'Akismet-Integration aktivieren', 'blogs-directory' ),
 			'default' => 'no',
-			'desc' => sprintf( __( 'the %s integration provides spam-filtering for your reviews. In order for this setting to have any affect, you will need to first install and activate the Akismet plugin and set up a WordPress.com API key.', 'blogs-directory' ),
-				sprintf( '<a href="https://akismet.com" target="_blank">%s</a>', __( 'Akismet plugin', 'blogs-directory' ))
+			'desc' => sprintf( __( 'Die %s-Integration bietet Spam-Filter fuer deine Bewertungen. Damit diese Einstellung wirkt, musst du zuerst das Akismet-Plugin installieren und aktivieren sowie einen WordPress.com-API-Key einrichten.', 'blogs-directory' ),
+				sprintf( '<a href="https://akismet.com" target="_blank">%s</a>', __( 'Akismet-Plugin', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'recaptcha.integration',
-			'label' => __( 'Invisible reCAPTCHA', 'blogs-directory' ),
+			'label' => __( 'Unsichtbares reCAPTCHA', 'blogs-directory' ),
 			'options' => [
-				'' => __( 'Do not use reCAPTCHA', 'blogs-directory' ),
-				'custom' => __( 'Use reCAPTCHA', 'blogs-directory' ),
-				'invisible-recaptcha' => _x( 'Use 3rd-party plugin: Invisible reCaptcha', 'plugin name', 'blogs-directory' ),
+				'' => __( 'reCAPTCHA nicht verwenden', 'blogs-directory' ),
+				'custom' => __( 'reCAPTCHA verwenden', 'blogs-directory' ),
+				'invisible-recaptcha' => _x( 'Drittanbieter-Plugin verwenden: Invisible reCaptcha', 'plugin name', 'blogs-directory' ),
 			],
-			'desc'  => sprintf( __( 'Invisible reCAPTCHA is a free anti-spam service from Google. To use it, you will need to %s for an API key pair for your site. If you are already using a reCAPTCHA plugin listed here, please select it; otherwise choose "Use reCAPTCHA".', 'blogs-directory' ),
-				sprintf( '<a href="https://www.google.com/recaptcha/admin" target="_blank">%s</a>', __( 'sign up', 'blogs-directory' ))
+			'desc'  => sprintf( __( 'Unsichtbares reCAPTCHA ist ein kostenloser Anti-Spam-Dienst von Google. Um ihn zu nutzen, musst du %s und ein API-Key-Paar fuer deine Seite erstellen. Wenn du bereits eines der hier gelisteten reCAPTCHA-Plugins nutzt, waehle es aus, sonst "reCAPTCHA verwenden".', 'blogs-directory' ),
+				sprintf( '<a href="https://www.google.com/recaptcha/admin" target="_blank">%s</a>', __( 'registrieren', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'recaptcha.key',
-			'label' => __( 'Site Key', 'blogs-directory' ),
+			'label' => __( 'Site-Schluessel', 'blogs-directory' ),
 			'depends' => [
 				'recaptcha.integration' => 'custom',
 			],
@@ -513,7 +513,7 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'recaptcha.secret',
-			'label' => __( 'Site Secret', 'blogs-directory' ),
+			'label' => __( 'Site-Secret', 'blogs-directory' ),
 			'depends' => [
 				'recaptcha.integration' => 'custom',
 			],
@@ -522,10 +522,10 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'recaptcha.position',
-			'label' => __( 'Badge Position', 'blogs-directory' ),
+			'label' => __( 'Badge-Position', 'blogs-directory' ),
 			'options' => [
-				'bottomleft' => 'Bottom Left',
-				'bottomright' => 'Bottom Right',
+				'bottomleft' => 'Unten links',
+				'bottomright' => 'Unten rechts',
 				'inline' => 'Inline',
 			],
 			'depends' => [
@@ -536,8 +536,8 @@ class Settings
 		$this->addSetting( $formId, [
 			'type' => 'textarea',
 			'name' => 'blacklist.entries',
-			'label' => __( 'Review Blacklist', 'blogs-directory' ),
-			'desc' => __( 'When a review contains any of these words in its title, content, name, email, or IP address, it will be rejected. One word or IP address per line. It will match inside words, so "press" will match "WordPress".', 'blogs-directory' ),
+			'label' => __( 'Bewertungs-Blacklist', 'blogs-directory' ),
+			'desc' => __( 'Wenn eine Bewertung eines dieser Woerter im Titel, Inhalt, Namen, in der E-Mail oder IP-Adresse enthaelt, wird sie abgelehnt. Ein Wort oder eine IP pro Zeile. Es wird auch innerhalb von Woertern gematcht, daher trifft "press" auch auf "WordPress" zu.', 'blogs-directory' ),
 			'class' => 'large-text code',
 			'rows' => 10,
 		]);
@@ -545,12 +545,12 @@ class Settings
 		$this->addSetting( $formId, [
 			'type' => 'select',
 			'name' => 'blacklist.action',
-			'label' => __( 'Blacklist Action', 'blogs-directory' ),
+			'label' => __( 'Blacklist-Aktion', 'blogs-directory' ),
 			'options' => [
-				'unapprove' => __( 'Require approval', 'blogs-directory' ),
-				'reject' => __( 'Reject submission', 'blogs-directory' ),
+				'unapprove' => __( 'Freigabe erforderlich', 'blogs-directory' ),
+				'reject' => __( 'Absendung ablehnen', 'blogs-directory' ),
 			],
-			'desc' => __( 'Choose the action that should be taken when a review is blacklisted.', 'blogs-directory' ),
+			'desc' => __( 'Waehle die Aktion, die ausgefuehrt werden soll, wenn eine Bewertung auf der Blacklist steht.', 'blogs-directory' ),
 		]);
 	}
 
@@ -565,7 +565,7 @@ class Settings
 			'action' => admin_url( 'options.php' ),
 			'class'  => 'glsr-strings-form',
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'blogs-directory' ),
+			'submit' => __( 'Einstellungen speichern', 'blogs-directory' ),
 		]);
 
 		// This exists for when there are no custom translations

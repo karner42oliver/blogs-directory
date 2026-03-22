@@ -20,8 +20,8 @@ class Yesno extends Radio
 	public function render( array $defaults = [] )
 	{
 		$this->args['options'] = [
-			'no'  => __( 'No', 'blogs-directory' ),
-			'yes' => __( 'Yes', 'blogs-directory' ),
+			'no'  => __( 'Nein', 'blogs-directory' ),
+			'yes' => __( 'Ja', 'blogs-directory' ),
 		];
 		return parent::render( wp_parse_args( $defaults, [
 			'default' => 'no',

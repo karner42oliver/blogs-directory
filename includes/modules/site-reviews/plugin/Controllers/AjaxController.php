@@ -46,7 +46,7 @@ class AjaxController extends BaseController
 	{
 		$this->app->make( 'Controllers\MainController' )->postClearLog();
 		wp_send_json([
-			'log' => __( 'Log is empty', 'blogs-directory' ),
+			'log' => __( 'Protokoll ist leer', 'blogs-directory' ),
 			'notices' => $this->notices->show( false ),
 		]);
 	}
@@ -63,7 +63,7 @@ class AjaxController extends BaseController
 		if( array_key_exists( $shortcode, glsr_app()->mceShortcodes )) {
 			$data = glsr_app()->mceShortcodes[ $shortcode ];
 			if( !empty( $data['errors'] )) {
-				$data['btn_okay'] = [ esc_html__( 'Okay', 'blogs-directory' ) ];
+				$data['btn_okay'] = [ esc_html__( 'OK', 'blogs-directory' ) ];
 			}
 			$response = [
 				'body'      => $data['fields'],
@@ -96,7 +96,7 @@ class AjaxController extends BaseController
 	public function ajaxSearchPosts( $request )
 	{
 		wp_send_json_success([
-			'empty' => sprintf( '<div>%s</div>', __( 'Nothing found.', 'blogs-directory' )),
+			'empty' => sprintf( '<div>%s</div>', __( 'Nichts gefunden.', 'blogs-directory' )),
 			'items' => $this->db->searchPosts( $request['search'] ),
 		]);
 	}
@@ -115,7 +115,7 @@ class AjaxController extends BaseController
 			->exclude( $request['exclude'] )
 			->renderResults();
 		wp_send_json_success([
-			'empty' => sprintf( '<div>%s</div>', __( 'Nothing found.', 'blogs-directory' )),
+			'empty' => sprintf( '<div>%s</div>', __( 'Nichts gefunden.', 'blogs-directory' )),
 			'items' => $results,
 		]);
 	}

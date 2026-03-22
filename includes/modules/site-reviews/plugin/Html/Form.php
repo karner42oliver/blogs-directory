@@ -134,7 +134,7 @@ class Form
 			'enctype'    => 'multipart/form-data',
 			'method'     => 'post',
 			'nonce'      => '',
-			'submit'     => __( 'Submit', 'blogs-directory' ),
+			'submit'     => __( 'Absenden', 'blogs-directory' ),
 		];
 
 		$this->args = array_merge( $defaults, $args );
@@ -277,7 +277,7 @@ class Form
 		is_array( $args ) ?: $args = ['text' => $args ];
 
 		$args = shortcode_atts([
-			'text' => __( 'Save Changes', 'blogs-directory' ),
+			'text' => __( 'Aenderungen speichern', 'blogs-directory' ),
 			'type' => 'primary',
 			'name' => 'submit',
 			'wrap' => true,

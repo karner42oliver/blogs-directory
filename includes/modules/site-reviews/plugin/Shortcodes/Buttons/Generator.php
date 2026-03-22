@@ -52,8 +52,8 @@ abstract class Generator
 
 		// Generate the fields, errors, and requirements
 		$defaults = [
-			'btn_close' => esc_html__( 'Close', 'blogs-directory' ),
-			'btn_okay'  => esc_html__( 'Insert Shortcode', 'blogs-directory' ),
+			'btn_close' => esc_html__( 'Schliessen', 'blogs-directory' ),
+			'btn_okay'  => esc_html__( 'Shortcode einfuegen', 'blogs-directory' ),
 			'errors'    => $this->errors,
 			'fields'    => $this->getFields(),
 			'label'     => '[' . $tag . ']',
@@ -205,7 +205,7 @@ abstract class Generator
 			$listbox[ $key ] = $value;
 		}
 
-		$field['placeholder'] ?: $field['placeholder'] = esc_attr__( '- Select -', 'blogs-directory' );
+		$field['placeholder'] ?: $field['placeholder'] = esc_attr__( '- Auswaehlen -', 'blogs-directory' );
 		$field['options'] = ['' => $field['placeholder']] + $field['options'];
 
 		foreach( $field['options'] as $value => $text ) {
@@ -324,14 +324,14 @@ abstract class Generator
 
 		if( !!$required || is_array( $required )) {
 
-			$alert = esc_html__( 'Some of the shortcode options are required.', 'blogs-directory' );
+			$alert = esc_html__( 'Einige Shortcode-Optionen sind erforderlich.', 'blogs-directory' );
 
 			if( isset( $required['alert'] )) {
 				$alert = $required['alert'];
 			}
 			else if( !empty( $label )) {
 				$alert = sprintf(
-					esc_html_x( 'The "%s" option is required.', 'the option label', 'blogs-directory' ),
+					esc_html_x( 'Die Option "%s" ist erforderlich.', 'the option label', 'blogs-directory' ),
 					str_replace( ':', '', $label )
 				);
 			}

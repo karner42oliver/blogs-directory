@@ -222,11 +222,11 @@ class SiteReviewsSummary extends Shortcode
 	protected function normalizeLabels( $labels )
 	{
 		$defaults = [
-			__( 'Excellent', 'blogs-directory' ),
-			__( 'Very good', 'blogs-directory' ),
-			__( 'Average', 'blogs-directory' ),
-			__( 'Poor', 'blogs-directory' ),
-			__( 'Terrible', 'blogs-directory' ),
+			__( 'Ausgezeichnet', 'blogs-directory' ),
+			__( 'Sehr gut', 'blogs-directory' ),
+			__( 'Durchschnittlich', 'blogs-directory' ),
+			__( 'Schlecht', 'blogs-directory' ),
+			__( 'Furchtbar', 'blogs-directory' ),
 		];
 		$labels = explode( ',', $labels );
 		foreach( $defaults as $i => $label ) {

@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2016, Paul Ryley
- * @license   GPLv3
- * @since     2.7.4
- * -------------------------------------------------------------------------------------------------
- */
-
 defined( 'WPINC' ) || die;
 
 use GeminiLabs\SiteReviews\App;

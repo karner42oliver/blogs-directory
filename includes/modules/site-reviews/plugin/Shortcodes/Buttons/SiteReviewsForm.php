@@ -27,26 +27,26 @@ class SiteReviewsForm extends Generator
 			$category = [
 				'type'    => 'listbox',
 				'name'    => 'category',
-				'label'   => esc_html__( 'Category', 'blogs-directory' ),
+				'label'   => esc_html__( 'Kategorie', 'blogs-directory' ),
 				'options' => $terms,
-				'tooltip' => __( 'Automatically assign a category to reviews submitted with this shortcode.', 'blogs-directory' ),
+				'tooltip' => __( 'Eingereichten Bewertungen automatisch eine Kategorie zuweisen.', 'blogs-directory' ),
 			];
 		}
 
 		return [
 			[
 				'type' => 'container',
-				'html' => sprintf( '<p class="strong">%s</p>', esc_html__( 'All settings are optional.', 'blogs-directory' )),
+				'html' => sprintf( '<p class="strong">%s</p>', esc_html__( 'Alle Einstellungen sind optional.', 'blogs-directory' )),
 			],[
 				'type'    => 'textbox',
 				'name'    => 'title',
-				'label'   => esc_html__( 'Title', 'blogs-directory' ),
-				'tooltip' => __( 'Enter a custom shortcode heading.', 'blogs-directory' ),
+				'label'   => esc_html__( 'Titel', 'blogs-directory' ),
+				'tooltip' => __( 'Gib eine eigene Shortcode-Ueberschrift ein.', 'blogs-directory' ),
 			],[
 				'type'    => 'textbox',
 				'name'    => 'description',
-				'label'   => esc_html__( 'Description', 'blogs-directory' ),
-				'tooltip' => __( 'Enter a custom shortcode description.', 'blogs-directory' ),
+				'label'   => esc_html__( 'Beschreibung', 'blogs-directory' ),
+				'tooltip' => __( 'Gib eine eigene Shortcode-Beschreibung ein.', 'blogs-directory' ),
 				'minWidth' => 240,
 				'minHeight' => 60,
 				'multiline' => true,
@@ -55,16 +55,16 @@ class SiteReviewsForm extends Generator
 			[
 				'type'      => 'textbox',
 				'name'      => 'assign_to',
-				'label'     => esc_html__( 'Post ID', 'blogs-directory' ),
-				'tooltip'   => __( 'Assign submitted reviews to a custom page/post ID. You can also enter "post_id" to assign reviews to the ID of the current page.', 'blogs-directory' ),
+				'label'     => esc_html__( 'Beitrags-ID', 'blogs-directory' ),
+				'tooltip'   => __( 'Eingereichte Bewertungen einer benutzerdefinierten Seiten-/Beitrags-ID zuweisen. Du kannst auch "post_id" fuer die aktuelle Seite verwenden.', 'blogs-directory' ),
 			],[
 				'type'     => 'textbox',
 				'name'     => 'class',
-				'label'    => esc_html__( 'Classes', 'blogs-directory' ),
-				'tooltip'  => __( 'Add custom CSS classes to the shortcode.', 'blogs-directory' ),
+				'label'    => esc_html__( 'Klassen', 'blogs-directory' ),
+				'tooltip'  => __( 'Eigene CSS-Klassen zum Shortcode hinzufuegen.', 'blogs-directory' ),
 			],[
 				'type'    => 'container',
-				'label'   => esc_html__( 'Hide', 'blogs-directory' ),
+				'label'   => esc_html__( 'Ausblenden', 'blogs-directory' ),
 				'layout'  => 'grid',
 				'columns' => 2,
 				'spacing' => 5,
@@ -72,23 +72,23 @@ class SiteReviewsForm extends Generator
 					[
 						'type' => 'checkbox',
 						'name' => 'hide_email',
-						'text' => esc_html__( 'Email', 'blogs-directory' ),
-						'tooltip' => __( 'Hide the email field?', 'blogs-directory' ),
+						'text' => esc_html__( 'E-Mail', 'blogs-directory' ),
+						'tooltip' => __( 'E-Mail-Feld ausblenden?', 'blogs-directory' ),
 					],[
 						'type' => 'checkbox',
 						'name' => 'hide_name',
 						'text' => esc_html__( 'Name', 'blogs-directory' ),
-						'tooltip' => __( 'Hide the name field?', 'blogs-directory' ),
+						'tooltip' => __( 'Namensfeld ausblenden?', 'blogs-directory' ),
 					],[
 						'type' => 'checkbox',
 						'name' => 'hide_terms',
-						'text' => esc_html__( 'Terms', 'blogs-directory' ),
-						'tooltip' => __( 'Hide the terms field?', 'blogs-directory' ),
+						'text' => esc_html__( 'AGB', 'blogs-directory' ),
+						'tooltip' => __( 'AGB-Feld ausblenden?', 'blogs-directory' ),
 					],[
 						'type' => 'checkbox',
 						'name' => 'hide_title',
-						'text' => esc_html__( 'Title', 'blogs-directory' ),
-						'tooltip' => __( 'Hide the title field?', 'blogs-directory' ),
+						'text' => esc_html__( 'Titel', 'blogs-directory' ),
+						'tooltip' => __( 'Titelfeld ausblenden?', 'blogs-directory' ),
 					],
 				],
 			],[

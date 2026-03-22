@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Requires Akismet plugin >= v3.0
- *
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2017, Paul Ryley
- * @license   GPLv3
- * @since     2.11.0
- * -------------------------------------------------------------------------------------------------
- */
-
 namespace GeminiLabs\SiteReviews;
 
 use GeminiLabs\SiteReviews\Commands\SubmitReview;

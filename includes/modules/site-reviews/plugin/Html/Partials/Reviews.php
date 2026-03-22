@@ -32,7 +32,7 @@ class Reviews extends Base
 		}
 		if( empty( $reviews->reviews )) {
 			$html = sprintf( '<p class="glsr-review glsr-no-reviews">%s</p>',
-				__( 'No reviews were found.', 'blogs-directory' )
+				__( 'Es wurden keine Bewertungen gefunden.', 'blogs-directory' )
 			);
 		}
 		else if( $this->args['pagination'] ) {
@@ -79,7 +79,7 @@ class Reviews extends Base
 		]);
 		if( empty( $permalink ))return;
 		return sprintf( '<span class="glsr-review-assigned">%s</span>',
-			sprintf( __( 'Review of %s', 'blogs-directory' ), $permalink )
+			sprintf( __( 'Bewertung von %s', 'blogs-directory' ), $permalink )
 		);
 	}
 
@@ -159,12 +159,12 @@ class Reviews extends Base
 		$links = $this->buildPaginationForDeprecatedThemes( $maxPageNum, $paged );
 		if( empty( $links )) {
 			$paginateArgs = [
-				'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Page', 'blogs-directory' ) . ' </span>',
+				'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Seite', 'blogs-directory' ) . ' </span>',
 				'current' => $paged,
 				'format' => '?'.App::PAGED_QUERY_VAR.'=%#%',
 				'mid_size' => 1,
-				'next_text' => __( 'Next &rarr;', 'blogs-directory' ),
-				'prev_text' => __( '&larr; Previous', 'blogs-directory' ),
+				'next_text' => __( 'Weiter &rarr;', 'blogs-directory' ),
+				'prev_text' => __( '&larr; Zurueck', 'blogs-directory' ),
 				'total' => $maxPageNum,
 			];
 			if( is_front_page() ) {
@@ -190,13 +190,13 @@ class Reviews extends Base
 		if( $paged > 1 ) {
 			$links .= sprintf( '<div class="nav-previous"><a href="%s"><span class="meta-nav">&larr;</span> %s</a></div>',
 				$this->buildPaginationUrlForDeprecatedThemes( $paged, -1 ),
-				__( 'Previous', 'blogs-directory' )
+				__( 'Zurueck', 'blogs-directory' )
 			);
 		}
 		if( $paged < $maxPageNum ) {
 			$links .= sprintf( '<div class="nav-next"><a href="%s">%s <span class="meta-nav">&rarr;</span></a></div>',
 				$this->buildPaginationUrlForDeprecatedThemes( $paged, 1 ),
-				__( 'Next', 'blogs-directory' )
+				__( 'Weiter', 'blogs-directory' )
 			);
 		}
 		return $links;
@@ -235,7 +235,7 @@ class Reviews extends Base
 	protected function buildResponse( $response )
 	{
 		if( in_array( 'response', $this->args['hide'] ) || empty( $response ))return;
-		$title = sprintf( __( 'Response from %s', 'blogs-directory' ), get_bloginfo( 'name' ));
+		$title = sprintf( __( 'Antwort von %s', 'blogs-directory' ), get_bloginfo( 'name' ));
 		$text = $this->normalizeText( $response );
 		$text = $this->getExcerpt( $text );
 		return sprintf( '<div class="glsr-review-response"><p><strong>%s</strong></p><p>%s</p></div>',
@@ -276,7 +276,7 @@ class Reviews extends Base
 	{
 		if( in_array( 'title', $this->args['hide'] ))return;
 		if( empty( $review->title )) {
-			$review->title = __( 'No Title', 'blogs-directory' );
+			$review->title = __( 'Kein Titel', 'blogs-directory' );
 		}
 		$title = sprintf( '<h3 class="glsr-review-title">%s</h3>', $review->title );
 		return apply_filters( 'site-reviews/reviews/review/title', $title, $review, $this->args );
@@ -304,8 +304,8 @@ class Reviews extends Base
 		}
 		return nl2br( sprintf( '%s<span class="glsr-hidden glsr-hidden-text" data-show-more="%s" data-show-less="%s">%s</span>',
 			$excerpt,
-			__( 'Show more', 'blogs-directory' ),
-			__( 'Show less', 'blogs-directory' ),
+			__( 'Mehr anzeigen', 'blogs-directory' ),
+			__( 'Weniger anzeigen', 'blogs-directory' ),
 			$hiddenText
 		));
 	}
@@ -335,7 +335,7 @@ class Reviews extends Base
 				$template = '<nav class="%1$s" role="navigation"><h2 class="screen-reader-text">%2$s</h2><div class="nav-links">%3$s</div></nav>';
 		}
 		$template = apply_filters( 'navigation_markup_template', $template, $class );
-		$screenReaderText = __( 'Site Reviews navigation', 'blogs-directory' );
+		$screenReaderText = __( 'Bewertungs-Navigation', 'blogs-directory' );
 		return sprintf( $template, $class, $screenReaderText, $links ) . '<div class="glsr-loader"></div>';
 	}
 

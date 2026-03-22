@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @package   GeminiLabs\SiteReviews
- * @copyright Copyright (c) 2017, Paul Ryley
- * @license   GPLv3
- * @since     2.3.0
- * -------------------------------------------------------------------------------------------------
- */
-
 namespace GeminiLabs\SiteReviews;
 
 class Date
@@ -41,13 +33,13 @@ class Date
 			if( $diff > $timePeriod[0] )continue;
 			$unit = intval( floor( $diff / $timePeriod[1] ));
 			$relativeDates = [
-				_n( '%s second ago', '%s seconds ago', $unit, 'blogs-directory' ),
-				_n( '%s minute ago', '%s minutes ago', $unit, 'blogs-directory' ),
-				_n( 'an hour ago', '%s hours ago', $unit, 'blogs-directory' ),
-				_n( 'yesterday', '%s days ago', $unit, 'blogs-directory' ),
-				_n( 'a week ago', '%s weeks ago', $unit, 'blogs-directory' ),
-				_n( '%s month ago', '%s months ago', $unit, 'blogs-directory' ),
-				_n( '%s year ago', '%s years ago', $unit, 'blogs-directory' ),
+				_n( 'vor %s Sekunde', 'vor %s Sekunden', $unit, 'blogs-directory' ),
+				_n( 'vor %s Minute', 'vor %s Minuten', $unit, 'blogs-directory' ),
+				_n( 'vor einer Stunde', 'vor %s Stunden', $unit, 'blogs-directory' ),
+				_n( 'gestern', 'vor %s Tagen', $unit, 'blogs-directory' ),
+				_n( 'vor einer Woche', 'vor %s Wochen', $unit, 'blogs-directory' ),
+				_n( 'vor %s Monat', 'vor %s Monaten', $unit, 'blogs-directory' ),
+				_n( 'vor %s Jahr', 'vor %s Jahren', $unit, 'blogs-directory' ),
 			];
 			$relativeDate = $relativeDates[$i];
 			if( strpos( $relativeDate, '%s' ) !== false ) {
