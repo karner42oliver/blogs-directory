@@ -158,75 +158,75 @@ class Settings
 		$this->html->createForm( $formId, [
 			'action' => admin_url( 'options.php' ),
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'site-reviews' ),
+			'submit' => __( 'Save Settings', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'yesno_inline',
 			'name'    => 'require.approval',
-			'label'   => __( 'Require approval', 'site-reviews' ),
+			'label'   => __( 'Require approval', 'blogs-directory' ),
 			'default' => 'yes',
-			'desc'    => __( 'Set the status of new review submissions to pending.', 'site-reviews' ),
+			'desc'    => __( 'Set the status of new review submissions to pending.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'require.login',
-			'label' => __( 'Require login', 'site-reviews' ),
-			'desc'  => __( 'Only allow review submissions from registered users.', 'site-reviews' ),
+			'label' => __( 'Require login', 'blogs-directory' ),
+			'desc'  => __( 'Only allow review submissions from registered users.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'yesno_inline',
 			'name'    => 'require.login_register',
-			'label'   => __( 'Show registration link', 'site-reviews' ),
+			'label'   => __( 'Show registration link', 'blogs-directory' ),
 			'depends' => [
 				'require.login' => 'yes',
 			],
-			'desc' => sprintf( __( 'Show a link for a new user to register. The %s Membership option must be enabled in General Settings for this to work.', 'site-reviews' ),
-				sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php' ), __( 'Anyone can register', 'site-reviews' ))
+			'desc' => sprintf( __( 'Show a link for a new user to register. The %s Membership option must be enabled in General Settings for this to work.', 'blogs-directory' ),
+				sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php' ), __( 'Anyone can register', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'radio',
 			'name'    => 'notification',
-			'label'   => __( 'Notifications', 'site-reviews' ),
+			'label'   => __( 'Notifications', 'blogs-directory' ),
 			'default' => 'none',
 			'options' => [
-				'none'    => __( 'Do not send review notifications', 'site-reviews' ),
-				'default' => __( 'Send to administrator', 'site-reviews' ) . sprintf( ' <code>%s</code>', (string) get_option( 'admin_email' )),
-				'custom'  => __( 'Send to one or more email addresses', 'site-reviews' ),
-				'webhook' => sprintf( __( 'Send to %s', 'site-reviews' ), '<a href="https://slack.com/">Slack</a>' ),
+				'none'    => __( 'Do not send review notifications', 'blogs-directory' ),
+				'default' => __( 'Send to administrator', 'blogs-directory' ) . sprintf( ' <code>%s</code>', (string) get_option( 'admin_email' )),
+				'custom'  => __( 'Send to one or more email addresses', 'blogs-directory' ),
+				'webhook' => sprintf( __( 'Send to %s', 'blogs-directory' ), '<a href="https://slack.com/">Slack</a>' ),
 			],
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'text',
 			'name'    => 'notification_email',
-			'label'   => __( 'Send notification emails to', 'site-reviews' ),
+			'label'   => __( 'Send notification emails to', 'blogs-directory' ),
 			'depends' => [
 				'notification' => 'custom',
 			],
-			'placeholder' => __( 'Separate multiple emails with a comma', 'site-reviews' ),
+			'placeholder' => __( 'Separate multiple emails with a comma', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'url',
 			'name'    => 'webhook_url',
-			'label'   => __( 'Webhook URL', 'site-reviews' ),
+			'label'   => __( 'Webhook URL', 'blogs-directory' ),
 			'depends' => [
 				'notification' => 'webhook',
 			],
-			'desc' => sprintf( __( 'To send notifications to Slack, create a new %s and then paste the provided Webhook URL in the field above.', 'site-reviews' ),
-				sprintf( '<a href="%s">%s</a>', esc_url( 'https://slack.com/apps/new/A0F7XDUAZ-incoming-webhooks' ), __( 'Incoming WebHook', 'site-reviews' ))
+			'desc' => sprintf( __( 'To send notifications to Slack, create a new %s and then paste the provided Webhook URL in the field above.', 'blogs-directory' ),
+				sprintf( '<a href="%s">%s</a>', esc_url( 'https://slack.com/apps/new/A0F7XDUAZ-incoming-webhooks' ), __( 'Incoming WebHook', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'code',
 			'name'    => 'notification_message',
-			'label'   => __( 'Notification template', 'site-reviews' ),
+			'label'   => __( 'Notification template', 'blogs-directory' ),
 			'rows'    => 10,
 			'depends' => [
 				'notification' => ['custom', 'default', 'webhook'],
@@ -255,30 +255,30 @@ class Settings
 		$this->html->createForm( $formId, [
 			'action' => admin_url( 'options.php' ),
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'site-reviews' ),
+			'submit' => __( 'Save Settings', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'date.format',
-			'label' => __( 'Date Format', 'site-reviews' ),
+			'label' => __( 'Date Format', 'blogs-directory' ),
 			'options' => [
-				'default' => __( 'Use the default date format', 'site-reviews' ),
-				'relative' => __( 'Use a relative date format', 'site-reviews' ),
-				'custom' => __( 'Use a custom date format', 'site-reviews' ),
+				'default' => __( 'Use the default date format', 'blogs-directory' ),
+				'relative' => __( 'Use a relative date format', 'blogs-directory' ),
+				'custom' => __( 'Use a custom date format', 'blogs-directory' ),
 			],
-			'desc'  => sprintf( __( 'The default date format is the one set in your %s.', 'site-reviews' ),
-				sprintf( '<a href="%s">%s<a>', get_admin_url( null, 'options-general.php' ), __( 'WordPress settings', 'site-reviews' ))
+			'desc'  => sprintf( __( 'The default date format is the one set in your %s.', 'blogs-directory' ),
+				sprintf( '<a href="%s">%s<a>', get_admin_url( null, 'options-general.php' ), __( 'WordPress settings', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'text',
 			'name'    => 'date.custom',
-			'label'   => __( 'Custom Date Format', 'site-reviews' ),
+			'label'   => __( 'Custom Date Format', 'blogs-directory' ),
 			'default' => get_option( 'date_format' ),
-			'desc'    => sprintf( __( 'Enter a custom date format (%s).', 'site-reviews' ),
-				sprintf( '<a href="https://codex.wordpress.org/Formatting_Date_and_Time">%s</a>', __( 'documentation on date and time formatting', 'site-reviews' ))
+			'desc'    => sprintf( __( 'Enter a custom date format (%s).', 'blogs-directory' ),
+				sprintf( '<a href="https://codex.wordpress.org/Formatting_Date_and_Time">%s</a>', __( 'documentation on date and time formatting', 'blogs-directory' ))
 			),
 			'depends' => [
 				'date.format' => 'custom',
@@ -288,32 +288,32 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'assigned_links.enabled',
-			'label' => __( 'Enable Assigned Links', 'site-reviews' ),
-			'desc'  => __( 'Display a link to the assigned post of a review.', 'site-reviews' ),
+			'label' => __( 'Enable Assigned Links', 'blogs-directory' ),
+			'desc'  => __( 'Display a link to the assigned post of a review.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'avatars.enabled',
-			'label' => __( 'Enable Avatars', 'site-reviews' ),
-			'desc'  => sprintf( __( 'Display reviewer avatars. These are generated from the email address of the reviewer using %s.', 'site-reviews' ),
-				sprintf( '<a href="https://gravatar.com">%s</a>', __( 'Gravatar', 'site-reviews' ))
+			'label' => __( 'Enable Avatars', 'blogs-directory' ),
+			'desc'  => sprintf( __( 'Display reviewer avatars. These are generated from the email address of the reviewer using %s.', 'blogs-directory' ),
+				sprintf( '<a href="https://gravatar.com">%s</a>', __( 'Gravatar', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'yesno_inline',
 			'name'  => 'excerpt.enabled',
-			'label' => __( 'Enable Excerpts', 'site-reviews' ),
-			'desc'  => __( 'Display an excerpt instead of the full review.', 'site-reviews' ),
+			'label' => __( 'Enable Excerpts', 'blogs-directory' ),
+			'desc'  => __( 'Display an excerpt instead of the full review.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'number',
 			'name'    => 'excerpt.length',
-			'label'   => __( 'Excerpt Length', 'site-reviews' ),
+			'label'   => __( 'Excerpt Length', 'blogs-directory' ),
 			'default' => '55',
-			'desc'    => __( 'Set the excerpt word length.', 'site-reviews' ),
+			'desc'    => __( 'Set the excerpt word length.', 'blogs-directory' ),
 			'depends' => [
 				'excerpt.enabled' => 'yes',
 			],
@@ -321,58 +321,58 @@ class Settings
 
 		$this->html->addfield( $formId, [
 			'type'  => 'heading',
-			'value' => __( 'Rich Snippets (schema.org)', 'site-reviews' ),
-			'desc'  => __( 'Review snippets appear in Google Search results and include the star rating and other summary info from your reviews.', 'site-reviews' ),
+			'value' => __( 'Rich Snippets (schema.org)', 'blogs-directory' ),
+			'desc'  => __( 'Review snippets appear in Google Search results and include the star rating and other summary info from your reviews.', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.type.default',
-			'label' => __( 'Default Schema Type', 'site-reviews' ),
+			'label' => __( 'Default Schema Type', 'blogs-directory' ),
 			'default' => 'LocalBusiness',
 			'options' => [
-				'LocalBusiness' => __( 'Local Business', 'site-reviews' ),
-				'Product' => __( 'Product', 'site-reviews' ),
-				'custom' => __( 'Custom', 'site-reviews' ),
+				'LocalBusiness' => __( 'Local Business', 'blogs-directory' ),
+				'Product' => __( 'Product', 'blogs-directory' ),
+				'custom' => __( 'Custom', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default schema type for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'site-reviews' ),
+			'desc' => sprintf( __( 'This is the default schema type for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
 				'<code>schema_type</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'site-reviews' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.type.custom',
-			'label' => __( 'Custom Schema Type', 'site-reviews' ),
+			'label' => __( 'Custom Schema Type', 'blogs-directory' ),
 			'depends' => [
 				'schema.type.default' => 'custom',
 			],
 			'desc' => sprintf(
-				__( 'Google supports review ratings for the following schema content types: Local businesses, Movies, Books, Music, and Products. %s', 'site-reviews' ),
-				sprintf( '<a href="https://schema.org/docs/schemas.html">%s</a>', __( 'View more information on schema types here.', 'site-reviews' ))
+				__( 'Google supports review ratings for the following schema content types: Local businesses, Movies, Books, Music, and Products. %s', 'blogs-directory' ),
+				sprintf( '<a href="https://schema.org/docs/schemas.html">%s</a>', __( 'View more information on schema types here.', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.name.default',
-			'label' => __( 'Default Name', 'site-reviews' ),
+			'label' => __( 'Default Name', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the assigned or current page title', 'site-reviews' ),
-				'custom' => __( 'Enter a custom title', 'site-reviews' ),
+				'post' => __( 'Use the assigned or current page title', 'blogs-directory' ),
+				'custom' => __( 'Enter a custom title', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default name of the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'site-reviews' ),
+			'desc' => sprintf( __( 'This is the default name of the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
 				'<code>schema_name</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'site-reviews' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.name.custom',
-			'label' => __( 'Custom Name', 'site-reviews' ),
+			'label' => __( 'Custom Name', 'blogs-directory' ),
 			'depends' => [
 				'schema.name.default' => 'custom',
 			],
@@ -381,22 +381,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.description.default',
-			'label' => __( 'Default Description', 'site-reviews' ),
+			'label' => __( 'Default Description', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the assigned or current page excerpt', 'site-reviews' ),
-				'custom' => __( 'Enter a custom description', 'site-reviews' ),
+				'post' => __( 'Use the assigned or current page excerpt', 'blogs-directory' ),
+				'custom' => __( 'Enter a custom description', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default description for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'site-reviews' ),
+			'desc' => sprintf( __( 'This is the default description for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
 				'<code>schema_description</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'site-reviews' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.description.custom',
-			'label' => __( 'Custom Description', 'site-reviews' ),
+			'label' => __( 'Custom Description', 'blogs-directory' ),
 			'depends' => [
 				'schema.description.default' => 'custom',
 			],
@@ -405,22 +405,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.url.default',
-			'label' => __( 'Default URL', 'site-reviews' ),
+			'label' => __( 'Default URL', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the assigned or current page URL', 'site-reviews' ),
-				'custom' => __( 'Enter a custom URL', 'site-reviews' ),
+				'post' => __( 'Use the assigned or current page URL', 'blogs-directory' ),
+				'custom' => __( 'Enter a custom URL', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default URL for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'site-reviews' ),
+			'desc' => sprintf( __( 'This is the default URL for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
 				'<code>schema_url</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'site-reviews' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.url.custom',
-			'label' => __( 'Custom URL', 'site-reviews' ),
+			'label' => __( 'Custom URL', 'blogs-directory' ),
 			'depends' => [
 				'schema.url.default' => 'custom',
 			],
@@ -429,22 +429,22 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'schema.image.default',
-			'label' => __( 'Default Image', 'site-reviews' ),
+			'label' => __( 'Default Image', 'blogs-directory' ),
 			'default' => 'post',
 			'options' => [
-				'post' => __( 'Use the featured image of the assigned or current page', 'site-reviews' ),
-				'custom' => __( 'Enter a custom image URL', 'site-reviews' ),
+				'post' => __( 'Use the featured image of the assigned or current page', 'blogs-directory' ),
+				'custom' => __( 'Enter a custom image URL', 'blogs-directory' ),
 			],
-			'desc' => sprintf( __( 'This is the default image for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'site-reviews' ),
+			'desc' => sprintf( __( 'This is the default image for the item being reviewed. You can override this option on a per-post/page basis by adding a %s metadata value using %s.', 'blogs-directory' ),
 				'<code>schema_image</code>',
-				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'site-reviews' ))
+				sprintf( '<a href="https://codex.wordpress.org/Using_Custom_Fields#Usage">%s</a>', __( 'Custom Fields', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'schema.image.custom',
-			'label' => __( 'Custom Image URL', 'site-reviews' ),
+			'label' => __( 'Custom Image URL', 'blogs-directory' ),
 			'depends' => [
 				'schema.image.default' => 'custom',
 			],
@@ -461,50 +461,50 @@ class Settings
 		$this->html->createForm( $formId, [
 			'action' => admin_url( 'options.php' ),
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'site-reviews' ),
+			'submit' => __( 'Save Settings', 'blogs-directory' ),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'    => 'checkbox',
 			'name'    => 'required',
-			'label'   => __( 'Required Fields', 'site-reviews' ),
+			'label'   => __( 'Required Fields', 'blogs-directory' ),
 			'default' => ['title','content','name','email'],
 			'options' => [
-				'title' => __( 'Title', 'site-reviews' ),
-				'content' => __( 'Review', 'site-reviews' ),
-				'name' => __( 'Name', 'site-reviews' ),
-				'email' => __( 'Email', 'site-reviews' ),
+				'title' => __( 'Title', 'blogs-directory' ),
+				'content' => __( 'Review', 'blogs-directory' ),
+				'name' => __( 'Name', 'blogs-directory' ),
+				'email' => __( 'Email', 'blogs-directory' ),
 			],
 		]);
 
 		$this->addSetting( $formId, [
 			'type' => 'yesno_inline',
 			'name' => 'akismet',
-			'label' => __( 'Enable Akismet Integration', 'site-reviews' ),
+			'label' => __( 'Enable Akismet Integration', 'blogs-directory' ),
 			'default' => 'no',
-			'desc' => sprintf( __( 'the %s integration provides spam-filtering for your reviews. In order for this setting to have any affect, you will need to first install and activate the Akismet plugin and set up a WordPress.com API key.', 'site-reviews' ),
-				sprintf( '<a href="https://akismet.com" target="_blank">%s</a>', __( 'Akismet plugin', 'site-reviews' ))
+			'desc' => sprintf( __( 'the %s integration provides spam-filtering for your reviews. In order for this setting to have any affect, you will need to first install and activate the Akismet plugin and set up a WordPress.com API key.', 'blogs-directory' ),
+				sprintf( '<a href="https://akismet.com" target="_blank">%s</a>', __( 'Akismet plugin', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'recaptcha.integration',
-			'label' => __( 'Invisible reCAPTCHA', 'site-reviews' ),
+			'label' => __( 'Invisible reCAPTCHA', 'blogs-directory' ),
 			'options' => [
-				'' => __( 'Do not use reCAPTCHA', 'site-reviews' ),
-				'custom' => __( 'Use reCAPTCHA', 'site-reviews' ),
-				'invisible-recaptcha' => _x( 'Use 3rd-party plugin: Invisible reCaptcha', 'plugin name', 'site-reviews' ),
+				'' => __( 'Do not use reCAPTCHA', 'blogs-directory' ),
+				'custom' => __( 'Use reCAPTCHA', 'blogs-directory' ),
+				'invisible-recaptcha' => _x( 'Use 3rd-party plugin: Invisible reCaptcha', 'plugin name', 'blogs-directory' ),
 			],
-			'desc'  => sprintf( __( 'Invisible reCAPTCHA is a free anti-spam service from Google. To use it, you will need to %s for an API key pair for your site. If you are already using a reCAPTCHA plugin listed here, please select it; otherwise choose "Use reCAPTCHA".', 'site-reviews' ),
-				sprintf( '<a href="https://www.google.com/recaptcha/admin" target="_blank">%s</a>', __( 'sign up', 'site-reviews' ))
+			'desc'  => sprintf( __( 'Invisible reCAPTCHA is a free anti-spam service from Google. To use it, you will need to %s for an API key pair for your site. If you are already using a reCAPTCHA plugin listed here, please select it; otherwise choose "Use reCAPTCHA".', 'blogs-directory' ),
+				sprintf( '<a href="https://www.google.com/recaptcha/admin" target="_blank">%s</a>', __( 'sign up', 'blogs-directory' ))
 			),
 		]);
 
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'recaptcha.key',
-			'label' => __( 'Site Key', 'site-reviews' ),
+			'label' => __( 'Site Key', 'blogs-directory' ),
 			'depends' => [
 				'recaptcha.integration' => 'custom',
 			],
@@ -513,7 +513,7 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'text',
 			'name'  => 'recaptcha.secret',
-			'label' => __( 'Site Secret', 'site-reviews' ),
+			'label' => __( 'Site Secret', 'blogs-directory' ),
 			'depends' => [
 				'recaptcha.integration' => 'custom',
 			],
@@ -522,7 +522,7 @@ class Settings
 		$this->addSetting( $formId, [
 			'type'  => 'select',
 			'name'  => 'recaptcha.position',
-			'label' => __( 'Badge Position', 'site-reviews' ),
+			'label' => __( 'Badge Position', 'blogs-directory' ),
 			'options' => [
 				'bottomleft' => 'Bottom Left',
 				'bottomright' => 'Bottom Right',
@@ -536,8 +536,8 @@ class Settings
 		$this->addSetting( $formId, [
 			'type' => 'textarea',
 			'name' => 'blacklist.entries',
-			'label' => __( 'Review Blacklist', 'site-reviews' ),
-			'desc' => __( 'When a review contains any of these words in its title, content, name, email, or IP address, it will be rejected. One word or IP address per line. It will match inside words, so "press" will match "WordPress".', 'site-reviews' ),
+			'label' => __( 'Review Blacklist', 'blogs-directory' ),
+			'desc' => __( 'When a review contains any of these words in its title, content, name, email, or IP address, it will be rejected. One word or IP address per line. It will match inside words, so "press" will match "WordPress".', 'blogs-directory' ),
 			'class' => 'large-text code',
 			'rows' => 10,
 		]);
@@ -545,12 +545,12 @@ class Settings
 		$this->addSetting( $formId, [
 			'type' => 'select',
 			'name' => 'blacklist.action',
-			'label' => __( 'Blacklist Action', 'site-reviews' ),
+			'label' => __( 'Blacklist Action', 'blogs-directory' ),
 			'options' => [
-				'unapprove' => __( 'Require approval', 'site-reviews' ),
-				'reject' => __( 'Reject submission', 'site-reviews' ),
+				'unapprove' => __( 'Require approval', 'blogs-directory' ),
+				'reject' => __( 'Reject submission', 'blogs-directory' ),
 			],
-			'desc' => __( 'Choose the action that should be taken when a review is blacklisted.', 'site-reviews' ),
+			'desc' => __( 'Choose the action that should be taken when a review is blacklisted.', 'blogs-directory' ),
 		]);
 	}
 
@@ -565,7 +565,7 @@ class Settings
 			'action' => admin_url( 'options.php' ),
 			'class'  => 'glsr-strings-form',
 			'nonce'  => $this->app->id . '-settings',
-			'submit' => __( 'Save Settings', 'site-reviews' ),
+			'submit' => __( 'Save Settings', 'blogs-directory' ),
 		]);
 
 		// This exists for when there are no custom translations

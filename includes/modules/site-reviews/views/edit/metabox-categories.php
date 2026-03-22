@@ -4,7 +4,7 @@
 
 	<ul id="<?= $tax_name; ?>-tabs" class="category-tabs">
 		<li class="tabs"><a href="#<?= $tax_name; ?>-all"><?= $taxonomy->labels->all_items; ?></a></li>
-		<li class="hide-if-no-js"><a href="#<?= $tax_name; ?>-pop"><?= __( 'Most Used', 'site-reviews' ); ?></a></li>
+		<li class="hide-if-no-js"><a href="#<?= $tax_name; ?>-pop"><?= __( 'Am meisten genutzt', 'blogs-directory' ); ?></a></li>
 	</ul>
 
 	<div id="<?= $tax_name; ?>-pop" class="tabs-panel" style="display: none;">

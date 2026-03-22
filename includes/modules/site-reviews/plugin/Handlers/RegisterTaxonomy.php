@@ -79,7 +79,7 @@ class RegisterTaxonomy
 			|| !is_object_in_taxonomy( get_current_screen()->post_type, App::TAXONOMY )
 		)return;
 
-		printf( '<label class="screen-reader-text" for="%s">%s</label>', App::TAXONOMY, __( 'Filter by category', 'site-reviews' ));
+		printf( '<label class="screen-reader-text" for="%s">%s</label>', App::TAXONOMY, __( 'Filter by category', 'blogs-directory' ));
 
 		$selected = isset( $wp_query->query[ App::TAXONOMY ] )
 			? $wp_query->query[ App::TAXONOMY ]

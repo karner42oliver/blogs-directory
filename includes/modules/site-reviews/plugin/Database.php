@@ -342,7 +342,7 @@ class Database implements OptionsContract
 				? $labels[$key]
 				: ucfirst( $key );
 
-			$value = sprintf( __( '%s reviews', 'site-reviews' ), $type );
+			$value = sprintf( __( '%s reviews', 'blogs-directory' ), $type );
 		});
 		return $types;
 	}
@@ -373,7 +373,7 @@ class Database implements OptionsContract
 	public function normalizeMeta( array $meta )
 	{
 		$defaults = [
-			'author'      => __( 'Anonymous', 'site-reviews' ),
+			'author'      => __( 'Anonymous', 'blogs-directory' ),
 			'assigned_to' => '',
 			'avatar'      => '',
 			'content'     => '',

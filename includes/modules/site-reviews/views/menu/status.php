@@ -3,8 +3,8 @@
 <form method="post" action="">
 
 	<?php
-		echo $html->p( sprintf( _x( 'All dates and times shown here use the WordPress %s.', 'configured timezone', 'site-reviews' ),
-			sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php' ), __( 'configured timezone', 'site-reviews' ))
+		echo $html->p( sprintf( _x( 'Alle hier angezeigten Datums- und Zeitangaben verwenden die WordPress-%s.', 'configured timezone', 'blogs-directory' ),
+			sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php' ), __( 'Zeitzone', 'blogs-directory' ))
 		));
 	?>
 
@@ -12,10 +12,10 @@
 
 		<thead>
 			<tr>
-				<th class="site"><?= __( 'Site', 'site-reviews' ); ?></th>
-				<th class="total-fetched column-primary"><?= __( 'Reviews', 'site-reviews' ); ?></th>
-				<th class="last-fetch"><?= __( 'Last fetch', 'site-reviews' ); ?></th>
-				<th class="next-fetch"><?= __( 'Next scheduled fetch', 'site-reviews' ); ?></th>
+				<th class="site"><?= __( 'Seite', 'blogs-directory' ); ?></th>
+				<th class="total-fetched column-primary"><?= __( 'Bewertungen', 'blogs-directory' ); ?></th>
+				<th class="last-fetch"><?= __( 'Letzter Abruf', 'blogs-directory' ); ?></th>
+				<th class="next-fetch"><?= __( 'Naechster geplanter Abruf', 'blogs-directory' ); ?></th>
 			</tr>
 		</thead>
 
@@ -29,13 +29,13 @@
 				</td>
 				<td class="total-fetched column-primary">
 					<a href="<?= admin_url( "edit.php?post_type=site-review&post_status=all&type={$key}" ); ?>"><?= $db->getReviewCount( 'type', $key ); ?></a>
-					<button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button>
+					<button type="button" class="toggle-row"><span class="screen-reader-text"><?= __( 'Mehr Details anzeigen', 'blogs-directory' ); ?></span></button>
 				</td>
-				<td class="last-fetch" data-colname="<?= __( 'Last fetch', 'site-reviews' ); ?>">
-					<?= $db->getOption( 'last_fetch.' . $key, __( 'No fetch has been completed', 'site-reviews' )); ?>
+				<td class="last-fetch" data-colname="<?= __( 'Letzter Abruf', 'blogs-directory' ); ?>">
+					<?= $db->getOption( 'last_fetch.' . $key, __( 'Es wurde noch kein Abruf abgeschlossen', 'blogs-directory' )); ?>
 				</td>
-				<td class="next-fetch" data-colname="<?= __( 'Next scheduled fetch', 'site-reviews' ); ?>">
-					<?= $db->getOption( 'next_fetch.' . $key, __( 'Nothing currently scheduled', 'site-reviews' )); ?>
+				<td class="next-fetch" data-colname="<?= __( 'Naechster geplanter Abruf', 'blogs-directory' ); ?>">
+					<?= $db->getOption( 'next_fetch.' . $key, __( 'Aktuell ist nichts geplant', 'blogs-directory' )); ?>
 				</td>
 			</tr>
 
@@ -55,15 +55,15 @@
 		<?php
 
 			echo $html->row()->select( 'type', [
-				'label'      => __( 'Fetch reviews from', 'site-reviews' ),
+				'label'      => __( 'Bewertungen abrufen von', 'blogs-directory' ),
 				'options'    => $tabs['settings']['sections'],
 				'attributes' => 'data-type',
 				'prefix'     => glsr_app()->prefix,
 			]);
 
 			echo $html->row()->progress([
-				'label'  => __( 'Fetch status', 'site-reviews' ),
-				'active' => __( 'Fetching reviews...', 'site-reviews' ),
+				'label'  => __( 'Abrufstatus', 'blogs-directory' ),
+				'active' => __( 'Bewertungen werden abgerufen...', 'blogs-directory' ),
 				'class'  => 'green',
 			]);
 		?>
@@ -75,6 +75,6 @@
 
 	<?php printf( '<input type="hidden" name="%s[action]" value="fetch-reviews">', glsr_app()->prefix ); ?>
 
-	<?php submit_button( __( 'Fetch Reviews', 'site-reviews' ), 'large primary', 'fetch-reviews' ); ?>
+	<?php submit_button( __( 'Bewertungen abrufen', 'blogs-directory' ), 'large primary', 'fetch-reviews' ); ?>
 
 </form>

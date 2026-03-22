@@ -1,9 +1,9 @@
 <?php defined( 'WPINC' ) || die; ?>
 
 <div class="glsr-search-box" id="glsr-search-translations">
-	<span class="screen-reader-text"><?= __( 'Search for translatable text', 'site-reviews' ); ?></span>
+	<span class="screen-reader-text"><?= __( 'Nach uebersetzbarem Text suchen', 'blogs-directory' ); ?></span>
 	<div class="glsr-spinner"><span class="spinner"></span></div>
-	<input type="search" class="glsr-search-input" autocomplete="off" placeholder="<?= __( 'Search for translatable text...', 'site-reviews' ); ?>">
+	<input type="search" class="glsr-search-input" autocomplete="off" placeholder="<?= __( 'Nach uebersetzbarem Text suchen...', 'blogs-directory' ); ?>">
 	<div class="glsr-search-results" data-prefix="<?= $db->getOptionName(); ?>"></div>
 </div>
 

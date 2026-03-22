@@ -63,7 +63,7 @@ class MainController extends BaseController
 	public function postClearLog()
 	{
 		$this->log->clear();
-		$this->notices->addSuccess( __( 'Log was cleared.', 'site-reviews' ));
+		$this->notices->addSuccess( __( 'Log was cleared.', 'blogs-directory' ));
 	}
 
 	/**
@@ -99,7 +99,7 @@ class MainController extends BaseController
 	{
 		$settings_url = admin_url( 'edit.php?post_type=site-review&page=settings' );
 
-		$links[] = sprintf( '<a href="%s">%s</a>', $settings_url, __( 'Settings', 'site-reviews' ));
+		$links[] = sprintf( '<a href="%s">%s</a>', $settings_url, __( 'Settings', 'blogs-directory' ));
 
 		return $links;
 	}
@@ -120,7 +120,7 @@ class MainController extends BaseController
 			return $items;
 		}
 
-		$text = _n( '%s Review', '%s Reviews', $num_posts->publish, 'site-reviews' );
+		$text = _n( '%s Review', '%s Reviews', $num_posts->publish, 'blogs-directory' );
 		$text = sprintf( $text, number_format_i18n( $num_posts->publish ));
 
 		$post_type_object = get_post_type_object( $post_type );
@@ -172,9 +172,9 @@ class MainController extends BaseController
 	{
 		if( $post_type != App::POST_TYPE )return;
 
-		add_meta_box( "{$this->app->id}_assigned_to", __( 'Assigned To', 'site-reviews' ), [ $this, 'renderAssignedToMetabox'], null, 'side' );
-		add_meta_box( "{$this->app->id}_review", __( 'Details', 'site-reviews' ), [ $this, 'renderMetaBox'], null, 'side' );
-		add_meta_box( "{$this->app->id}_response", __( 'Respond Publicly', 'site-reviews' ), [ $this, 'renderResponseMetaBox'], null, 'normal' );
+		add_meta_box( "{$this->app->id}_assigned_to", __( 'Assigned To', 'blogs-directory' ), [ $this, 'renderAssignedToMetabox'], null, 'side' );
+		add_meta_box( "{$this->app->id}_review", __( 'Details', 'blogs-directory' ), [ $this, 'renderMetaBox'], null, 'side' );
+		add_meta_box( "{$this->app->id}_response", __( 'Respond Publicly', 'blogs-directory' ), [ $this, 'renderResponseMetaBox'], null, 'normal' );
 	}
 
 	/**
@@ -188,8 +188,8 @@ class MainController extends BaseController
 			'id'       => 'glsr-pointer-pinned',
 			'screen'   => App::POST_TYPE,
 			'target'   => '#misc-pub-pinned',
-			'title'    => __( 'Pin Your Reviews', 'site-reviews' ),
-			'content'  => __( 'You can pin exceptional reviews so that they are always shown first in your widgets and shortcodes.', 'site-reviews' ),
+			'title'    => __( 'Pin Your Reviews', 'blogs-directory' ),
+			'content'  => __( 'You can pin exceptional reviews so that they are always shown first in your widgets and shortcodes.', 'blogs-directory' ),
 			'position' => [
 				'edge'  => 'right',  // top, bottom, left, right
 				'align' => 'middle', // top, bottom, left, right, middle
@@ -209,9 +209,9 @@ class MainController extends BaseController
 		if( !$this->app->hasPermission() )return;
 
 		$command = new RegisterPostType([
-			'single'      => __( 'Review', 'site-reviews' ),
-			'plural'      => __( 'Reviews', 'site-reviews' ),
-			'menu_name'   => __( 'Site Reviews', 'site-reviews' ),
+			'single'      => __( 'Review', 'blogs-directory' ),
+			'plural'      => __( 'Reviews', 'blogs-directory' ),
+			'menu_name'   => __( 'Site Reviews', 'blogs-directory' ),
 			'menu_icon'   => 'dashicons-star-half',
 			'public'      => false,
 			'has_archive' => false,
@@ -220,11 +220,11 @@ class MainController extends BaseController
 			'columns'     => [
 				'title'       => '', // empty values use the default label
 				'category'    => '',
-				'assigned_to' => __( 'Assigned To', 'site-reviews' ),
-				'reviewer'    => __( 'Author', 'site-reviews' ),
-				'type'        => __( 'Type', 'site-reviews' ),
-				'stars'       => __( 'Rating', 'site-reviews' ),
-				'sticky'      => __( 'Pinned', 'site-reviews' ),
+				'assigned_to' => __( 'Assigned To', 'blogs-directory' ),
+				'reviewer'    => __( 'Author', 'blogs-directory' ),
+				'type'        => __( 'Type', 'blogs-directory' ),
+				'stars'       => __( 'Rating', 'blogs-directory' ),
+				'sticky'      => __( 'Pinned', 'blogs-directory' ),
 				'date'        => '',
 			],
 		]);
@@ -247,14 +247,14 @@ class MainController extends BaseController
 
 		$atts = [
 			'approve' => [
-				'aria-label' => esc_attr__( 'Approve this review', 'site-reviews' ),
+				'aria-label' => esc_attr__( 'Approve this review', 'blogs-directory' ),
 				'href'       => wp_nonce_url( admin_url( sprintf( 'post.php?post=%s&action=approve', $post->ID )), 'approve-review_' . $post->ID ),
-				'text'       => __( 'Approve', 'site-reviews' ),
+				'text'       => __( 'Approve', 'blogs-directory' ),
 			],
 			'unapprove' => [
-				'aria-label' => esc_attr__( 'Unapprove this review', 'site-reviews' ),
+				'aria-label' => esc_attr__( 'Unapprove this review', 'blogs-directory' ),
 				'href'       => wp_nonce_url( admin_url( sprintf( 'post.php?post=%s&action=unapprove', $post->ID )), 'unapprove-review_' . $post->ID ),
-				'text'       => __( 'Unapprove', 'site-reviews' ),
+				'text'       => __( 'Unapprove', 'blogs-directory' ),
 			],
 		];
 
@@ -300,9 +300,9 @@ class MainController extends BaseController
 	 */
 	public function registerShortcodeButtons()
 	{
-		$site_reviews = esc_html__( 'Recent Site Reviews', 'site-reviews' );
-		$site_reviews_summary = esc_html__( 'Site Reviews Summary', 'site-reviews' );
-		$site_reviews_form = esc_html__( 'Submit a Site Review', 'site-reviews' );
+		$site_reviews = esc_html__( 'Recent Site Reviews', 'blogs-directory' );
+		$site_reviews_summary = esc_html__( 'Site Reviews Summary', 'blogs-directory' );
+		$site_reviews_form = esc_html__( 'Submit a Site Review', 'blogs-directory' );
 
 		$command = new registerShortcodeButtons([
 			'site_reviews' => [
@@ -346,9 +346,9 @@ class MainController extends BaseController
 	public function registerSubMenus()
 	{
 		$pages = [
-			'settings' => __( 'Settings', 'site-reviews' ),
-			'help'     => __( 'Get Help', 'site-reviews' ),
-			'addons'   => __( 'Add-Ons', 'site-reviews' ),
+			'settings' => __( 'Settings', 'blogs-directory' ),
+			'help'     => __( 'Get Help', 'blogs-directory' ),
+			'addons'   => __( 'Add-Ons', 'blogs-directory' ),
 		];
 
 		$pages = apply_filters( 'site-reviews/addon/submenu/pages', $pages );
@@ -392,13 +392,13 @@ class MainController extends BaseController
 	{
 		$command = new RegisterWidgets([
 			'site-reviews' => [
-				'title'       => __( 'Recent Site Reviews', 'site-reviews' ),
-				'description' => __( 'Your site’s most recent Local Reviews.', 'site-reviews' ),
+				'title'       => __( 'Recent Site Reviews', 'blogs-directory' ),
+				'description' => __( 'Your site’s most recent Local Reviews.', 'blogs-directory' ),
 				'class'       => 'glsr-widget glsr-widget-recent-reviews',
 			],
 			'site-reviews-form' => [
-				'title'       => __( 'Submit a Site Review', 'site-reviews' ),
-				'description' => __( 'A "submit a review" form for your site.', 'site-reviews' ),
+				'title'       => __( 'Submit a Site Review', 'blogs-directory' ),
+				'description' => __( 'A "submit a review" form for your site.', 'blogs-directory' ),
 				'class'       => 'glsr-widget glsr-widget-reviews-form',
 			],
 		]);
@@ -414,7 +414,7 @@ class MainController extends BaseController
 	public function renderAddonsMenu()
 	{
 		$this->renderMenu( 'addons', [
-			'addons' => __( 'Add-Ons', 'site-reviews' ),
+			'addons' => __( 'Add-Ons', 'blogs-directory' ),
 		]);
 	}
 
@@ -452,18 +452,18 @@ class MainController extends BaseController
 	{
 		// allow addons to add their own help sections
 		$sections = apply_filters( 'site-reviews/addon/documentation/sections', [
-			'support'    => __( 'Support', 'site-reviews' ),
-			'shortcodes' => __( 'Shortcodes', 'site-reviews' ),
-			'hooks'      => __( 'Hooks', 'site-reviews' ),
-			'helpers'    => __( 'Helper Functions', 'site-reviews' ),
+			'support'    => __( 'Support', 'blogs-directory' ),
+			'shortcodes' => __( 'Shortcodes', 'blogs-directory' ),
+			'hooks'      => __( 'Hooks', 'blogs-directory' ),
+			'helpers'    => __( 'Helper Functions', 'blogs-directory' ),
 		]);
 
 		$this->renderMenu( 'help', [
 			'documentation' => [
-				'title'    => __( 'Documentation', 'site-reviews' ),
+				'title'    => __( 'Documentation', 'blogs-directory' ),
 				'sections' => $sections,
 			],
-			'system' => __( 'System Info', 'site-reviews' ),
+			'system' => __( 'System Info', 'blogs-directory' ),
 		],[
 			'system_info' => $this->app->make( 'SystemInfo' ),
 		]);
@@ -563,7 +563,7 @@ class MainController extends BaseController
 
 		$reviewType = get_post_meta( $post->ID, 'review_type', true );
 		if( $reviewType == 'local' )return;
-		$this->notices->addWarning( __( 'This review is read-only.', 'site-reviews' ));
+		$this->notices->addWarning( __( 'This review is read-only.', 'blogs-directory' ));
 		$this->render( 'edit/notice' );
 	}
 
@@ -586,18 +586,18 @@ class MainController extends BaseController
 	{
 		// allow addons to add their own setting sections
 		$sections = apply_filters( 'site-reviews/addon/settings/sections', [
-			'general' => __( 'General', 'site-reviews' ),
-			'reviews' => __( 'Reviews', 'site-reviews' ),
-			'reviews-form' => __( 'Submission Form', 'site-reviews' ),
-			'strings' => __( 'Translations', 'site-reviews' ),
+			'general' => __( 'General', 'blogs-directory' ),
+			'reviews' => __( 'Reviews', 'blogs-directory' ),
+			'reviews-form' => __( 'Submission Form', 'blogs-directory' ),
+			'strings' => __( 'Translations', 'blogs-directory' ),
 		]);
 
 		$this->renderMenu( 'settings', [
 			'settings' => [
-				'title' => __( 'Settings', 'site-reviews' ),
+				'title' => __( 'Settings', 'blogs-directory' ),
 				'sections' => $sections,
 			],
-			'licenses' => __( 'Licenses', 'site-reviews' ),
+			'licenses' => __( 'Licenses', 'blogs-directory' ),
 		],[
 			'settings' => $this->app->getDefaultSettings(),
 		]);
@@ -661,10 +661,10 @@ class MainController extends BaseController
 		$message = '';
 
 		if( $key == 'logging' ) {
-			$message = _n( 'Logging disabled.', 'Logging enabled.', (int) empty( $input[$key] ), 'site-reviews' );
+			$message = _n( 'Logging disabled.', 'Logging enabled.', (int) empty( $input[$key] ), 'blogs-directory' );
 		}
 		else if( $key == 'settings' ) {
-			$message = __( 'Settings updated.', 'site-reviews' );
+			$message = __( 'Settings updated.', 'blogs-directory' );
 		}
 
 		$message = apply_filters( 'site-reviews/settings/notice', $message, $key );
@@ -755,8 +755,8 @@ class MainController extends BaseController
 		);
 
 		return !$modified
-			? sprintf( '<button id="revert" class="button button-large" disabled>%s</button>', __( 'Nothing to Revert', 'site-reviews' ))
-			: sprintf( '<a href="%s" id="revert" class="button button-large">%s</a>', $revertUrl, __( 'Revert Changes', 'site-reviews' ));
+			? sprintf( '<button id="revert" class="button button-large" disabled>%s</button>', __( 'Nothing to Revert', 'blogs-directory' ))
+			: sprintf( '<a href="%s" id="revert" class="button button-large">%s</a>', $revertUrl, __( 'Revert Changes', 'blogs-directory' ));
 	}
 
 	/**
@@ -768,9 +768,9 @@ class MainController extends BaseController
 	protected function getMetaboxDetails( $review )
 	{
 		$reviewTypeFallback = empty( $review->review_type )
-			? __( 'Unknown', 'site-reviews' )
+			? __( 'Unknown', 'blogs-directory' )
 			: ucfirst( $review->review_type );
-		$reviewType = sprintf( __( '%s review', 'site-reviews' ),
+		$reviewType = sprintf( __( '%s review', 'blogs-directory' ),
 			glsr_resolve( 'Strings' )->review_types( $review->review_type, $reviewTypeFallback )
 		);
 		if( $review->url ) {
@@ -778,19 +778,19 @@ class MainController extends BaseController
 		}
 		$reviewer = $review->user_id
 			? sprintf( '<a href="%s">%s</a>', get_author_posts_url( $review->user_id ), get_the_author_meta( 'display_name', $review->user_id ))
-			: __( 'Unregistered user', 'site-reviews' );
+			: __( 'Unregistered user', 'blogs-directory' );
 		$email = $review->email
-			? sprintf( '<a href="mailto:%1$s?subject=%3$s %2$s">%1$s</a>', $review->email, esc_attr( $review->title ), __( 'RE:', 'site-reviews' ))
+			? sprintf( '<a href="mailto:%1$s?subject=%3$s %2$s">%1$s</a>', $review->email, esc_attr( $review->title ), __( 'RE:', 'blogs-directory' ))
 			: '&mdash;';
 		$metabox = [
-			__( 'Rating', 'site-reviews' ) => $this->html->renderPartial( 'star-rating', ['rating' => $review->rating] ),
-			__( 'Type', 'site-reviews' ) => $reviewType,
-			__( 'Date', 'site-reviews' ) => get_date_from_gmt( $review->date, 'F j, Y' ),
-			__( 'Reviewer', 'site-reviews' ) => $reviewer,
-			__( 'Name', 'site-reviews' ) => $review->author,
-			__( 'Email', 'site-reviews' ) => $email,
-			__( 'IP Address', 'site-reviews' ) => $review->ip_address,
-			__( 'Avatar', 'site-reviews' ) => sprintf( '<img src="%s" width="96">', $review->avatar ),
+			__( 'Rating', 'blogs-directory' ) => $this->html->renderPartial( 'star-rating', ['rating' => $review->rating] ),
+			__( 'Type', 'blogs-directory' ) => $reviewType,
+			__( 'Date', 'blogs-directory' ) => get_date_from_gmt( $review->date, 'F j, Y' ),
+			__( 'Reviewer', 'blogs-directory' ) => $reviewer,
+			__( 'Name', 'blogs-directory' ) => $review->author,
+			__( 'Email', 'blogs-directory' ) => $email,
+			__( 'IP Address', 'blogs-directory' ) => $review->ip_address,
+			__( 'Avatar', 'blogs-directory' ) => sprintf( '<img src="%s" width="96">', $review->avatar ),
 		];
 		return apply_filters( 'site-reviews/metabox/details', $metabox, $review );
 	}

@@ -3,9 +3,9 @@
 <div class="glsr-search-box" id="glsr-search-posts">
 	<span class="glsr-spinner"><span class="spinner"></span></span>
 	<input type="hidden" id="assigned_to" name="assigned_to" value="<?= $id; ?>">
-	<input type="search" class="glsr-search-input" autocomplete="off" placeholder="<?= __( 'Type to search...', 'site-reviews' ); ?>">
+	<input type="search" class="glsr-search-input" autocomplete="off" placeholder="<?= __( 'Tippe zum Suchen...', 'blogs-directory' ); ?>">
 	<span class="glsr-search-results"></span>
-	<p><?= __( 'Search here for a page or post that you would like to assign this review to. You may search by title or ID.', 'site-reviews' ); ?></p>
+	<p><?= __( 'Suche hier nach einer Seite oder einem Beitrag, den Du dieser Bewertung zuordnen willst. Du kannst nach Titel oder ID suchen.', 'blogs-directory' ); ?></p>
 	<span class="description"><?= $template; ?></span>
 </div>
 

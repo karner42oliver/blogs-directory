@@ -135,8 +135,8 @@ class ReviewController extends BaseController
 			];
 
 			$replace = [
-				__( 'Approved', 'site-reviews' ),
-				__( 'Unapproved', 'site-reviews' ),
+				__( 'Approved', 'blogs-directory' ),
+				__( 'Unapproved', 'blogs-directory' ),
 			];
 
 			foreach( $search as $string ) {
@@ -199,11 +199,11 @@ class ReviewController extends BaseController
 	public function modifyUpdateMessagesBulk( array $messages, array $counts )
 	{
 		$messages[ App::POST_TYPE ] = [
-			'updated'   => _n( '%s review updated.', '%s reviews updated.', $counts['updated'], 'site-reviews' ),
-			'locked'    => _n( '%s review not updated, somebody is editing it.', '%s reviews not updated, somebody is editing them.', $counts['locked'], 'site-reviews' ),
-			'deleted'   => _n( '%s review permanently deleted.', '%s reviews permanently deleted.', $counts['deleted'], 'site-reviews' ),
-			'trashed'   => _n( '%s review moved to the Trash.', '%s reviews moved to the Trash.', $counts['trashed'], 'site-reviews' ),
-			'untrashed' => _n( '%s review restored from the Trash.', '%s reviews restored from the Trash.', $counts['untrashed'], 'site-reviews' ),
+			'updated'   => _n( '%s review updated.', '%s reviews updated.', $counts['updated'], 'blogs-directory' ),
+			'locked'    => _n( '%s review not updated, somebody is editing it.', '%s reviews not updated, somebody is editing them.', $counts['locked'], 'blogs-directory' ),
+			'deleted'   => _n( '%s review permanently deleted.', '%s reviews permanently deleted.', $counts['deleted'], 'blogs-directory' ),
+			'trashed'   => _n( '%s review moved to the Trash.', '%s reviews moved to the Trash.', $counts['trashed'], 'blogs-directory' ),
+			'untrashed' => _n( '%s review restored from the Trash.', '%s reviews restored from the Trash.', $counts['untrashed'], 'blogs-directory' ),
 		];
 
 		return $messages;
@@ -257,7 +257,7 @@ class ReviewController extends BaseController
 		// Validation
 		$validatedRequest = $this->validateSubmittedReview( $request );
 		if( !is_array( $validatedRequest )) {
-			return __( 'Please fix the submission errors.', 'site-reviews' );
+			return __( 'Please fix the submission errors.', 'blogs-directory' );
 		}
 		// Custom validation
 		$customValidation = apply_filters( 'site-reviews/validate/review/submission', true, $validatedRequest );
@@ -266,14 +266,14 @@ class ReviewController extends BaseController
 			$session->set( "{$validatedRequest['form_id']}-values", $validatedRequest );
 			return is_string( $customValidation )
 				? $customValidation
-				: __( 'The review submission failed. Please notify the site administrator.', 'site-reviews' );
+				: __( 'The review submission failed. Please notify the site administrator.', 'blogs-directory' );
 		}
 		// Honeypot validation
 		if( !empty( $validatedRequest['gotcha'] )) {
 			$session->set( "{$validatedRequest['form_id']}-errors", [] );
 			glsr_resolve( 'Log\Logger' )->warning( 'The Honeypot caught a bad submission:' );
 			glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-			return __( 'The review submission failed. Please notify the site administrator.', 'site-reviews' );
+			return __( 'The review submission failed. Please notify the site administrator.', 'blogs-directory' );
 		}
 		// reCAPTCHA validation
 		$validateRecaptcha = $this->validateRecaptcha();
@@ -285,7 +285,7 @@ class ReviewController extends BaseController
 		if( !$validateRecaptcha ) {
 			$session->set( "{$validatedRequest['form_id']}-errors", [] );
 			$session->set( "{$validatedRequest['form_id']}-recaptcha", 'reset' );
-			return __( 'The reCAPTCHA verification failed. Please notify the site administrator.', 'site-reviews' );
+			return __( 'The reCAPTCHA verification failed. Please notify the site administrator.', 'blogs-directory' );
 		}
 
 		$submitReview = new SubmitReview( $validatedRequest );
@@ -300,7 +300,7 @@ class ReviewController extends BaseController
 				$session->set( "{$validatedRequest['form_id']}-errors", [] );
 				glsr_resolve( 'Log\Logger' )->warning( 'Blacklisted submission detected:' );
 				glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-				return __( 'Your review cannot be submitted at this time.', 'site-reviews' );
+				return __( 'Your review cannot be submitted at this time.', 'blogs-directory' );
 			}
 		}
 
@@ -309,7 +309,7 @@ class ReviewController extends BaseController
 			$session->set( "{$validatedRequest['form_id']}-errors", [] );
 			glsr_resolve( 'Log\Logger' )->warning( 'Akismet caught a spam submission:' );
 			glsr_resolve( 'Log\Logger' )->warning( $validatedRequest );
-			return __( 'Your review cannot be submitted at this time. Please try again later.', 'site-reviews' );
+			return __( 'Your review cannot be submitted at this time. Please try again later.', 'blogs-directory' );
 		}
 
 		return $this->execute( $submitReview );
@@ -528,7 +528,7 @@ class ReviewController extends BaseController
 
 		$args = (object) wp_parse_args( $args, $defaults );
 
-		$translations = get_translations_for_domain( 'site-reviews' );
+		$translations = get_translations_for_domain( 'blogs-directory' );
 
 		return $args->text
 			? $translations->translate( $args->text )
@@ -691,7 +691,7 @@ class ReviewController extends BaseController
 		}
 
 		if( empty( $request['title'] )) {
-			$request['title'] = __( 'No Title', 'site-reviews' );
+			$request['title'] = __( 'No Title', 'blogs-directory' );
 		}
 
 		return array_merge( $defaults, $request );

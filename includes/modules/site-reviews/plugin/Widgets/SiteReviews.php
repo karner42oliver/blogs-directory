@@ -34,14 +34,14 @@ class SiteReviews extends Widget
 		$this->create_field([
 			'type'  => 'text',
 			'name'  => 'title',
-			'label' => __( 'Title', 'site-reviews' ),
+			'label' => __( 'Title', 'blogs-directory' ),
 			'value' => $args['title'],
 		]);
 
 		$this->create_field([
 			'type'    => 'number',
 			'name'    => 'count',
-			'label'   => __( 'How many reviews would you like to display? ', 'site-reviews' ),
+			'label'   => __( 'How many reviews would you like to display? ', 'blogs-directory' ),
 			'value'   => $args['count'],
 			'default' => 5,
 			'max'     => 100,
@@ -50,14 +50,14 @@ class SiteReviews extends Widget
 		$this->create_field([
 			'type'  => 'select',
 			'name'  => 'rating',
-			'label' => __( 'What is the minimum rating to display? ', 'site-reviews' ),
+			'label' => __( 'What is the minimum rating to display? ', 'blogs-directory' ),
 			'value' => $args['rating'],
 			'options' => [
-				'5' => sprintf( _n( '%s star', '%s stars', 5, 'site-reviews' ), 5 ),
-				'4' => sprintf( _n( '%s star', '%s stars', 4, 'site-reviews' ), 4 ),
-				'3' => sprintf( _n( '%s star', '%s stars', 3, 'site-reviews' ), 3 ),
-				'2' => sprintf( _n( '%s star', '%s stars', 2, 'site-reviews' ), 2 ),
-				'1' => sprintf( _n( '%s star', '%s stars', 1, 'site-reviews' ), 1 ),
+				'5' => sprintf( _n( '%s star', '%s stars', 5, 'blogs-directory' ), 5 ),
+				'4' => sprintf( _n( '%s star', '%s stars', 4, 'blogs-directory' ), 4 ),
+				'3' => sprintf( _n( '%s star', '%s stars', 3, 'blogs-directory' ), 3 ),
+				'2' => sprintf( _n( '%s star', '%s stars', 2, 'blogs-directory' ), 2 ),
+				'1' => sprintf( _n( '%s star', '%s stars', 1, 'blogs-directory' ), 1 ),
 			],
 		]);
 
@@ -65,10 +65,10 @@ class SiteReviews extends Widget
 			$this->create_field([
 				'type'  => 'select',
 				'name'  => 'display',
-				'label' => __( 'Which reviews would you like to display? ', 'site-reviews' ),
+				'label' => __( 'Which reviews would you like to display? ', 'blogs-directory' ),
 				'class' => 'widefat',
 				'value' => $args['display'],
-				'options' => ['' => __( 'All Reviews', 'site-reviews' ) ] + $types,
+				'options' => ['' => __( 'All Reviews', 'blogs-directory' ) ] + $types,
 			]);
 		}
 
@@ -76,27 +76,27 @@ class SiteReviews extends Widget
 			$this->create_field([
 				'type'  => 'select',
 				'name'  => 'category',
-				'label' => __( 'Limit reviews to this category', 'site-reviews' ),
+				'label' => __( 'Limit reviews to this category', 'blogs-directory' ),
 				'class' => 'widefat',
 				'value' => $args['category'],
-				'options' => ['' => __( 'All Categories', 'site-reviews' ) ] + glsr_resolve( 'Database' )->getTerms(),
+				'options' => ['' => __( 'All Categories', 'blogs-directory' ) ] + glsr_resolve( 'Database' )->getTerms(),
 			]);
 		}
 
 		$this->create_field([
 			'type'    => 'text',
 			'name'    => 'assigned_to',
-			'label'   => __( 'Limit reviews to those assigned to this page/post ID', 'site-reviews' ),
+			'label'   => __( 'Limit reviews to those assigned to this page/post ID', 'blogs-directory' ),
 			'value'   => $args['assigned_to'],
 			'default' => '',
-			'placeholder' => __( "Separate multiple ID's with a comma", 'site-reviews' ),
-			'description' => sprintf( __( 'You may also enter %s to limit assigned reviews to the current page.', 'site-reviews' ), '<code>post_id</code>' ),
+			'placeholder' => __( "Separate multiple ID's with a comma", 'blogs-directory' ),
+			'description' => sprintf( __( 'You may also enter %s to limit assigned reviews to the current page.', 'blogs-directory' ), '<code>post_id</code>' ),
 		]);
 
 		$this->create_field([
 			'type'  => 'text',
 			'name'  => 'class',
-			'label' => __( 'Enter any custom CSS classes here', 'site-reviews' ),
+			'label' => __( 'Enter any custom CSS classes here', 'blogs-directory' ),
 			'value' => $args['class'],
 		]);
 
@@ -105,12 +105,12 @@ class SiteReviews extends Widget
 			'name'  => 'hide',
 			'value' => $args['hide'],
 			'options' => [
-				'author' => __( 'Hide the review author?', 'site-reviews' ),
-				'date' => __( 'Hide the review date?', 'site-reviews' ),
-				'excerpt' => __( 'Hide the review excerpt?', 'site-reviews' ),
-				'rating' => __( 'Hide the review rating?', 'site-reviews' ),
-				'response' => __( 'Hide the review response?', 'site-reviews' ),
-				'title' => __( 'Hide the review title?', 'site-reviews' ),
+				'author' => __( 'Hide the review author?', 'blogs-directory' ),
+				'date' => __( 'Hide the review date?', 'blogs-directory' ),
+				'excerpt' => __( 'Hide the review excerpt?', 'blogs-directory' ),
+				'rating' => __( 'Hide the review rating?', 'blogs-directory' ),
+				'response' => __( 'Hide the review response?', 'blogs-directory' ),
+				'title' => __( 'Hide the review title?', 'blogs-directory' ),
 			],
 		]);
 	}

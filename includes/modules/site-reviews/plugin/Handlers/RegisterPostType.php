@@ -307,13 +307,13 @@ class RegisterPostType
 		$ratings = array_flip( array_reverse( $ratings ));
 
 		array_walk( $ratings, function( &$value, $key ) {
-			$label = _n( '%s star', '%s stars', $key, 'site-reviews' );
+			$label = _n( '%s star', '%s stars', $key, 'blogs-directory' );
 			$value = sprintf( $label, $key );
 		});
 
-		$ratings = [ __( 'All ratings', 'site-reviews' ) ] + $ratings;
+		$ratings = [ __( 'All ratings', 'blogs-directory' ) ] + $ratings;
 
-		printf( '<label class="screen-reader-text" for="rating">%s</label>', __( 'Filter by rating', 'site-reviews' ));
+		printf( '<label class="screen-reader-text" for="rating">%s</label>', __( 'Filter by rating', 'blogs-directory' ));
 
 		echo $this->app->make( 'Html' )->renderPartial( 'filterby', [
 			'name'   => 'rating',
@@ -333,13 +333,13 @@ class RegisterPostType
 			|| apply_filters( 'site-reviews/disable/filter/types', false )
 		)return;
 
-		$reviewTypes = [ __( 'All types', 'site-reviews' ) ];
+		$reviewTypes = [ __( 'All types', 'blogs-directory' ) ];
 
 		foreach( $types as $type ) {
 			$reviewTypes[ $type ] = $this->app->make( 'Strings' )->review_types( $type, ucfirst( $type ));
 		}
 
-		printf( '<label class="screen-reader-text" for="type">%s</label>', __( 'Filter by type', 'site-reviews' ));
+		printf( '<label class="screen-reader-text" for="type">%s</label>', __( 'Filter by type', 'blogs-directory' ));
 
 		echo $this->app->make( 'Html' )->renderPartial( 'filterby', [
 			'name'   => 'review_type',

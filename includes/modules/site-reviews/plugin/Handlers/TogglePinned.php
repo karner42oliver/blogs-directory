@@ -40,8 +40,8 @@ class TogglePinned
 		}
 		else {
 			$notice = $command->pinned
-				? __( 'The review is pinned.', 'site-reviews' )
-				: __( 'The review is unpinned.', 'site-reviews' );
+				? __( 'The review is pinned.', 'blogs-directory' )
+				: __( 'The review is unpinned.', 'blogs-directory' );
 
 			$this->notices->addSuccess( $notice );
 		}

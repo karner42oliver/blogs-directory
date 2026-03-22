@@ -36,7 +36,7 @@ class SubmitReview
 		glsr_resolve( 'Database' )->setReviewMeta( $post_id, $command->category );
 		$this->sendNotification( $post_id, $command );
 		$successMessage = apply_filters( 'site-reviews/local/review/submitted/message',
-			__( 'Your review has been submitted!', 'site-reviews' ),
+			__( 'Your review has been submitted!', 'blogs-directory' ),
 			$command
 		);
 		do_action( 'site-reviews/local/review/submitted', $successMessage, $command );
@@ -90,7 +90,7 @@ class SubmitReview
 		if( $command->author ) {
 			$fields[] = ['value' => trim( $command->author.$command->email.' - '.$command->ipAddress )];
 		}
-		$fields[] = ['value' => sprintf( '<%s|%s>', $args['notification_link'], __( 'View Review', 'site-reviews' ))];
+		$fields[] = ['value' => sprintf( '<%s|%s>', $args['notification_link'], __( 'View Review', 'blogs-directory' ))];
 		return json_encode([
 			'icon_url' => glsr_app()->url.'assets/img/icon.png',
 			'username' => glsr_app()->name,
@@ -117,7 +117,7 @@ class SubmitReview
 			'New %s-star review of: %s',
 			(int) empty( $assignedToTitle ),
 			'The text is different depending on whether or not the review has been assigned to a post.',
-			'site-reviews'
+			'blogs-directory'
 		);
 		$notificationTitle = sprintf( '[%s] %s',
 			wp_specialchars_decode( (string) get_option( 'blogname' ), ENT_QUOTES ),
@@ -145,10 +145,10 @@ class SubmitReview
 			? $this->createEmailNotification( $command, $args )->send()
 			: false;
 		if( !is_bool( $result )) {
-			glsr_log( __( 'Email notification was not sent: missing email, subject, or message.', 'site-reviews' ), 'error' );
+			glsr_log( __( 'Email notification was not sent: missing email, subject, or message.', 'blogs-directory' ), 'error' );
 		}
 		if( $result === false ) {
-			glsr_log( __( 'Email notification was not sent: wp_mail() failed.', 'site-reviews' ), 'error' );
+			glsr_log( __( 'Email notification was not sent: wp_mail() failed.', 'blogs-directory' ), 'error' );
 		}
 		return (bool) $result;
 	}

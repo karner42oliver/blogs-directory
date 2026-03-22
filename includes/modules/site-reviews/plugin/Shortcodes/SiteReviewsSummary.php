@@ -151,7 +151,7 @@ class SiteReviewsSummary extends Shortcode
 				'{rating} out of {max} stars (based on %d reviews)',
 				$count,
 				'Do not translate {rating} and {max}, they are template tags.',
-				'site-reviews'
+				'blogs-directory'
 			);
 		}
 		$summary = str_replace( ['{rating}','{max}'], [$rating, Rating::MAX_RATING], $this->args['text'] );
@@ -222,11 +222,11 @@ class SiteReviewsSummary extends Shortcode
 	protected function normalizeLabels( $labels )
 	{
 		$defaults = [
-			__( 'Excellent', 'site-reviews' ),
-			__( 'Very good', 'site-reviews' ),
-			__( 'Average', 'site-reviews' ),
-			__( 'Poor', 'site-reviews' ),
-			__( 'Terrible', 'site-reviews' ),
+			__( 'Excellent', 'blogs-directory' ),
+			__( 'Very good', 'blogs-directory' ),
+			__( 'Average', 'blogs-directory' ),
+			__( 'Poor', 'blogs-directory' ),
+			__( 'Terrible', 'blogs-directory' ),
 		];
 		$labels = explode( ',', $labels );
 		foreach( $defaults as $i => $label ) {

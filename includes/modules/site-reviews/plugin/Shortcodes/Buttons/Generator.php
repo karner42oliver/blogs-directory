@@ -52,13 +52,13 @@ abstract class Generator
 
 		// Generate the fields, errors, and requirements
 		$defaults = [
-			'btn_close' => esc_html__( 'Close', 'site-reviews' ),
-			'btn_okay'  => esc_html__( 'Insert Shortcode', 'site-reviews' ),
+			'btn_close' => esc_html__( 'Close', 'blogs-directory' ),
+			'btn_okay'  => esc_html__( 'Insert Shortcode', 'blogs-directory' ),
 			'errors'    => $this->errors,
 			'fields'    => $this->getFields(),
 			'label'     => '[' . $tag . ']',
 			'required'  => $this->required,
-			'title'     => esc_html__( 'Shortcode', 'site-reviews' ),
+			'title'     => esc_html__( 'Shortcode', 'blogs-directory' ),
 		];
 
 		$this->properties = wp_parse_args( $args, $defaults );
@@ -205,7 +205,7 @@ abstract class Generator
 			$listbox[ $key ] = $value;
 		}
 
-		$field['placeholder'] ?: $field['placeholder'] = esc_attr__( '- Select -', 'site-reviews' );
+		$field['placeholder'] ?: $field['placeholder'] = esc_attr__( '- Select -', 'blogs-directory' );
 		$field['options'] = ['' => $field['placeholder']] + $field['options'];
 
 		foreach( $field['options'] as $value => $text ) {
@@ -324,14 +324,14 @@ abstract class Generator
 
 		if( !!$required || is_array( $required )) {
 
-			$alert = esc_html__( 'Some of the shortcode options are required.', 'site-reviews' );
+			$alert = esc_html__( 'Some of the shortcode options are required.', 'blogs-directory' );
 
 			if( isset( $required['alert'] )) {
 				$alert = $required['alert'];
 			}
 			else if( !empty( $label )) {
 				$alert = sprintf(
-					esc_html_x( 'The "%s" option is required.', 'the option label', 'site-reviews' ),
+					esc_html_x( 'The "%s" option is required.', 'the option label', 'blogs-directory' ),
 					str_replace( ':', '', $label )
 				);
 			}

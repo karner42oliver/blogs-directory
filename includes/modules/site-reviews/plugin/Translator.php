@@ -12,7 +12,6 @@ namespace GeminiLabs\SiteReviews;
 
 use GeminiLabs\SiteReviews\App;
 use GeminiLabs\SiteReviews\Database;
-use Sepia\PoParser\Parser;
 
 class Translator
 {
@@ -64,12 +63,8 @@ class Translator
 	public function entries()
 	{
 		if( !is_array( $this->entries )) {
-			$entries = $this->normalize(
-				Parser::parseFile( $this->app->path . 'languages/site-reviews.pot' )->getEntries()
-			);
-			foreach( $entries as $key => $entry ) {
-				$this->entries[html_entity_decode( $key, ENT_COMPAT, 'UTF-8' )] = $entry;
-			}
+			// The embedded module now uses the main plugin textdomain and must not depend on local .pot files.
+			$this->entries = [];
 		}
 		return $this->entries;
 	}
@@ -214,7 +209,7 @@ class Translator
 	 */
 	public function translate( $original, $domain, array $args )
 	{
-		if( $domain != 'site-reviews' ) {
+		if( $domain != 'blogs-directory' ) {
 			return $original;
 		}
 		$args = $this->normalizeTranslationArgs( $args );

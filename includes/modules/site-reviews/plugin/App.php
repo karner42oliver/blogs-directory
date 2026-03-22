@@ -210,7 +210,8 @@ final class App extends Container
 	 */
 	public function registerLanguages()
 	{
-		load_plugin_textdomain( 'site-reviews', false, plugin_basename( $this->path ).'/languages/' );
+		$languagePath = dirname( plugin_basename( $this->path ), 3 ) . '/languages/';
+		load_plugin_textdomain( 'blogs-directory', false, $languagePath );
 	}
 
 	/**

@@ -37,7 +37,7 @@ class Colorpicker extends Text
 		return parent::render( wp_parse_args( $defaults, [
 			'class'       => 'color-picker-hex',
 			'maxlength'   => 7,
-			'placeholder' => __( 'Hex Value', 'site-reviews' ),
+			'placeholder' => __( 'Hex Value', 'blogs-directory' ),
 			'attributes'  => [
 				'data-colorpicker' => json_encode([
 					'palettes' => [

@@ -1,6 +1,6 @@
 <?php defined( 'WPINC' ) || die; ?>
 
-<p><?= __( 'The following Add-Ons extend the functionality of Site Reviews.', 'site-reviews' ); ?></p>
+<p><?= __( 'Die folgenden Add-ons erweitern die Funktionen von Site Reviews.', 'blogs-directory' ); ?></p>
 
 <div class="glsr-addons wp-clearfix">
 
@@ -8,15 +8,15 @@
 
 	echo $html->renderPartial( 'addon', [
 		'name'        => 'tripadvisor',
-		'title'       => 'Coming soon in v3.0.0',
-		'description' => __( 'Sync your Tripadvisor business reviews with an optional minimum rating and display them on your site.', 'site-reviews' ),
+		'title'       => __( 'Bald verfuegbar in v3.0.0', 'blogs-directory' ),
+		'description' => __( 'Synchronisiere Deine Tripadvisor-Bewertungen mit optionaler Mindestbewertung und zeige sie auf Deiner Seite an.', 'blogs-directory' ),
 		'link'        => '',
 	]);
 
 	echo $html->renderPartial( 'addon', [
 		'name'        => 'yelp',
-		'title'       => 'Coming soon in v3.0.0',
-		'description' => __( 'Sync your Yelp business reviews with an optional minimum rating and display them on your site.', 'site-reviews' ),
+		'title'       => __( 'Bald verfuegbar in v3.0.0', 'blogs-directory' ),
+		'description' => __( 'Synchronisiere Deine Yelp-Bewertungen mit optionaler Mindestbewertung und zeige sie auf Deiner Seite an.', 'blogs-directory' ),
 		'link'        => '',
 	]);
 

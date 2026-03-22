@@ -98,12 +98,12 @@ trait SiteReviewsForm
 		if( $requireUser != 'yes' || is_user_logged_in() ) {
 			return false;
 		}
-		$login = sprintf( __( 'You must be %s to submit a review.', 'site-reviews' ),
-			sprintf( '<a href="%s">%s</a>', wp_login_url( (string) get_permalink() ), __( 'logged in', 'site-reviews' ))
+		$login = sprintf( __( 'You must be %s to submit a review.', 'blogs-directory' ),
+			sprintf( '<a href="%s">%s</a>', wp_login_url( (string) get_permalink() ), __( 'logged in', 'blogs-directory' ))
 		);
 		if( get_option( 'users_can_register' ) && glsr_get_option( 'general.require.login_register' ) == 'yes' ) {
-			$login .= ' '.sprintf( __( 'You may also %s for an account.', 'site-reviews' ),
-				sprintf( '<a href="%s">%s</a>', wp_registration_url(), __( 'register', 'site-reviews' ))
+			$login .= ' '.sprintf( __( 'You may also %s for an account.', 'blogs-directory' ),
+				sprintf( '<a href="%s">%s</a>', wp_registration_url(), __( 'register', 'blogs-directory' ))
 			);
 		}
 		echo apply_filters( 'site-reviews/rendered/review-form/login-register', wpautop( trim( $login )));

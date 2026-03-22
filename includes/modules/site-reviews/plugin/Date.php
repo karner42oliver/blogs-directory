@@ -41,13 +41,13 @@ class Date
 			if( $diff > $timePeriod[0] )continue;
 			$unit = intval( floor( $diff / $timePeriod[1] ));
 			$relativeDates = [
-				_n( '%s second ago', '%s seconds ago', $unit, 'site-reviews' ),
-				_n( '%s minute ago', '%s minutes ago', $unit, 'site-reviews' ),
-				_n( 'an hour ago', '%s hours ago', $unit, 'site-reviews' ),
-				_n( 'yesterday', '%s days ago', $unit, 'site-reviews' ),
-				_n( 'a week ago', '%s weeks ago', $unit, 'site-reviews' ),
-				_n( '%s month ago', '%s months ago', $unit, 'site-reviews' ),
-				_n( '%s year ago', '%s years ago', $unit, 'site-reviews' ),
+				_n( '%s second ago', '%s seconds ago', $unit, 'blogs-directory' ),
+				_n( '%s minute ago', '%s minutes ago', $unit, 'blogs-directory' ),
+				_n( 'an hour ago', '%s hours ago', $unit, 'blogs-directory' ),
+				_n( 'yesterday', '%s days ago', $unit, 'blogs-directory' ),
+				_n( 'a week ago', '%s weeks ago', $unit, 'blogs-directory' ),
+				_n( '%s month ago', '%s months ago', $unit, 'blogs-directory' ),
+				_n( '%s year ago', '%s years ago', $unit, 'blogs-directory' ),
 			];
 			$relativeDate = $relativeDates[$i];
 			if( strpos( $relativeDate, '%s' ) !== false ) {

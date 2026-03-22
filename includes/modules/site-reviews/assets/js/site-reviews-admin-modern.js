@@ -3,6 +3,7 @@
 
   var appSelector = '#glsr-admin-app';
   var tabsSelector = '.nav-tab-wrapper a.nav-tab, .glsr-subsubsub a';
+  var activeRequestId = 0;
 
   function findAppRoot(doc) {
     return (doc || document).querySelector(appSelector);
@@ -68,6 +69,13 @@
       return;
     }
 
+    if (url === window.location.href && push) {
+      return;
+    }
+
+    activeRequestId += 1;
+    var requestId = activeRequestId;
+
     setLoading(root, true);
 
     fetch(url, {
@@ -84,6 +92,10 @@
         return response.text();
       })
       .then(function (html) {
+        if (requestId !== activeRequestId) {
+          return;
+        }
+
         var nextDoc = parseDocumentFromHtml(html);
         var replaced = replaceSectionFromDocument(nextDoc);
 
@@ -102,10 +114,15 @@
         }
       })
       .catch(function () {
+        if (requestId !== activeRequestId) {
+          return;
+        }
         window.location.assign(url);
       })
       .finally(function () {
-        setLoading(root, false);
+        if (requestId === activeRequestId) {
+          setLoading(root, false);
+        }
       });
   }
 
@@ -129,10 +146,19 @@
   });
 
   window.addEventListener('popstate', function () {
+    if (!window.history.state || window.history.state.glsr !== true) {
+      return;
+    }
+
     var appRoot = findAppRoot(document);
     if (!appRoot) {
       return;
     }
-    navigate(window.location.href, false);
+
+    navigate(window.history.state.url || window.location.href, false);
   });
+
+  if (!window.history.state || window.history.state.glsr !== true) {
+    window.history.replaceState({ glsr: true, url: window.location.href }, '', window.location.href);
+  }
 })();
