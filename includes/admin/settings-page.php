@@ -20,6 +20,7 @@ function blogs_directory_site_admin_options() {
     $blogs_directory_title_blogs_page           = get_site_option('blogs_directory_title_blogs_page');
 	$blogs_directory_show_description           = get_site_option('blogs_directory_show_description');
     $blogs_directory_avatar_fallback_order      = get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo');
+    $blogs_directory_show_site_reviews          = get_site_option('blogs_directory_show_site_reviews', 0);
 	?>
 
     <div class="wrap">
@@ -109,6 +110,14 @@ function blogs_directory_site_admin_options() {
                             <option value="logo_site_icon" <?php selected( $blogs_directory_avatar_fallback_order, 'logo_site_icon' ); ?>><?php _e('Logo zuerst, dann Site-Icon','blogs-directory'); ?></option>
                         </select>
                         <br /><span class="description"><?php _e('Wenn kein Blog-Avatar gesetzt ist, wird diese Reihenfolge verwendet.','blogs-directory'); ?></span>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Bewertungen anzeigen','blogs-directory') ?></th>
+                    <td>
+                        <input name="blogs_directory_show_site_reviews" id="blogs_directory_show_site_reviews" type="checkbox" value="1" <?php checked( (int) $blogs_directory_show_site_reviews, 1 ); ?> />
+                        <label for="blogs_directory_show_site_reviews"><?php _e('Zeige Site-Reviews Bewertung in der Verzeichnisliste an','blogs-directory') ?></label><br />
+                        <span class="description"><?php _e('Zeigt Durchschnitt und Anzahl veroeffentlichter Bewertungen pro Site, falls vorhanden.','blogs-directory'); ?></span>
                     </td>
                 </tr>
                 <tr valign="top">
@@ -220,6 +229,7 @@ function blogs_directory_save_options() {
 	}
 
 	$show_description = isset( $_POST['blogs_directory_show_description'] ) ? 1 : 0;
+    $show_site_reviews = isset( $_POST['blogs_directory_show_site_reviews'] ) ? 1 : 0;
 
     $allowed_fallback_orders = array( 'site_icon_logo', 'logo_site_icon' );
     $fallback_order_raw = isset( $_POST['blogs_directory_avatar_fallback_order'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_avatar_fallback_order'] ) ) : 'site_icon_logo';
@@ -235,6 +245,7 @@ function blogs_directory_save_options() {
 	update_site_option( 'blogs_directory_border_color', $border_color );
 	update_site_option( 'blogs_directory_hide_blogs', $hide_blogs );
 	update_site_option( 'blogs_directory_show_description', $show_description );
+    update_site_option( 'blogs_directory_show_site_reviews', $show_site_reviews );
     update_site_option( 'blogs_directory_avatar_fallback_order', $avatar_fallback_order );
 	update_site_option( 'blogs_directory_title_blogs_page', $blogs_directory_title_blogs_page );
 

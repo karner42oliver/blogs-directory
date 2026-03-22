@@ -43,6 +43,7 @@ function blogs_directory_get_output_settings() {
 		'blogs_directory_title_blogs_page'           => get_site_option('blogs_directory_title_blogs_page'),
 		'blogs_directory_show_description'           => get_site_option('blogs_directory_show_description'),
 		'blogs_directory_avatar_fallback_order'      => get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo'),
+		'blogs_directory_show_site_reviews'          => (int) get_site_option('blogs_directory_show_site_reviews', 0),
 		'blogs_directory_hide_blogs'                 => get_site_option( 'blogs_directory_hide_blogs' ),
 	);
 }
@@ -227,6 +228,75 @@ function blogs_directory_get_blog_avatar_html( $blog_id, $size, $alt, $fallback_
 }
 
 /**
+ * Holt Bewertungsdurchschnitt und Anzahl aus Site Reviews pro Blog.
+ */
+function blogs_directory_get_site_reviews_summary( $blog_id ) {
+	$blog_id = absint( $blog_id );
+	if ( $blog_id < 1 ) {
+		return array(
+			'count' => 0,
+			'average' => 0.0,
+		);
+	}
+
+	$cache_key = 'blogs_directory_reviews_' . $blog_id;
+	$cached = get_site_transient( $cache_key );
+	if ( is_array( $cached ) && isset( $cached['count'], $cached['average'] ) ) {
+		return $cached;
+	}
+
+	switch_to_blog( $blog_id );
+
+	global $wpdb;
+	$summary = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT COUNT(pm.meta_value) AS review_count, AVG(CAST(pm.meta_value AS DECIMAL(10,2))) AS review_average
+			 FROM {$wpdb->posts} p
+			 INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+			 WHERE p.post_type = %s
+			   AND p.post_status = %s
+			   AND pm.meta_key = %s
+			   AND CAST(pm.meta_value AS DECIMAL(10,2)) >= 1
+			   AND CAST(pm.meta_value AS DECIMAL(10,2)) <= 5",
+			'site-review',
+			'publish',
+			'rating'
+		)
+	);
+
+	restore_current_blog();
+
+	$result = array(
+		'count' => isset( $summary->review_count ) ? absint( $summary->review_count ) : 0,
+		'average' => isset( $summary->review_average ) ? (float) $summary->review_average : 0.0,
+	);
+
+	set_site_transient( $cache_key, $result, 15 * MINUTE_IN_SECONDS );
+
+	return $result;
+}
+
+/**
+ * Rendert Bewertungs-Text fuer eine Site-Zeile.
+ */
+function blogs_directory_get_site_reviews_html( $blog_id ) {
+	$summary = blogs_directory_get_site_reviews_summary( $blog_id );
+
+	if ( $summary['count'] < 1 ) {
+		return '';
+	}
+
+	$rating_text = sprintf(
+		/* translators: 1: average rating, 2: number of reviews */
+		__( 'Bewertung: %1$s/5 (%2$d)', 'blogs-directory' ),
+		number_format_i18n( $summary['average'], 1 ),
+		$summary['count']
+	);
+
+	return '<span class="blogs_dir_site_reviews" style="font-size: 12px; color: #5A5A5A; font-weight: 600;">' . esc_html( $rating_text ) . '</span>';
+}
+
+/**
  * Rendert die Landing-Seite des Blogs-Verzeichnisses.
  */
 function blogs_directory_render_landing_content( $content, $blogs_directory, $settings ) {
@@ -306,6 +376,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 				//=============================//
 				$blog_url = 'http://' . $blog['domain'] . $blog['path'];
 				$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog_title, $settings['blogs_directory_avatar_fallback_order'] );
+				$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
 
 				$content .= '<tr>';
 					if ( '' !== $avatar_html ) {
@@ -315,6 +386,9 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 					}
 					$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
 					$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . $blog_title . '</a><br />';
+					if ( '' !== $site_reviews_html ) {
+						$content .= $site_reviews_html . '<br />';
+					}
 
                     //show description for blog
                     if ( 1 == $settings['blogs_directory_show_description'] ) {
@@ -458,6 +532,7 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 		foreach ($blogs as $blog){
 			$blog_url = 'http://' . $blog['domain'] . $blog['path'];
 			$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog['blogname'], $settings['blogs_directory_avatar_fallback_order'] );
+			$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
 
 			//=============================//
 			if ($tic_toc == 'toc'){
@@ -479,6 +554,9 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 			}
 			$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
 			$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . $blog['blogname'] . '</a><br />';
+			if ( '' !== $site_reviews_html ) {
+				$content .= $site_reviews_html . '<br />';
+			}
 			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . $blog['blogdescription'] . '</span>';
 			$content .= '</td>';
 			$content .= '</tr>';
