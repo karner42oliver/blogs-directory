@@ -14,6 +14,7 @@ use Closure;
 use Exception;
 use GeminiLabs\SiteReviews\Providers\ProviderInterface;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionParameter;
 
 abstract class Container
@@ -218,8 +219,13 @@ abstract class Container
 	 */
 	protected function resolveClass( ReflectionParameter $parameter )
 	{
+		$type = $parameter->getType();
+		if( !$type instanceof ReflectionNamedType || $type->isBuiltin() ) {
+			return $this->resolveDependency( $parameter );
+		}
+
 		try {
-			return $this->make( $parameter->getClass()->name );
+			return $this->make( $type->getName() );
 		}
 		catch( Exception $error ) {
 			if( $parameter->isOptional() ) {
@@ -238,7 +244,8 @@ abstract class Container
 	{
 		$results = [];
 		foreach( $dependencies as $dependency ) {
-			$results[] = !is_null( $class = $dependency->getClass() )
+			$type = $dependency->getType();
+			$results[] = $type instanceof ReflectionNamedType && !$type->isBuiltin()
 				? $this->resolveClass( $dependency )
 				: $this->resolveDependency( $dependency );
 		}
@@ -252,7 +259,12 @@ abstract class Container
 	 */
 	protected function resolveDependency( ReflectionParameter $parameter )
 	{
-		if( $parameter->isArray() && $parameter->isDefaultValueAvailable() ) {
+		$type = $parameter->getType();
+		if(
+			$type instanceof ReflectionNamedType
+			&& 'array' === $type->getName()
+			&& $parameter->isDefaultValueAvailable()
+		) {
 			return $parameter->getDefaultValue();
 		}
 		return null;

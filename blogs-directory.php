@@ -38,7 +38,10 @@ if ( ! function_exists( 'glsr_app' ) && file_exists( BLOGS_DIRECTORY_PLUGIN_DIR 
 	require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/modules/site-reviews/site-reviews.php';
 }
 
-require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'blogs-widget/widget-blogs.php';
+$blogs_widget_file = BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/modules/blogs-widget/widget-blogs.php';
+if ( file_exists( $blogs_widget_file ) ) {
+	require_once $blogs_widget_file;
+}
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/admin/settings-page.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/admin/blog-avatar-page.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/routing.php';
