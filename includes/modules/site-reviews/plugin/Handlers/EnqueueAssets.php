@@ -58,7 +58,8 @@ class EnqueueAssets
 		$screen = glsr_current_screen();
 		if( !$this->isSiteReviewsAdminScreen( $screen ) )return;
 
-		$dependencies = array_merge( $this->dependencies, ['jquery', 'jquery-ui-sortable', 'underscore', 'wp-util'] );
+		$sortableHandle = $command->handle . '-sortable';
+		$dependencies = array_merge( $this->dependencies, ['jquery', $sortableHandle, 'underscore', 'wp-util'] );
 
 		wp_enqueue_style(
 			$command->handle,
@@ -94,6 +95,14 @@ class EnqueueAssets
 		) {
 			return;
 		}
+
+		wp_enqueue_script(
+			$sortableHandle,
+			$command->url . 'js/site-reviews-sortable.js',
+			['jquery'],
+			$command->version,
+			true
+		);
 
 		wp_enqueue_script(
 			$command->handle,

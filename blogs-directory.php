@@ -104,6 +104,7 @@ if ( isset($current_blog) && ($current_blog->domain . $current_blog->path == $cu
 	add_filter('rewrite_rules_array','blogs_directory_rewrite');
 	add_filter('the_content', 'blogs_directory_output', 20);
 	add_filter('the_title', 'blogs_directory_title_output', 99, 2);
+	add_action('wp_enqueue_scripts', 'blogs_directory_enqueue_frontend_assets');
 	add_action('admin_footer', 'blogs_directory_page_setup');
 	add_action('init', 'blogs_directory_flush_rewrite_rules');
 }
@@ -111,6 +112,7 @@ if ( isset($current_blog) && ($current_blog->domain . $current_blog->path == $cu
 add_action('network_admin_menu', 'blogs_directory_admin_page');
 add_action('admin_init', 'blogs_directory_save_options');
 add_action('admin_init', 'blogs_directory_register_site_reviews_discussion_setting');
+add_action('admin_enqueue_scripts', 'blogs_directory_settings_enqueue_assets');
 add_action('admin_menu', 'blogs_directory_blog_avatar_admin_page');
 add_action('admin_enqueue_scripts', 'blogs_directory_blog_avatar_enqueue_assets');
 add_action('admin_init', 'blogs_directory_blog_avatar_handle_actions');

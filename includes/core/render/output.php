@@ -5,6 +5,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Laedt optionale Frontend-Styles des Blogs-Verzeichnisses.
+ */
+function blogs_directory_enqueue_frontend_assets() {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$style_rel_path = 'includes/core/assets/blogs-directory-frontend.css';
+	$style_path = BLOGS_DIRECTORY_PLUGIN_DIR . $style_rel_path;
+	$style_url = plugins_url( $style_rel_path, BLOGS_DIRECTORY_PLUGIN_FILE );
+	$style_version = file_exists( $style_path ) ? (string) filemtime( $style_path ) : '1.0.0';
+
+	wp_enqueue_style(
+		'blogs-directory-frontend',
+		$style_url,
+		array(),
+		$style_version
+	);
+}
+
+/**
  * Zentraler Output-Dispatcher für die Verzeichnisseite.
  */
 function blogs_directory_output($content) {
@@ -48,6 +69,13 @@ function blogs_directory_get_output_settings() {
 		'blogs_directory_show_description'           => get_site_option('blogs_directory_show_description'),
 		'blogs_directory_avatar_fallback_order'      => get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo'),
 		'blogs_directory_show_site_reviews'          => (int) get_site_option('blogs_directory_show_site_reviews', 0),
+		'blogs_directory_show_recent_posts'          => (int) get_site_option('blogs_directory_show_recent_posts', 0),
+		'blogs_directory_recent_posts_number'        => (int) get_site_option('blogs_directory_recent_posts_number', 3),
+		'blogs_directory_recent_posts_title_chars'   => (int) get_site_option('blogs_directory_recent_posts_title_chars', 80),
+		'blogs_directory_recent_posts_content_chars' => (int) get_site_option('blogs_directory_recent_posts_content_chars', 0),
+		'blogs_directory_recent_posts_show_avatars'  => (int) get_site_option('blogs_directory_recent_posts_show_avatars', 0),
+		'blogs_directory_recent_posts_avatar_size'   => (int) get_site_option('blogs_directory_recent_posts_avatar_size', 24),
+		'blogs_directory_recent_posts_post_type'     => get_site_option('blogs_directory_recent_posts_post_type', 'post'),
 		'blogs_directory_include_main_site'          => (int) get_site_option('blogs_directory_include_main_site', 1),
 		'blogs_directory_hide_blogs'                 => get_site_option( 'blogs_directory_hide_blogs' ),
 	);
@@ -345,6 +373,113 @@ function blogs_directory_get_site_reviews_html( $blog_id ) {
 }
 
 /**
+ * Rendert aktuelle Beitraege fuer ein Blog innerhalb des Verzeichniseintrags.
+ */
+function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
+	if ( empty( $settings['blogs_directory_show_recent_posts'] ) ) {
+		return '';
+	}
+
+	$blog_id = absint( $blog_id );
+	if ( $blog_id < 1 ) {
+		return '';
+	}
+
+	$post_type = isset( $settings['blogs_directory_recent_posts_post_type'] ) ? sanitize_key( (string) $settings['blogs_directory_recent_posts_post_type'] ) : 'post';
+	if ( '' === $post_type ) {
+		$post_type = 'post';
+	}
+
+	$number = isset( $settings['blogs_directory_recent_posts_number'] ) ? absint( $settings['blogs_directory_recent_posts_number'] ) : 3;
+	$number = max( 1, min( 10, $number ) );
+
+	$title_chars = isset( $settings['blogs_directory_recent_posts_title_chars'] ) ? absint( $settings['blogs_directory_recent_posts_title_chars'] ) : 80;
+	$title_chars = min( 200, $title_chars );
+
+	$content_chars = isset( $settings['blogs_directory_recent_posts_content_chars'] ) ? absint( $settings['blogs_directory_recent_posts_content_chars'] ) : 0;
+	$content_chars = min( 500, $content_chars );
+
+	$show_avatars = ! empty( $settings['blogs_directory_recent_posts_show_avatars'] );
+	$avatar_size = isset( $settings['blogs_directory_recent_posts_avatar_size'] ) ? absint( $settings['blogs_directory_recent_posts_avatar_size'] ) : 24;
+	$avatar_size = max( 16, min( 96, $avatar_size ) );
+
+	switch_to_blog( $blog_id );
+
+	$query = new WP_Query(
+		array(
+			'post_type'           => $post_type,
+			'post_status'         => 'publish',
+			'posts_per_page'      => $number,
+			'ignore_sticky_posts' => true,
+			'no_found_rows'       => true,
+		)
+	);
+
+	if ( ! $query->have_posts() ) {
+		wp_reset_postdata();
+		restore_current_blog();
+		return '';
+	}
+
+	$html = '<div class="blogs_dir_recent_posts">';
+	$html .= '<span class="blogs_dir_recent_posts_title">' . esc_html__( 'hat zuletzt veröffentlicht:', 'blogs-directory' ) . '</span>';
+	$html .= '<ul class="blogs_dir_recent_posts_list">';
+
+	while ( $query->have_posts() ) {
+		$query->the_post();
+		$permalink = get_permalink();
+
+		$title = get_the_title();
+		if ( '' === $title ) {
+			$title = esc_html__( '(Ohne Titel)', 'blogs-directory' );
+		}
+
+		if ( $title_chars > 0 && function_exists( 'mb_strimwidth' ) ) {
+			$title = mb_strimwidth( $title, 0, $title_chars, '...' );
+		} elseif ( $title_chars > 0 ) {
+			$title = substr( $title, 0, $title_chars );
+		}
+
+		$item = '<li class="blogs_dir_recent_posts_item">';
+
+		if ( $show_avatars ) {
+			$item .= get_avatar( (int) get_the_author_meta( 'ID' ), $avatar_size ) . ' ';
+		}
+
+		$item .= '<a href="' . esc_url( $permalink ) . '" class="blogs_dir_recent_posts_link">' . esc_html( $title ) . '</a>';
+
+		if ( $content_chars > 0 ) {
+			$excerpt = wp_strip_all_tags( get_the_excerpt() );
+			if ( '' === $excerpt ) {
+				$excerpt = wp_strip_all_tags( get_the_content( null, false ) );
+			}
+
+			if ( function_exists( 'mb_strimwidth' ) ) {
+				$excerpt = mb_strimwidth( $excerpt, 0, $content_chars, '...' );
+			} else {
+				$excerpt = substr( $excerpt, 0, $content_chars );
+			}
+
+			if ( '' !== $excerpt ) {
+				$item .= '<br /><span class="blogs_dir_recent_posts_excerpt">' . esc_html( $excerpt ) . '</span>';
+			}
+		}
+
+		$item .= ' <a href="' . esc_url( $permalink ) . '" class="blogs_dir_recent_posts_more">' . esc_html__( 'Zum vollen Beitrag', 'blogs-directory' ) . '</a>';
+
+		$item .= '</li>';
+		$html .= $item;
+	}
+
+	$html .= '</ul></div>';
+
+	wp_reset_postdata();
+	restore_current_blog();
+
+	return $html;
+}
+
+/**
  * Rendert die Landing-Seite des Blogs-Verzeichnisses.
  */
 function blogs_directory_render_landing_content( $content, $blogs_directory, $settings ) {
@@ -429,6 +564,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 				$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 				$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog_title, $settings['blogs_directory_avatar_fallback_order'] );
 				$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
+				$recent_posts_html = blogs_directory_get_recent_posts_html( $blog['blog_id'], $settings );
 
 				$content .= '<tr>';
 					if ( '' !== $avatar_html ) {
@@ -447,6 +583,10 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
                         $blogdescription    = get_blog_option( $blog['blog_id'], 'blogdescription', $blog['domain'] . $blog['path'] );
 						$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . esc_html( $blogdescription ) . '</span>';
                     }
+
+					if ( '' !== $recent_posts_html ) {
+						$content .= $recent_posts_html;
+					}
 
 					$content .= '</td>';
 				$content .= '</tr>';
@@ -585,6 +725,7 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 			$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 			$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog['blogname'], $settings['blogs_directory_avatar_fallback_order'] );
 			$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
+			$recent_posts_html = blogs_directory_get_recent_posts_html( $blog['blog_id'], $settings );
 
 			//=============================//
 			if ($tic_toc == 'toc'){
@@ -610,6 +751,9 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 				$content .= $site_reviews_html . '<br />';
 			}
 			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . esc_html( $blog['blogdescription'] ) . '</span>';
+			if ( '' !== $recent_posts_html ) {
+				$content .= $recent_posts_html;
+			}
 			$content .= '</td>';
 			$content .= '</tr>';
 		}

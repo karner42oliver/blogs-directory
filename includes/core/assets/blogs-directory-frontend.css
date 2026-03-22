@@ -1,0 +1,82 @@
+.blogs_dir_recent_posts {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.blogs_dir_recent_posts_title {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a5a5a;
+}
+
+.blogs_dir_recent_posts_list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blogs_dir_recent_posts_item {
+  margin: 0;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
+  color: #444;
+  list-style: none;
+}
+
+.blogs_dir_recent_posts_list .blogs_dir_recent_posts_item::marker {
+  content: '';
+}
+
+.blogs_dir_recent_posts_list .blogs_dir_recent_posts_item::before {
+  content: none !important;
+  display: none !important;
+}
+
+.blogs_dir_recent_posts_item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.blogs_dir_recent_posts_item .avatar {
+  width: 18px;
+  height: 18px;
+  margin: 0 6px 0 0;
+  border-radius: 50%;
+  vertical-align: text-bottom;
+  object-fit: cover;
+}
+
+.blogs_dir_recent_posts_link {
+  color: #1f4f7b;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.blogs_dir_recent_posts_link:hover,
+.blogs_dir_recent_posts_link:focus {
+  text-decoration: underline;
+}
+
+.blogs_dir_recent_posts_excerpt {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #777;
+}
+
+.blogs_dir_recent_posts_more {
+  margin-left: 6px;
+  font-size: 12px;
+  color: #6f6f6f;
+  text-decoration: underline;
+}
+
+.blogs_dir_recent_posts_more:hover,
+.blogs_dir_recent_posts_more:focus {
+  color: #1f4f7b;
+}
