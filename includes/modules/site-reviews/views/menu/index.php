@@ -1,6 +1,6 @@
 <?php defined( 'WPINC' ) || die; ?>
 
-<div class="wrap">
+<div class="wrap glsr-modern-admin" id="glsr-admin-app">
 
 	<h1 class="page-title"><?= esc_html( get_admin_page_title() ); ?></h1>
 
@@ -26,12 +26,16 @@
 
 	$file = apply_filters( 'site-reviews/addon/views/file', $file, $view, $data );
 
+	echo '<div id="glsr-tab-content" class="glsr-tab-content" aria-live="polite">';
+
 	if( file_exists( $file ) ) {
 		include $file;
 	}
 	else {
 		$log->error( sprintf( 'File not found: %s', $file ) );
 	}
+
+	echo '</div>';
 
 ?>
 

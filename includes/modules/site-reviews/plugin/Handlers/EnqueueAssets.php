@@ -56,6 +56,7 @@ class EnqueueAssets
 	public function enqueueAdmin( Command $command )
 	{
 		$screen = glsr_current_screen();
+		if( !$this->isSiteReviewsAdminScreen( $screen ) )return;
 
 		$dependencies = array_merge( $this->dependencies, ['jquery', 'jquery-ui-sortable', 'underscore', 'wp-util'] );
 
@@ -66,14 +67,29 @@ class EnqueueAssets
 			$command->version
 		);
 
-		if( !$screen || $screen->post_type != App::POST_TYPE )return;
+		wp_enqueue_style(
+			$command->handle . '-modern',
+			$command->url . 'css/site-reviews-admin-modern.css',
+			[$command->handle],
+			$command->version
+		);
+
+		wp_enqueue_script(
+			$command->handle . '-modern',
+			$command->url . 'js/site-reviews-admin-modern.js',
+			[],
+			$command->version,
+			true
+		);
+
+		if( !$this->isSiteReviewsPostTypeScreen( $screen ) )return;
 
 		// Avoid JS conflicts on Add New screens where media-grid may initialize before fields exist.
 		if(
-			$screen->post_type == App::POST_TYPE
+			$this->isSiteReviewsPostTypeScreen( $screen )
 			&& (
-				( $screen->base == 'post' && empty( $_GET['post'] ))
-				|| $screen->base == 'post-new'
+				( $this->getScreenBase( $screen ) == 'post' && empty( $_GET['post'] ))
+				|| $this->getScreenBase( $screen ) == 'post-new'
 			)
 		) {
 			return;
@@ -86,6 +102,91 @@ class EnqueueAssets
 			$command->version,
 			true
 		);
+	}
+
+	/**
+	 * Limit admin assets to Site Reviews related screens.
+	 *
+	 * @param WP_Screen|null $screen
+	 *
+	 * @return bool
+	 */
+	protected function isSiteReviewsAdminScreen( $screen )
+	{
+		if( is_network_admin() ) {
+			return false;
+		}
+
+		if( $this->isSiteReviewsPostTypeScreen( $screen ) ) {
+			return true;
+		}
+
+		$screenId = $this->getScreenId( $screen );
+		if( strpos( $screenId, App::POST_TYPE . '_page_' ) === 0 ) {
+			return true;
+		}
+
+		if( $this->isSiteReviewsPostTypeRequest() || $this->isSiteReviewsSubmenuRequest() ) {
+			return true;
+		}
+
+		$base = $this->getScreenBase( $screen );
+
+		return in_array( $base, ['dashboard', 'widgets'], true );
+	}
+
+	/**
+	 * @param WP_Screen|null $screen
+	 *
+	 * @return bool
+	 */
+	protected function isSiteReviewsPostTypeScreen( $screen )
+	{
+		if( isset( $screen->post_type ) && $screen->post_type == App::POST_TYPE ) {
+			return true;
+		}
+
+		return $this->isSiteReviewsPostTypeRequest();
+	}
+
+	/**
+	 * @return bool
+	 */
+	protected function isSiteReviewsPostTypeRequest()
+	{
+		$postType = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : '';
+
+		return $postType === App::POST_TYPE;
+	}
+
+	/**
+	 * @return bool
+	 */
+	protected function isSiteReviewsSubmenuRequest()
+	{
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+		return in_array( $page, ['settings', 'help', 'addons'], true );
+	}
+
+	/**
+	 * @param WP_Screen|null $screen
+	 *
+	 * @return string
+	 */
+	protected function getScreenId( $screen )
+	{
+		return isset( $screen->id ) ? (string) $screen->id : '';
+	}
+
+	/**
+	 * @param WP_Screen|null $screen
+	 *
+	 * @return string
+	 */
+	protected function getScreenBase( $screen )
+	{
+		return isset( $screen->base ) ? (string) $screen->base : '';
 	}
 
 	/**

@@ -311,7 +311,7 @@ function blogs_directory_render_site_reviews_discussion_field() {
         <input type="checkbox" id="blogs_directory_site_reviews_enabled" name="blogs_directory_site_reviews_enabled" value="1" <?php checked( $enabled, 1 ); ?> />
         <?php _e( 'Site Reviews auf dieser Subsite aktivieren', 'blogs-directory' ); ?>
     </label>
-    <p class="description"><?php _e( 'Diese Option ist nur sichtbar, wenn der Netzwerkmodus auf "Netzwerkweit erlauben" steht.', 'blogs-directory' ); ?></p>
+    <p class="description"><?php _e( 'Gibt Deinen Besuchern und Usern die Möglichkeit, Bewertungen für diese Webseite abzugeben.', 'blogs-directory' ); ?></p>
     <?php
 }
 
