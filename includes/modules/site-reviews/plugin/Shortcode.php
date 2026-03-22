@@ -1,6 +1,6 @@
 <?php
 
-namespace Geminilabs\SiteReviews;
+namespace PsourceLabs\SiteReviews;
 
 use PsourceLabs\SiteReviews\App;
 
