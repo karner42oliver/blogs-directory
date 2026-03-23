@@ -53,6 +53,12 @@ function blogs_directory_site_admin_options() {
 	$blogs_directory_per_page                   = get_site_option('blogs_directory_per_page', '10');
 	$blogs_directory_background_color           = get_site_option('blogs_directory_background_color', '#F2F2EA');
 	$blogs_directory_alternate_background_color = get_site_option('blogs_directory_alternate_background_color', '#FFFFFF');
+    $blogs_directory_background_title_color     = get_site_option('blogs_directory_background_title_color', '#2B261F');
+    $blogs_directory_background_text_color      = get_site_option('blogs_directory_background_text_color', '#5A5A5A');
+    $blogs_directory_background_link_color      = get_site_option('blogs_directory_background_link_color', '#1F4F7B');
+    $blogs_directory_alternate_title_color      = get_site_option('blogs_directory_alternate_title_color', '#2B261F');
+    $blogs_directory_alternate_text_color       = get_site_option('blogs_directory_alternate_text_color', '#5A5A5A');
+    $blogs_directory_alternate_link_color       = get_site_option('blogs_directory_alternate_link_color', '#1F4F7B');
     $blogs_directory_border_color               = get_site_option('blogs_directory_border_color', '#CFD0CB');
     $blogs_directory_hide_blogs                 = get_site_option('blogs_directory_hide_blogs');
     $blogs_directory_title_blogs_page           = get_site_option('blogs_directory_title_blogs_page');
@@ -205,6 +211,36 @@ function blogs_directory_site_admin_options() {
                     <br /><span class="description"><?php _e('Standard','blogs-directory') ?>: #F2F2EA</span></td>
                 </tr>
                 <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Titel-Farbe für Hintergrund 1','blogs-directory') ?></th>
+                    <td>
+                    <div class="bd-color-control">
+                        <input name="blogs_directory_background_title_color" type="color" id="blogs_directory_background_title_color" value="<?php echo esc_attr( $blogs_directory_background_title_color ); ?>" />
+                        <div id="preview_background_title_color" class="bd-color-preview is-text" data-preview-type="text" style="color: <?php echo esc_attr( $blogs_directory_background_title_color ); ?>"></div>
+                        <span id="text_background_title_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_background_title_color ); ?></span>
+                    </div>
+                    <br /><span class="description"><?php _e('Farbe für Blog-Titel in jeder ersten, dritten, fünften usw. Zeile.','blogs-directory'); ?></span></td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Text-Farbe für Hintergrund 1','blogs-directory') ?></th>
+                    <td>
+                    <div class="bd-color-control">
+                        <input name="blogs_directory_background_text_color" type="color" id="blogs_directory_background_text_color" value="<?php echo esc_attr( $blogs_directory_background_text_color ); ?>" />
+                        <div id="preview_background_text_color" class="bd-color-preview is-text" data-preview-type="text" style="color: <?php echo esc_attr( $blogs_directory_background_text_color ); ?>"></div>
+                        <span id="text_background_text_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_background_text_color ); ?></span>
+                    </div>
+                    <br /><span class="description"><?php _e('Farbe für Beschreibung, Bewertungs-Text und weitere Inhalte in diesen Zeilen.','blogs-directory'); ?></span></td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Link-Farbe für Hintergrund 1','blogs-directory') ?></th>
+                    <td>
+                    <div class="bd-color-control">
+                        <input name="blogs_directory_background_link_color" type="color" id="blogs_directory_background_link_color" value="<?php echo esc_attr( $blogs_directory_background_link_color ); ?>" />
+                        <div id="preview_background_link_color" class="bd-color-preview is-text" data-preview-type="text" style="color: <?php echo esc_attr( $blogs_directory_background_link_color ); ?>"></div>
+                        <span id="text_background_link_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_background_link_color ); ?></span>
+                    </div>
+                    <br /><span class="description"><?php _e('Farbe für alle Links in diesen Zeilen.','blogs-directory'); ?></span></td>
+                </tr>
+                <tr valign="top">
                     <th width="33%" scope="row"><?php _e('Alternative Hintergrundfarbe','blogs-directory') ?></th>
                     <td>
                     <div class="bd-color-control">
@@ -213,6 +249,36 @@ function blogs_directory_site_admin_options() {
                         <span id="text_alternate_background_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_alternate_background_color ); ?></span>
                     </div>
                     <br /><span class="description"><?php _e('Standard','blogs-directory') ?>: #FFFFFF</span></td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Titel-Farbe für Hintergrund 2','blogs-directory') ?></th>
+                    <td>
+                    <div class="bd-color-control">
+                        <input name="blogs_directory_alternate_title_color" type="color" id="blogs_directory_alternate_title_color" value="<?php echo esc_attr( $blogs_directory_alternate_title_color ); ?>" />
+                        <div id="preview_alternate_title_color" class="bd-color-preview is-text" data-preview-type="text" style="color: <?php echo esc_attr( $blogs_directory_alternate_title_color ); ?>"></div>
+                        <span id="text_alternate_title_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_alternate_title_color ); ?></span>
+                    </div>
+                    <br /><span class="description"><?php _e('Farbe für Blog-Titel in jeder zweiten, vierten, sechsten usw. Zeile.','blogs-directory'); ?></span></td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Text-Farbe für Hintergrund 2','blogs-directory') ?></th>
+                    <td>
+                    <div class="bd-color-control">
+                        <input name="blogs_directory_alternate_text_color" type="color" id="blogs_directory_alternate_text_color" value="<?php echo esc_attr( $blogs_directory_alternate_text_color ); ?>" />
+                        <div id="preview_alternate_text_color" class="bd-color-preview is-text" data-preview-type="text" style="color: <?php echo esc_attr( $blogs_directory_alternate_text_color ); ?>"></div>
+                        <span id="text_alternate_text_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_alternate_text_color ); ?></span>
+                    </div>
+                    <br /><span class="description"><?php _e('Farbe für Beschreibung, Bewertungs-Text und weitere Inhalte in diesen Zeilen.','blogs-directory'); ?></span></td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Link-Farbe für Hintergrund 2','blogs-directory') ?></th>
+                    <td>
+                    <div class="bd-color-control">
+                        <input name="blogs_directory_alternate_link_color" type="color" id="blogs_directory_alternate_link_color" value="<?php echo esc_attr( $blogs_directory_alternate_link_color ); ?>" />
+                        <div id="preview_alternate_link_color" class="bd-color-preview is-text" data-preview-type="text" style="color: <?php echo esc_attr( $blogs_directory_alternate_link_color ); ?>"></div>
+                        <span id="text_alternate_link_color" class="bd-color-code"><?php echo esc_html( $blogs_directory_alternate_link_color ); ?></span>
+                    </div>
+                    <br /><span class="description"><?php _e('Farbe für alle Links in diesen Zeilen.','blogs-directory'); ?></span></td>
                 </tr>
                 <tr valign="top">
                     <th width="33%" scope="row"><?php _e('Rahmenfarbe','blogs-directory') ?></th>
@@ -328,89 +394,123 @@ function blogs_directory_save_options() {
     $active_tab_raw = isset( $_POST['blogs_directory_active_tab'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_active_tab'] ) ) : 'general';
     $active_tab = in_array( $active_tab_raw, $allowed_tabs, true ) ? $active_tab_raw : 'general';
 
-	$allowed_sort_by = array( 'alphabetically', 'latest', 'last_updated' );
-	$sort_by_raw = isset( $_POST['blogs_directory_sort_by'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_sort_by'] ) ) : 'alphabetically';
-	$sort_by = in_array( $sort_by_raw, $allowed_sort_by, true ) ? $sort_by_raw : 'alphabetically';
+    if ( 'general' === $active_tab ) {
+        $allowed_sort_by = array( 'alphabetically', 'latest', 'last_updated' );
+        $sort_by_raw = isset( $_POST['blogs_directory_sort_by'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_sort_by'] ) ) : 'alphabetically';
+        $sort_by = in_array( $sort_by_raw, $allowed_sort_by, true ) ? $sort_by_raw : 'alphabetically';
 
-	$allowed_per_page = array( '5', '10', '15', '20', '25', '30', '35', '40', '45', '50' );
-	$per_page_raw = isset( $_POST['blogs_directory_per_page'] ) ? (string) absint( wp_unslash( $_POST['blogs_directory_per_page'] ) ) : '10';
-	$per_page = in_array( $per_page_raw, $allowed_per_page, true ) ? $per_page_raw : '10';
+        $allowed_per_page = array( '5', '10', '15', '20', '25', '30', '35', '40', '45', '50' );
+        $per_page_raw = isset( $_POST['blogs_directory_per_page'] ) ? (string) absint( wp_unslash( $_POST['blogs_directory_per_page'] ) ) : '10';
+        $per_page = in_array( $per_page_raw, $allowed_per_page, true ) ? $per_page_raw : '10';
 
-	$background_color = isset( $_POST['blogs_directory_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_background_color'] ) ) : '';
-	$background_color = $background_color ? $background_color : '#F2F2EA';
+        $hide_blogs = array();
+        if ( isset( $_POST['blogs_directory_hide_blogs'] ) && is_array( $_POST['blogs_directory_hide_blogs'] ) ) {
+            $hide_blogs_raw = wp_unslash( $_POST['blogs_directory_hide_blogs'] );
+            $hide_blogs['pro_site'] = ( isset( $hide_blogs_raw['pro_site'] ) && '1' === (string) $hide_blogs_raw['pro_site'] ) ? 1 : 0;
+            $hide_blogs['private'] = ( isset( $hide_blogs_raw['private'] ) && '1' === (string) $hide_blogs_raw['private'] ) ? 1 : 0;
+        }
 
-	$alternate_background_color = isset( $_POST['blogs_directory_alternate_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_alternate_background_color'] ) ) : '';
-	$alternate_background_color = $alternate_background_color ? $alternate_background_color : '#FFFFFF';
+        $include_main_site = isset( $_POST['blogs_directory_include_main_site'] ) ? 1 : 0;
 
-	$border_color = isset( $_POST['blogs_directory_border_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_border_color'] ) ) : '';
-	$border_color = $border_color ? $border_color : '#CFD0CB';
+        $title_raw = isset( $_POST['blogs_directory_title_blogs_page'] ) ? sanitize_text_field( wp_unslash( $_POST['blogs_directory_title_blogs_page'] ) ) : '';
+        $blogs_directory_title_blogs_page = '' !== $title_raw ? $title_raw : 'Netzwerkseiten';
 
-	$hide_blogs = array();
-	if ( isset( $_POST['blogs_directory_hide_blogs'] ) && is_array( $_POST['blogs_directory_hide_blogs'] ) ) {
-		$hide_blogs_raw = wp_unslash( $_POST['blogs_directory_hide_blogs'] );
-		$hide_blogs['pro_site'] = ( isset( $hide_blogs_raw['pro_site'] ) && '1' === (string) $hide_blogs_raw['pro_site'] ) ? 1 : 0;
-		$hide_blogs['private'] = ( isset( $hide_blogs_raw['private'] ) && '1' === (string) $hide_blogs_raw['private'] ) ? 1 : 0;
-	}
+        update_site_option( 'blogs_directory_sort_by', $sort_by );
+        update_site_option( 'blogs_directory_per_page', $per_page );
+        update_site_option( 'blogs_directory_hide_blogs', $hide_blogs );
+        update_site_option( 'blogs_directory_include_main_site', $include_main_site );
+        update_site_option( 'blogs_directory_title_blogs_page', $blogs_directory_title_blogs_page );
 
-	$show_description = isset( $_POST['blogs_directory_show_description'] ) ? 1 : 0;
-    $show_site_reviews = isset( $_POST['blogs_directory_show_site_reviews'] ) ? 1 : 0;
-    $show_recent_posts = isset( $_POST['blogs_directory_show_recent_posts'] ) ? 1 : 0;
-    $recent_posts_number = isset( $_POST['blogs_directory_recent_posts_number'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_number'] ) ) : 3;
-    $recent_posts_number = max( 1, min( 10, $recent_posts_number ) );
-    $recent_posts_title_chars = isset( $_POST['blogs_directory_recent_posts_title_chars'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_title_chars'] ) ) : 80;
-    $recent_posts_title_chars = min( 200, $recent_posts_title_chars );
-    $recent_posts_content_chars = isset( $_POST['blogs_directory_recent_posts_content_chars'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_content_chars'] ) ) : 0;
-    $recent_posts_content_chars = min( 500, $recent_posts_content_chars );
-    $recent_posts_show_avatars = isset( $_POST['blogs_directory_recent_posts_show_avatars'] ) ? 1 : 0;
-    $recent_posts_avatar_size = isset( $_POST['blogs_directory_recent_posts_avatar_size'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_avatar_size'] ) ) : 24;
-    $recent_posts_avatar_size = max( 16, min( 96, $recent_posts_avatar_size ) );
-    $recent_posts_post_type_raw = isset( $_POST['blogs_directory_recent_posts_post_type'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_recent_posts_post_type'] ) ) : 'post';
-    $recent_posts_post_type = '' !== $recent_posts_post_type_raw ? $recent_posts_post_type_raw : 'post';
-    $include_main_site = isset( $_POST['blogs_directory_include_main_site'] ) ? 1 : 0;
+        global $wpdb, $blogs_directory_base;
+        $page_count = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
+                $blogs_directory_base,
+                'page'
+            )
+        );
 
-    $allowed_site_reviews_modes = array( 'off', 'allow', 'force' );
-    $site_reviews_mode_raw = isset( $_POST['blogs_directory_site_reviews_mode'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_site_reviews_mode'] ) ) : 'force';
-    $site_reviews_mode = in_array( $site_reviews_mode_raw, $allowed_site_reviews_modes, true ) ? $site_reviews_mode_raw : 'force';
+        if ( 1 == $page_count ) {
+            $wpdb->query( $wpdb->prepare( "UPDATE " . $wpdb->posts . " SET post_title = %s WHERE post_name = %s AND post_type = 'page'", $blogs_directory_title_blogs_page, $blogs_directory_base ) );
+        }
+    }
 
-    $allowed_fallback_orders = array( 'site_icon_logo', 'logo_site_icon' );
-    $fallback_order_raw = isset( $_POST['blogs_directory_avatar_fallback_order'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_avatar_fallback_order'] ) ) : 'site_icon_logo';
-    $avatar_fallback_order = in_array( $fallback_order_raw, $allowed_fallback_orders, true ) ? $fallback_order_raw : 'site_icon_logo';
+    if ( 'frontend' === $active_tab ) {
+        $allowed_fallback_orders = array( 'site_icon_logo', 'logo_site_icon' );
+        $fallback_order_raw = isset( $_POST['blogs_directory_avatar_fallback_order'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_avatar_fallback_order'] ) ) : 'site_icon_logo';
+        $avatar_fallback_order = in_array( $fallback_order_raw, $allowed_fallback_orders, true ) ? $fallback_order_raw : 'site_icon_logo';
 
-	$title_raw = isset( $_POST['blogs_directory_title_blogs_page'] ) ? sanitize_text_field( wp_unslash( $_POST['blogs_directory_title_blogs_page'] ) ) : '';
-	$blogs_directory_title_blogs_page = '' !== $title_raw ? $title_raw : 'Sites';
+        $background_color = isset( $_POST['blogs_directory_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_background_color'] ) ) : '';
+        $background_color = $background_color ? $background_color : '#F2F2EA';
 
-	update_site_option( 'blogs_directory_sort_by', $sort_by );
-	update_site_option( 'blogs_directory_per_page', $per_page );
-	update_site_option( 'blogs_directory_background_color', $background_color );
-	update_site_option( 'blogs_directory_alternate_background_color', $alternate_background_color );
-	update_site_option( 'blogs_directory_border_color', $border_color );
-	update_site_option( 'blogs_directory_hide_blogs', $hide_blogs );
-    update_site_option( 'blogs_directory_include_main_site', $include_main_site );
-	update_site_option( 'blogs_directory_show_description', $show_description );
-    update_site_option( 'blogs_directory_show_site_reviews', $show_site_reviews );
-    update_site_option( 'blogs_directory_show_recent_posts', $show_recent_posts );
-    update_site_option( 'blogs_directory_recent_posts_number', $recent_posts_number );
-    update_site_option( 'blogs_directory_recent_posts_title_chars', $recent_posts_title_chars );
-    update_site_option( 'blogs_directory_recent_posts_content_chars', $recent_posts_content_chars );
-    update_site_option( 'blogs_directory_recent_posts_show_avatars', $recent_posts_show_avatars );
-    update_site_option( 'blogs_directory_recent_posts_avatar_size', $recent_posts_avatar_size );
-    update_site_option( 'blogs_directory_recent_posts_post_type', $recent_posts_post_type );
-    update_site_option( 'blogs_directory_site_reviews_mode', $site_reviews_mode );
-    update_site_option( 'blogs_directory_avatar_fallback_order', $avatar_fallback_order );
-	update_site_option( 'blogs_directory_title_blogs_page', $blogs_directory_title_blogs_page );
+        $alternate_background_color = isset( $_POST['blogs_directory_alternate_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_alternate_background_color'] ) ) : '';
+        $alternate_background_color = $alternate_background_color ? $alternate_background_color : '#FFFFFF';
 
-	global $wpdb, $blogs_directory_base;
-    $page_count = (int) $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
-            $blogs_directory_base,
-            'page'
-        )
-    );
+        $background_title_color = isset( $_POST['blogs_directory_background_title_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_background_title_color'] ) ) : '';
+        $background_title_color = $background_title_color ? $background_title_color : '#2B261F';
 
-	if ( 1 == $page_count ) {
-		$wpdb->query( $wpdb->prepare( "UPDATE " . $wpdb->posts . " SET post_title = %s WHERE post_name = %s AND post_type = 'page'", $blogs_directory_title_blogs_page, $blogs_directory_base ) );
-	}
+        $background_text_color = isset( $_POST['blogs_directory_background_text_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_background_text_color'] ) ) : '';
+        $background_text_color = $background_text_color ? $background_text_color : '#5A5A5A';
+
+        $background_link_color = isset( $_POST['blogs_directory_background_link_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_background_link_color'] ) ) : '';
+        $background_link_color = $background_link_color ? $background_link_color : '#1F4F7B';
+
+        $alternate_title_color = isset( $_POST['blogs_directory_alternate_title_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_alternate_title_color'] ) ) : '';
+        $alternate_title_color = $alternate_title_color ? $alternate_title_color : '#2B261F';
+
+        $alternate_text_color = isset( $_POST['blogs_directory_alternate_text_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_alternate_text_color'] ) ) : '';
+        $alternate_text_color = $alternate_text_color ? $alternate_text_color : '#5A5A5A';
+
+        $alternate_link_color = isset( $_POST['blogs_directory_alternate_link_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_alternate_link_color'] ) ) : '';
+        $alternate_link_color = $alternate_link_color ? $alternate_link_color : '#1F4F7B';
+
+        $border_color = isset( $_POST['blogs_directory_border_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_border_color'] ) ) : '';
+        $border_color = $border_color ? $border_color : '#CFD0CB';
+
+        $show_description = isset( $_POST['blogs_directory_show_description'] ) ? 1 : 0;
+        $show_recent_posts = isset( $_POST['blogs_directory_show_recent_posts'] ) ? 1 : 0;
+        $recent_posts_number = isset( $_POST['blogs_directory_recent_posts_number'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_number'] ) ) : 3;
+        $recent_posts_number = max( 1, min( 10, $recent_posts_number ) );
+        $recent_posts_title_chars = isset( $_POST['blogs_directory_recent_posts_title_chars'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_title_chars'] ) ) : 80;
+        $recent_posts_title_chars = min( 200, $recent_posts_title_chars );
+        $recent_posts_content_chars = isset( $_POST['blogs_directory_recent_posts_content_chars'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_content_chars'] ) ) : 0;
+        $recent_posts_content_chars = min( 500, $recent_posts_content_chars );
+        $recent_posts_show_avatars = isset( $_POST['blogs_directory_recent_posts_show_avatars'] ) ? 1 : 0;
+        $recent_posts_avatar_size = isset( $_POST['blogs_directory_recent_posts_avatar_size'] ) ? absint( wp_unslash( $_POST['blogs_directory_recent_posts_avatar_size'] ) ) : 24;
+        $recent_posts_avatar_size = max( 16, min( 96, $recent_posts_avatar_size ) );
+        $recent_posts_post_type_raw = isset( $_POST['blogs_directory_recent_posts_post_type'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_recent_posts_post_type'] ) ) : 'post';
+        $recent_posts_post_type = '' !== $recent_posts_post_type_raw ? $recent_posts_post_type_raw : 'post';
+
+        update_site_option( 'blogs_directory_avatar_fallback_order', $avatar_fallback_order );
+        update_site_option( 'blogs_directory_background_color', $background_color );
+        update_site_option( 'blogs_directory_alternate_background_color', $alternate_background_color );
+        update_site_option( 'blogs_directory_background_title_color', $background_title_color );
+        update_site_option( 'blogs_directory_background_text_color', $background_text_color );
+        update_site_option( 'blogs_directory_background_link_color', $background_link_color );
+        update_site_option( 'blogs_directory_alternate_title_color', $alternate_title_color );
+        update_site_option( 'blogs_directory_alternate_text_color', $alternate_text_color );
+        update_site_option( 'blogs_directory_alternate_link_color', $alternate_link_color );
+        update_site_option( 'blogs_directory_border_color', $border_color );
+        update_site_option( 'blogs_directory_show_description', $show_description );
+        update_site_option( 'blogs_directory_show_recent_posts', $show_recent_posts );
+        update_site_option( 'blogs_directory_recent_posts_number', $recent_posts_number );
+        update_site_option( 'blogs_directory_recent_posts_title_chars', $recent_posts_title_chars );
+        update_site_option( 'blogs_directory_recent_posts_content_chars', $recent_posts_content_chars );
+        update_site_option( 'blogs_directory_recent_posts_show_avatars', $recent_posts_show_avatars );
+        update_site_option( 'blogs_directory_recent_posts_avatar_size', $recent_posts_avatar_size );
+        update_site_option( 'blogs_directory_recent_posts_post_type', $recent_posts_post_type );
+    }
+
+    if ( 'reviews' === $active_tab ) {
+        $show_site_reviews = isset( $_POST['blogs_directory_show_site_reviews'] ) ? 1 : 0;
+
+        $allowed_site_reviews_modes = array( 'off', 'allow', 'force' );
+        $site_reviews_mode_raw = isset( $_POST['blogs_directory_site_reviews_mode'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_site_reviews_mode'] ) ) : 'force';
+        $site_reviews_mode = in_array( $site_reviews_mode_raw, $allowed_site_reviews_modes, true ) ? $site_reviews_mode_raw : 'force';
+
+        update_site_option( 'blogs_directory_show_site_reviews', $show_site_reviews );
+        update_site_option( 'blogs_directory_site_reviews_mode', $site_reviews_mode );
+    }
 
     wp_safe_redirect( add_query_arg( array( 'page' => 'blog-directory-settings', 'tab' => $active_tab, 'updated' => 'true', 'dmsg' => 'settings-saved' ), network_admin_url( 'settings.php' ) ) );
 	exit;

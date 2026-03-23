@@ -57,6 +57,12 @@ function blogs_directory_output($content) {
 function blogs_directory_get_output_settings() {
 	$background = sanitize_hex_color( get_site_option('blogs_directory_background_color', '#F2F2EA') );
 	$alternate_background = sanitize_hex_color( get_site_option('blogs_directory_alternate_background_color', '#FFFFFF') );
+	$background_title = sanitize_hex_color( get_site_option('blogs_directory_background_title_color', '#2B261F') );
+	$background_text = sanitize_hex_color( get_site_option('blogs_directory_background_text_color', '#5A5A5A') );
+	$background_link = sanitize_hex_color( get_site_option('blogs_directory_background_link_color', '#1F4F7B') );
+	$alternate_title = sanitize_hex_color( get_site_option('blogs_directory_alternate_title_color', '#2B261F') );
+	$alternate_text = sanitize_hex_color( get_site_option('blogs_directory_alternate_text_color', '#5A5A5A') );
+	$alternate_link = sanitize_hex_color( get_site_option('blogs_directory_alternate_link_color', '#1F4F7B') );
 	$border = sanitize_hex_color( get_site_option('blogs_directory_border_color', '#CFD0CB') );
 
 	return array(
@@ -64,6 +70,12 @@ function blogs_directory_get_output_settings() {
 		'blogs_directory_per_page'                   => get_site_option('blogs_directory_per_page', '10'),
 		'blogs_directory_background_color'           => $background ? $background : '#F2F2EA',
 		'blogs_directory_alternate_background_color' => $alternate_background ? $alternate_background : '#FFFFFF',
+		'blogs_directory_background_title_color'     => $background_title ? $background_title : '#2B261F',
+		'blogs_directory_background_text_color'      => $background_text ? $background_text : '#5A5A5A',
+		'blogs_directory_background_link_color'      => $background_link ? $background_link : '#1F4F7B',
+		'blogs_directory_alternate_title_color'      => $alternate_title ? $alternate_title : '#2B261F',
+		'blogs_directory_alternate_text_color'       => $alternate_text ? $alternate_text : '#5A5A5A',
+		'blogs_directory_alternate_link_color'       => $alternate_link ? $alternate_link : '#1F4F7B',
 		'blogs_directory_border_color'               => $border ? $border : '#CFD0CB',
 		'blogs_directory_title_blogs_page'           => get_site_option('blogs_directory_title_blogs_page'),
 		'blogs_directory_show_description'           => get_site_option('blogs_directory_show_description'),
@@ -79,6 +91,45 @@ function blogs_directory_get_output_settings() {
 		'blogs_directory_include_main_site'          => (int) get_site_option('blogs_directory_include_main_site', 1),
 		'blogs_directory_hide_blogs'                 => get_site_option( 'blogs_directory_hide_blogs' ),
 	);
+}
+
+/**
+ * Liefert die Farbpalette fuer eine Verzeichniszeile.
+ */
+function blogs_directory_get_row_palette( $use_alternate, array $settings ) {
+	if ( $use_alternate ) {
+		return array(
+			'background' => $settings['blogs_directory_alternate_background_color'],
+			'title'      => $settings['blogs_directory_alternate_title_color'],
+			'text'       => $settings['blogs_directory_alternate_text_color'],
+			'link'       => $settings['blogs_directory_alternate_link_color'],
+		);
+	}
+
+	return array(
+		'background' => $settings['blogs_directory_background_color'],
+		'title'      => $settings['blogs_directory_background_title_color'],
+		'text'       => $settings['blogs_directory_background_text_color'],
+		'link'       => $settings['blogs_directory_background_link_color'],
+	);
+}
+
+/**
+ * Baut die CSS-Variablen fuer eine Verzeichniszeile.
+ */
+function blogs_directory_get_row_style_attr( array $palette, $extra = '' ) {
+	$style = 'background-color:' . $palette['background'] . ';';
+	$style .= '--bd-row-bg:' . $palette['background'] . ';';
+	$style .= '--bd-row-title:' . $palette['title'] . ';';
+	$style .= '--bd-row-text:' . $palette['text'] . ';';
+	$style .= '--bd-row-link:' . $palette['link'] . ';';
+	$style .= 'color:' . $palette['text'] . ';';
+
+	if ( '' !== $extra ) {
+		$style .= $extra;
+	}
+
+	return esc_attr( $style );
 }
 
 /**
@@ -303,19 +354,18 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 
 	$blog_id = absint( $blog_id );
 	if ( $blog_id < 1 ) {
-		return array(
-			'count' => 0,
-			'average' => 0.0,
-		);
+		return array( 'count' => 0, 'average' => 0.0 );
 	}
 
 	if ( isset( $runtime_cache[ $blog_id ] ) ) {
 		return $runtime_cache[ $blog_id ];
 	}
 
-	$cache_key = 'blogs_directory_reviews_' . $blog_id;
+	// Nur echte Ergebnisse (count > 0) aus dem Transient-Cache laden.
+	// Nullergebnisse werden NICHT gecacht, damit spätere Reviews sofort sichtbar werden.
+	$cache_key = 'blogs_directory_reviews_v2_' . $blog_id;
 	$cached = get_site_transient( $cache_key );
-	if ( is_array( $cached ) && isset( $cached['count'], $cached['average'] ) ) {
+	if ( is_array( $cached ) && isset( $cached['count'] ) && $cached['count'] > 0 ) {
 		$runtime_cache[ $blog_id ] = $cached;
 		return $cached;
 	}
@@ -323,16 +373,17 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 	switch_to_blog( $blog_id );
 
 	global $wpdb;
-	$summary = $wpdb->get_row(
+	// Direktes SQL – zuverlässig nach switch_to_blog da $wpdb->posts/$wpdb->postmeta aktualisiert werden.
+	$row = $wpdb->get_row(
 		$wpdb->prepare(
-			"SELECT COUNT(pm.meta_value) AS review_count, AVG(CAST(pm.meta_value AS DECIMAL(10,2))) AS review_average
+			"SELECT COUNT(DISTINCT p.ID) AS review_count,
+			        AVG(CAST(pm.meta_value AS DECIMAL(10,2))) AS review_average
 			 FROM {$wpdb->posts} p
 			 INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
 			 WHERE p.post_type = %s
 			   AND p.post_status = %s
 			   AND pm.meta_key = %s
-			   AND CAST(pm.meta_value AS DECIMAL(10,2)) >= 1
-			   AND CAST(pm.meta_value AS DECIMAL(10,2)) <= 5",
+			   AND CAST(pm.meta_value AS DECIMAL(10,2)) BETWEEN 1 AND 5",
 			'site-review',
 			'publish',
 			'rating'
@@ -341,12 +392,19 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 
 	restore_current_blog();
 
+	$count   = isset( $row->review_count ) ? absint( $row->review_count ) : 0;
+	$average = isset( $row->review_average ) ? (float) $row->review_average : 0.0;
+
 	$result = array(
-		'count' => isset( $summary->review_count ) ? absint( $summary->review_count ) : 0,
-		'average' => isset( $summary->review_average ) ? (float) $summary->review_average : 0.0,
+		'count'   => $count,
+		'average' => $average,
 	);
 
-	set_site_transient( $cache_key, $result, 15 * MINUTE_IN_SECONDS );
+	// Nur cachen wenn wirklich Bewertungen da sind.
+	if ( $count > 0 ) {
+		set_site_transient( $cache_key, $result, 15 * MINUTE_IN_SECONDS );
+	}
+
 	$runtime_cache[ $blog_id ] = $result;
 
 	return $result;
@@ -355,7 +413,7 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 /**
  * Rendert Bewertungs-Text fuer eine Site-Zeile.
  */
-function blogs_directory_get_site_reviews_html( $blog_id ) {
+function blogs_directory_get_site_reviews_html( $blog_id, $text_color = '#5A5A5A' ) {
 	$summary = blogs_directory_get_site_reviews_summary( $blog_id );
 
 	if ( $summary['count'] < 1 ) {
@@ -369,7 +427,7 @@ function blogs_directory_get_site_reviews_html( $blog_id ) {
 		$summary['count']
 	);
 
-	return '<span class="blogs_dir_site_reviews" style="font-size: 12px; color: #5A5A5A; font-weight: 600;">' . esc_html( $rating_text ) . '</span>';
+	return '<span class="blogs_dir_site_reviews" style="font-size: 12px; color: ' . esc_attr( $text_color ) . '; font-weight: 600;">' . esc_html( $rating_text ) . '</span>';
 }
 
 /**
@@ -449,9 +507,13 @@ function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
 		$item .= '<a href="' . esc_url( $permalink ) . '" class="blogs_dir_recent_posts_link">' . esc_html( $title ) . '</a>';
 
 		if ( $content_chars > 0 ) {
-			$excerpt = wp_strip_all_tags( get_the_excerpt() );
+			// Zuerst manuell gesetzten Excerpt versuchen (enthält keinen More-Tag-Text)
+			$excerpt = wp_strip_all_tags( get_post_field( 'post_excerpt', get_the_ID() ) );
 			if ( '' === $excerpt ) {
-				$excerpt = wp_strip_all_tags( get_the_content( null, false ) );
+				// Fallback: rohen post_content nehmen, alles ab <!--more ...--> abschneiden
+				$raw = get_post_field( 'post_content', get_the_ID() );
+				$raw = preg_replace( '/<!--more[^>]*-->.*$/s', '', $raw );
+				$excerpt = wp_strip_all_tags( apply_filters( 'the_content', $raw ) );
 			}
 
 			if ( function_exists( 'mb_strimwidth' ) ) {
@@ -555,25 +617,21 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 				} else {
 					$tic_toc = 'toc';
 				}
-				if ($tic_toc == 'tic'){
-					$bg_color = $settings['blogs_directory_alternate_background_color'];
-				} else {
-					$bg_color = $settings['blogs_directory_background_color'];
-				}
+				$row_palette = blogs_directory_get_row_palette( 'tic' === $tic_toc, $settings );
 				//=============================//
 				$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 				$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog_title, $settings['blogs_directory_avatar_fallback_order'] );
-				$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
+				$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'], $row_palette['text'] ) : '';
 				$recent_posts_html = blogs_directory_get_recent_posts_html( $blog['blog_id'], $settings );
 
 				$content .= '<tr>';
 					if ( '' !== $avatar_html ) {
-						$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px;" valign="top" width="10%"><center><a style="text-decoration:none;" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
+						$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"><center><a style="text-decoration:none; color:' . esc_attr( $row_palette['link'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
 					} else {
-						$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px;" valign="top" width="10%"></td>';
+						$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
 					}
-					$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
-					$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . $safe_blog_title . '</a><br />';
+					$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">';
+					$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px; color:' . esc_attr( $row_palette['title'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $safe_blog_title . '</a><br />';
 					if ( '' !== $site_reviews_html ) {
 						$content .= $site_reviews_html . '<br />';
 					}
@@ -581,7 +639,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
                     //show description for blog
                     if ( 1 == $settings['blogs_directory_show_description'] ) {
                         $blogdescription    = get_blog_option( $blog['blog_id'], 'blogdescription', $blog['domain'] . $blog['path'] );
-						$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . esc_html( $blogdescription ) . '</span>';
+						$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: ' . esc_attr( $row_palette['text'] ) . ';" >' . esc_html( $blogdescription ) . '</span>';
                     }
 
 					if ( '' !== $recent_posts_html ) {
@@ -724,7 +782,6 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 		foreach ($blogs as $blog){
 			$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 			$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog['blogname'], $settings['blogs_directory_avatar_fallback_order'] );
-			$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'] ) : '';
 			$recent_posts_html = blogs_directory_get_recent_posts_html( $blog['blog_id'], $settings );
 
 			//=============================//
@@ -733,24 +790,21 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 			} else {
 				$tic_toc = 'toc';
 			}
-			if ($tic_toc == 'tic'){
-				$bg_color = $settings['blogs_directory_alternate_background_color'];
-			} else {
-				$bg_color = $settings['blogs_directory_background_color'];
-			}
+			$row_palette = blogs_directory_get_row_palette( 'tic' === $tic_toc, $settings );
+			$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'], $row_palette['text'] ) : '';
 			//=============================//
 			$content .= '<tr>';
 			if ( '' !== $avatar_html ) {
-				$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px;" valign="top" width="10%"><center><a style="text-decoration:none;" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
+				$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"><center><a style="text-decoration:none; color:' . esc_attr( $row_palette['link'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
 			} else {
-				$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px;" valign="top" width="10%"></td>';
+				$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
 			}
-			$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
-			$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px;" href="' . esc_url( $blog_url ) . '">' . esc_html( $blog['blogname'] ) . '</a><br />';
+			$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">';
+			$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px; color:' . esc_attr( $row_palette['title'] ) . ';" href="' . esc_url( $blog_url ) . '">' . esc_html( $blog['blogname'] ) . '</a><br />';
 			if ( '' !== $site_reviews_html ) {
 				$content .= $site_reviews_html . '<br />';
 			}
-			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: #9D88B0" >' . esc_html( $blog['blogdescription'] ) . '</span>';
+			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: ' . esc_attr( $row_palette['text'] ) . ';" >' . esc_html( $blog['blogdescription'] ) . '</span>';
 			if ( '' !== $recent_posts_html ) {
 				$content .= $recent_posts_html;
 			}
@@ -758,9 +812,10 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 			$content .= '</tr>';
 		}
 	} else {
+		$row_palette = blogs_directory_get_row_palette( false, $settings );
 		$content .= '<tr>';
-		$content .= '<td style="background-color:' . $settings['blogs_directory_background_color'] . '; padding-top:10px;" valign="top" width="10%"></td>';
-		$content .= '<td style="background-color:' . $settings['blogs_directory_background_color'] . ';" width="90%">' . __('Keine Ergebnisse...','blogs-directory') . '</td>';
+		$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
+		$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">' . __('Keine Ergebnisse...','blogs-directory') . '</td>';
 		$content .= '</tr>';
 	}
 	//=================================//

@@ -22,6 +22,12 @@
     var colorInputs = [
       { input: 'blogs_directory_background_color', preview: 'preview_background_color', text: 'text_background_color' },
       { input: 'blogs_directory_alternate_background_color', preview: 'preview_alternate_background_color', text: 'text_alternate_background_color' },
+      { input: 'blogs_directory_background_title_color', preview: 'preview_background_title_color', text: 'text_background_title_color' },
+      { input: 'blogs_directory_background_text_color', preview: 'preview_background_text_color', text: 'text_background_text_color' },
+      { input: 'blogs_directory_background_link_color', preview: 'preview_background_link_color', text: 'text_background_link_color' },
+      { input: 'blogs_directory_alternate_title_color', preview: 'preview_alternate_title_color', text: 'text_alternate_title_color' },
+      { input: 'blogs_directory_alternate_text_color', preview: 'preview_alternate_text_color', text: 'text_alternate_text_color' },
+      { input: 'blogs_directory_alternate_link_color', preview: 'preview_alternate_link_color', text: 'text_alternate_link_color' },
       { input: 'blogs_directory_border_color', preview: 'preview_border_color', text: 'text_border_color' }
     ];
 
@@ -40,6 +46,8 @@
 
         if (preview.dataset.previewType === 'border') {
           preview.style.borderColor = color;
+        } else if (preview.dataset.previewType === 'text') {
+          preview.style.color = color;
         } else {
           preview.style.backgroundColor = color;
         }
