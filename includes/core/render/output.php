@@ -80,6 +80,7 @@ function blogs_directory_get_output_settings() {
 		'blogs_directory_title_blogs_page'           => get_site_option('blogs_directory_title_blogs_page'),
 		'blogs_directory_show_description'           => get_site_option('blogs_directory_show_description'),
 		'blogs_directory_avatar_fallback_order'      => get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo'),
+		'blogs_directory_layout_mode'                => get_site_option('blogs_directory_layout_mode', 'list'),
 		'blogs_directory_show_site_reviews'          => (int) get_site_option('blogs_directory_show_site_reviews', 0),
 		'blogs_directory_show_recent_posts'          => (int) get_site_option('blogs_directory_show_recent_posts', 0),
 		'blogs_directory_recent_posts_number'        => (int) get_site_option('blogs_directory_recent_posts_number', 3),
@@ -130,6 +131,54 @@ function blogs_directory_get_row_style_attr( array $palette, $extra = '' ) {
 	}
 
 	return esc_attr( $style );
+}
+
+/**
+ * Liefert den konfigurierten Layout-Modus des Verzeichnisses.
+ */
+function blogs_directory_get_layout_mode( array $settings ) {
+	$layout_mode = isset( $settings['blogs_directory_layout_mode'] ) ? (string) $settings['blogs_directory_layout_mode'] : 'list';
+
+	return in_array( $layout_mode, array( 'list', 'grid' ), true ) ? $layout_mode : 'list';
+}
+
+/**
+ * Rendert einen Blog-Eintrag als Grid-Karte.
+ */
+function blogs_directory_render_grid_item( array $args ) {
+	$palette = $args['palette'];
+	$style = blogs_directory_get_row_style_attr(
+		$palette,
+		'border:1px solid ' . $args['border_color'] . ';border-radius:12px;padding:18px;'
+	);
+
+	$html = '<article class="blogs_directory_grid_item" style="' . $style . '">';
+	$html .= '<div class="blogs_directory_grid_header">';
+
+	if ( '' !== $args['avatar_html'] ) {
+		$html .= '<div class="blogs_directory_grid_avatar"><a style="text-decoration:none; color:' . esc_attr( $palette['link'] ) . ';" href="' . esc_url( $args['blog_url'] ) . '">' . $args['avatar_html'] . '</a></div>';
+	}
+
+	$html .= '<div class="blogs_directory_grid_body">';
+	$html .= '<a class="blogs_directory_grid_title" style="color:' . esc_attr( $palette['title'] ) . ';" href="' . esc_url( $args['blog_url'] ) . '">' . esc_html( $args['blog_title'] ) . '</a>';
+
+	if ( '' !== $args['site_reviews_html'] ) {
+		$html .= '<div class="blogs_directory_grid_reviews">' . $args['site_reviews_html'] . '</div>';
+	}
+
+	if ( ! empty( $args['show_description'] ) && '' !== $args['blog_description'] ) {
+		$html .= '<div class="blogs_directory_grid_description" style="color:' . esc_attr( $palette['text'] ) . ';">' . esc_html( $args['blog_description'] ) . '</div>';
+	}
+
+	if ( '' !== $args['recent_posts_html'] ) {
+		$html .= $args['recent_posts_html'];
+	}
+
+	$html .= '</div>';
+	$html .= '</div>';
+	$html .= '</article>';
+
+	return $html;
 }
 
 /**
@@ -546,6 +595,7 @@ function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
  */
 function blogs_directory_render_landing_content( $content, $blogs_directory, $settings ) {
 	global $wpdb, $current_site;
+	$layout_mode = blogs_directory_get_layout_mode( $settings );
 
 	$search_form_content = blogs_directory_search_form_output('', $blogs_directory['phrase']);
 	$navigation_content = blogs_directory_landing_navigation_output('', $settings['blogs_directory_per_page'], $blogs_directory['page']);
@@ -553,11 +603,17 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 	$content .= '<br />';
 	$content .= $navigation_content;
 	$content .= '<div style="float:left; width:100%">';
-	$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="" class="blogs_directory_table">';
+	if ( 'grid' === $layout_mode ) {
+		$content .= '<div class="blogs_directory_grid_wrap">';
+		$content .= '<div class="blogs_directory_grid_heading" style="background-color:' . esc_attr( $settings['blogs_directory_background_color'] ) . '; border:1px solid ' . esc_attr( $settings['blogs_directory_border_color'] ) . ';"><h2>' . esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</h2></div>';
+		$content .= '<div class="blogs_directory_grid">';
+	} else {
+		$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="" class="blogs_directory_table">';
 		$content .= '<tr>';
 			$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="10%"> </th>';
 			$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><h2>' .  esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</h2></center></th>';
 		$content .= '</tr>';
+	}
 		//=================================//
 		$tic_toc = 'toc';
 		//=================================//
@@ -622,36 +678,57 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 				$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 				$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog_title, $settings['blogs_directory_avatar_fallback_order'] );
 				$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'], $row_palette['text'] ) : '';
+				$blog_description = get_blog_option( $blog['blog_id'], 'blogdescription', $blog['domain'] . $blog['path'] );
 				$recent_posts_html = blogs_directory_get_recent_posts_html( $blog['blog_id'], $settings );
 
-				$content .= '<tr>';
-					if ( '' !== $avatar_html ) {
-						$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"><center><a style="text-decoration:none; color:' . esc_attr( $row_palette['link'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
-					} else {
-						$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
-					}
-					$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">';
-					$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px; color:' . esc_attr( $row_palette['title'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $safe_blog_title . '</a><br />';
-					if ( '' !== $site_reviews_html ) {
-						$content .= $site_reviews_html . '<br />';
-					}
+				if ( 'grid' === $layout_mode ) {
+					$content .= blogs_directory_render_grid_item(
+						array(
+							'palette'          => $row_palette,
+							'border_color'     => $settings['blogs_directory_border_color'],
+							'avatar_html'      => $avatar_html,
+							'blog_url'         => $blog_url,
+							'blog_title'       => $blog_title,
+							'blog_description' => $blog_description,
+							'show_description' => 1 == $settings['blogs_directory_show_description'],
+							'site_reviews_html'=> $site_reviews_html,
+							'recent_posts_html'=> $recent_posts_html,
+						)
+					);
+				} else {
+					$content .= '<tr>';
+						if ( '' !== $avatar_html ) {
+							$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"><center><a style="text-decoration:none; color:' . esc_attr( $row_palette['link'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
+						} else {
+							$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
+						}
+						$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">';
+						$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px; color:' . esc_attr( $row_palette['title'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $safe_blog_title . '</a><br />';
+						if ( '' !== $site_reviews_html ) {
+							$content .= $site_reviews_html . '<br />';
+						}
 
                     //show description for blog
                     if ( 1 == $settings['blogs_directory_show_description'] ) {
-                        $blogdescription    = get_blog_option( $blog['blog_id'], 'blogdescription', $blog['domain'] . $blog['path'] );
-						$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: ' . esc_attr( $row_palette['text'] ) . ';" >' . esc_html( $blogdescription ) . '</span>';
+							$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: ' . esc_attr( $row_palette['text'] ) . ';" >' . esc_html( $blog_description ) . '</span>';
                     }
 
-					if ( '' !== $recent_posts_html ) {
-						$content .= $recent_posts_html;
-					}
+						if ( '' !== $recent_posts_html ) {
+							$content .= $recent_posts_html;
+						}
 
-					$content .= '</td>';
-				$content .= '</tr>';
+						$content .= '</td>';
+					$content .= '</tr>';
+				}
 			}
 			//=================================//
 		}
-	$content .= '</table>';
+	if ( 'grid' === $layout_mode ) {
+		$content .= '</div>';
+		$content .= '</div>';
+	} else {
+		$content .= '</table>';
+	}
 	$content .= '</div>';
 	$content .= $navigation_content;
 
@@ -663,6 +740,7 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
  */
 function blogs_directory_render_search_content( $content, $blogs_directory, $settings ) {
 	global $wpdb, $current_site;
+	$layout_mode = blogs_directory_get_layout_mode( $settings );
 
 	if ($blogs_directory['page'] == 1){
 		$start = 0;
@@ -770,11 +848,17 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 		$content .= $navigation_content;
 	}
 	$content .= '<div style="float:left; width:100%">';
-	$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="" class="blogs_directory_search_table">';
-	$content .= '<tr>';
-	$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="10%"> </td>';
-	$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' .  esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</strong></center></td>';
-	$content .= '</tr>';
+	if ( 'grid' === $layout_mode ) {
+		$content .= '<div class="blogs_directory_grid_wrap">';
+		$content .= '<div class="blogs_directory_grid_heading" style="background-color:' . esc_attr( $settings['blogs_directory_background_color'] ) . '; border:1px solid ' . esc_attr( $settings['blogs_directory_border_color'] ) . ';"><strong>' . esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</strong></div>';
+		$content .= '<div class="blogs_directory_grid">';
+	} else {
+		$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="" class="blogs_directory_search_table">';
+		$content .= '<tr>';
+		$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="10%"> </td>';
+		$content .= '<th style="background-color:' . $settings['blogs_directory_background_color'] . '; border-bottom-style:solid; border-bottom-color:' . $settings['blogs_directory_border_color'] . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' .  esc_html( $settings['blogs_directory_title_blogs_page'] ) . '</strong></center></td>';
+		$content .= '</tr>';
+	}
 	//=================================//
 	$tic_toc = 'toc';
 	//=================================//
@@ -782,6 +866,7 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 		foreach ($blogs as $blog){
 			$blog_url = set_url_scheme( 'http://' . $blog['domain'] . $blog['path'] );
 			$avatar_html = blogs_directory_get_blog_avatar_html( $blog['blog_id'], 32, $blog['blogname'], $settings['blogs_directory_avatar_fallback_order'] );
+			$blog_description = isset( $blog['blogdescription'] ) ? $blog['blogdescription'] : '';
 			$recent_posts_html = blogs_directory_get_recent_posts_html( $blog['blog_id'], $settings );
 
 			//=============================//
@@ -793,33 +878,58 @@ function blogs_directory_render_search_content( $content, $blogs_directory, $set
 			$row_palette = blogs_directory_get_row_palette( 'tic' === $tic_toc, $settings );
 			$site_reviews_html = ( ! empty( $settings['blogs_directory_show_site_reviews'] ) ) ? blogs_directory_get_site_reviews_html( $blog['blog_id'], $row_palette['text'] ) : '';
 			//=============================//
-			$content .= '<tr>';
-			if ( '' !== $avatar_html ) {
-				$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"><center><a style="text-decoration:none; color:' . esc_attr( $row_palette['link'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
+			if ( 'grid' === $layout_mode ) {
+				$content .= blogs_directory_render_grid_item(
+					array(
+						'palette'          => $row_palette,
+						'border_color'     => $settings['blogs_directory_border_color'],
+						'avatar_html'      => $avatar_html,
+						'blog_url'         => $blog_url,
+						'blog_title'       => $blog['blogname'],
+						'blog_description' => $blog_description,
+						'show_description' => true,
+						'site_reviews_html'=> $site_reviews_html,
+						'recent_posts_html'=> $recent_posts_html,
+					)
+				);
 			} else {
-				$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
+				$content .= '<tr>';
+				if ( '' !== $avatar_html ) {
+					$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"><center><a style="text-decoration:none; color:' . esc_attr( $row_palette['link'] ) . ';" href="' . esc_url( $blog_url ) . '">' . $avatar_html . '</a></center></td>';
+				} else {
+					$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
+				}
+				$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">';
+				$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px; color:' . esc_attr( $row_palette['title'] ) . ';" href="' . esc_url( $blog_url ) . '">' . esc_html( $blog['blogname'] ) . '</a><br />';
+				if ( '' !== $site_reviews_html ) {
+					$content .= $site_reviews_html . '<br />';
+				}
+				$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: ' . esc_attr( $row_palette['text'] ) . ';" >' . esc_html( $blog_description ) . '</span>';
+				if ( '' !== $recent_posts_html ) {
+					$content .= $recent_posts_html;
+				}
+				$content .= '</td>';
+				$content .= '</tr>';
 			}
-			$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">';
-			$content .= '<a style="text-decoration:none; font-size:1.5em; margin-left:20px; color:' . esc_attr( $row_palette['title'] ) . ';" href="' . esc_url( $blog_url ) . '">' . esc_html( $blog['blogname'] ) . '</a><br />';
-			if ( '' !== $site_reviews_html ) {
-				$content .= $site_reviews_html . '<br />';
-			}
-			$content .= '<span class="blogs_dir_search_blog_description" style="font-size: 12px; color: ' . esc_attr( $row_palette['text'] ) . ';" >' . esc_html( $blog['blogdescription'] ) . '</span>';
-			if ( '' !== $recent_posts_html ) {
-				$content .= $recent_posts_html;
-			}
-			$content .= '</td>';
-			$content .= '</tr>';
 		}
 	} else {
 		$row_palette = blogs_directory_get_row_palette( false, $settings );
-		$content .= '<tr>';
-		$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
-		$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">' . __('Keine Ergebnisse...','blogs-directory') . '</td>';
-		$content .= '</tr>';
+		if ( 'grid' === $layout_mode ) {
+			$content .= '<div class="blogs_directory_grid_empty" style="' . blogs_directory_get_row_style_attr( $row_palette, 'border:1px solid ' . $settings['blogs_directory_border_color'] . ';border-radius:12px;padding:18px;' ) . '">' . __('Keine Ergebnisse...','blogs-directory') . '</div>';
+		} else {
+			$content .= '<tr>';
+			$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette, 'padding-top:10px;' ) . '" valign="top" width="10%"></td>';
+			$content .= '<td style="' . blogs_directory_get_row_style_attr( $row_palette ) . '" width="90%">' . __('Keine Ergebnisse...','blogs-directory') . '</td>';
+			$content .= '</tr>';
+		}
 	}
 	//=================================//
-	$content .= '</table>';
+	if ( 'grid' === $layout_mode ) {
+		$content .= '</div>';
+		$content .= '</div>';
+	} else {
+		$content .= '</table>';
+	}
 	$content .= '</div>';
 	if ( !empty( $blogs ) ) {
 		$content .= $navigation_content;

@@ -64,6 +64,7 @@ function blogs_directory_site_admin_options() {
     $blogs_directory_title_blogs_page           = get_site_option('blogs_directory_title_blogs_page');
 	$blogs_directory_show_description           = get_site_option('blogs_directory_show_description');
     $blogs_directory_avatar_fallback_order      = get_site_option('blogs_directory_avatar_fallback_order', 'site_icon_logo');
+    $blogs_directory_layout_mode                = get_site_option('blogs_directory_layout_mode', 'list');
     $blogs_directory_show_site_reviews          = get_site_option('blogs_directory_show_site_reviews', 0);
     $blogs_directory_show_recent_posts          = (int) get_site_option( 'blogs_directory_show_recent_posts', 0 );
     $blogs_directory_recent_posts_number        = (int) get_site_option( 'blogs_directory_recent_posts_number', 3 );
@@ -198,6 +199,16 @@ function blogs_directory_site_admin_options() {
                     <td>
                         <input name="blogs_directory_show_description" id="blogs_directory_show_description" type="checkbox" value="1" <?php echo ( isset( $blogs_directory_show_description ) && '1' == $blogs_directory_show_description ) ? 'checked' : '' ; ?>  />
                         <label for="blogs_directory_show_description"><?php _e('Zeige die Beschreibung für jede Seite auf der Verzeichnis-Seite an','blogs-directory') ?></label><br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th width="33%" scope="row"><?php _e('Verzeichnis-Darstellung','blogs-directory') ?></th>
+                    <td>
+                        <select name="blogs_directory_layout_mode" id="blogs_directory_layout_mode">
+                            <option value="list" <?php selected( $blogs_directory_layout_mode, 'list' ); ?>><?php _e('Liste','blogs-directory'); ?></option>
+                            <option value="grid" <?php selected( $blogs_directory_layout_mode, 'grid' ); ?>><?php _e('Grid','blogs-directory'); ?></option>
+                        </select>
+                        <br /><span class="description"><?php _e('Liste = bisherige Ansicht. Grid = Kartenansicht mit maximal 3 Elementen pro Reihe.','blogs-directory'); ?></span>
                     </td>
                 </tr>
                 <tr valign="top">
@@ -440,6 +451,10 @@ function blogs_directory_save_options() {
         $fallback_order_raw = isset( $_POST['blogs_directory_avatar_fallback_order'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_avatar_fallback_order'] ) ) : 'site_icon_logo';
         $avatar_fallback_order = in_array( $fallback_order_raw, $allowed_fallback_orders, true ) ? $fallback_order_raw : 'site_icon_logo';
 
+        $allowed_layout_modes = array( 'list', 'grid' );
+        $layout_mode_raw = isset( $_POST['blogs_directory_layout_mode'] ) ? sanitize_key( wp_unslash( $_POST['blogs_directory_layout_mode'] ) ) : 'list';
+        $layout_mode = in_array( $layout_mode_raw, $allowed_layout_modes, true ) ? $layout_mode_raw : 'list';
+
         $background_color = isset( $_POST['blogs_directory_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['blogs_directory_background_color'] ) ) : '';
         $background_color = $background_color ? $background_color : '#F2F2EA';
 
@@ -482,6 +497,7 @@ function blogs_directory_save_options() {
         $recent_posts_post_type = '' !== $recent_posts_post_type_raw ? $recent_posts_post_type_raw : 'post';
 
         update_site_option( 'blogs_directory_avatar_fallback_order', $avatar_fallback_order );
+        update_site_option( 'blogs_directory_layout_mode', $layout_mode );
         update_site_option( 'blogs_directory_background_color', $background_color );
         update_site_option( 'blogs_directory_alternate_background_color', $alternate_background_color );
         update_site_option( 'blogs_directory_background_title_color', $background_title_color );
