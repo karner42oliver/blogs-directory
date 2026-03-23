@@ -7,6 +7,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 function blogs_directory_search_form_output($content, $phrase) {
 	global $wpdb, $current_site, $blogs_directory_base;
 	$phrase = sanitize_text_field( (string) $phrase );
+	
+	// Check if ps-postindexer Global Site Search is active
+	if ( class_exists('Postindexer_Extensions_Admin') ) {
+		global $postindexer_extensions_admin;
+		if ( isset($postindexer_extensions_admin) && $postindexer_extensions_admin->is_extension_active_for_site('global_site_search') ) {
+			// Use Global Site Search form if ps-postindexer is active
+			if ( function_exists('global_site_search_form') ) {
+				ob_start();
+				global_site_search_form();
+				$content .= ob_get_clean();
+				return $content;
+			}
+		}
+	}
+	
+	// Fallback to blogs-directory search form
 	$search_base_url = home_url( trailingslashit( $blogs_directory_base ) . 'search/' );
 
 	if ( !empty( $phrase ) ) {

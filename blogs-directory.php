@@ -83,6 +83,7 @@ require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/routing.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/navigation.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/render/title.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/render/output.php';
+require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/search-form-ajax.php';
 //------------------------------------------------------------------------//
 //---Config---------------------------------------------------------------//
 //------------------------------------------------------------------------//
