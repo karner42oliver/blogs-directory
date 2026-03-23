@@ -5,104 +5,132 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * AJAX-Handler für blogs-directory Live-Suche
- * Wird aufgerufen bei: ?bd_search_ajax=1&phrase=...
+	* Liefert eine stabile Client-Kennung fuer einfaches Public-Throttling.
  */
-function blogs_directory_search_ajax_handler() {
-	global $wpdb, $current_site;
-
-	// Prüfe ob AJAX-Request
-	if ( ! isset( $_GET['bd_search_ajax'] ) || $_GET['bd_search_ajax'] != '1' ) {
-		return;
+function blogs_directory_get_ajax_client_id() {
+	if ( is_user_logged_in() ) {
+		return 'user:' . get_current_user_id();
 	}
 
-	// Kein Cachen für AJAX-Requests
+	$forwarded_for = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? wp_unslash( (string) $_SERVER['HTTP_X_FORWARDED_FOR'] ) : '';
+	if ( '' !== $forwarded_for ) {
+		$parts = explode( ',', $forwarded_for );
+		$forwarded_for = trim( (string) $parts[0] );
+	}
+
+	$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) : '';
+	$client_ip = '' !== $forwarded_for ? $forwarded_for : $remote_addr;
+
+	return 'guest:' . md5( $client_ip );
+}
+
+/**
+	* Prueft, ob ein oeffentlicher Such-Endpunkt zu oft aufgerufen wurde.
+	*/
+function blogs_directory_is_search_rate_limited( $bucket, $limit = 6, $window = 10 ) {
+	$bucket = sanitize_key( $bucket );
+	$limit = max( 1, absint( $limit ) );
+	$window = max( 1, absint( $window ) );
+	$cache_key = 'blogs_directory_rate_' . md5( $bucket . ':' . blogs_directory_get_ajax_client_id() );
+	$hits = get_site_transient( $cache_key );
+	$hits = is_array( $hits ) ? $hits : array();
+	$now = time();
+	$valid_after = $now - $window;
+
+	$hits = array_values(
+		array_filter(
+			$hits,
+			static function ( $timestamp ) use ( $valid_after ) {
+				return is_numeric( $timestamp ) && (int) $timestamp >= $valid_after;
+			}
+		)
+	);
+
+	if ( count( $hits ) >= $limit ) {
+		return true;
+	}
+
+	$hits[] = $now;
+	set_site_transient( $cache_key, $hits, $window );
+
+	return false;
+}
+
+/**
+	* Liest und validiert die Suchphrase fuer AJAX-Endpunkte.
+	*/
+function blogs_directory_get_ajax_search_phrase() {
+	$phrase = isset( $_REQUEST['phrase'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['phrase'] ) ) : '';
+	$phrase = trim( preg_replace( '/\s+/u', ' ', $phrase ) );
+
+	return $phrase;
+}
+
+/**
+	* Liefert HTML fuer die Blog-Suchvorschau.
+	*/
+function blogs_directory_get_blog_search_results_html( $phrase, $limit = 5 ) {
+	$settings = blogs_directory_get_output_settings();
+	$limit = max( 1, min( absint( $limit ), 10 ) );
+	$results = blogs_directory_search_blogs_indexed( $phrase, $settings, $limit );
+
+	if ( empty( $results ) ) {
+		return '<div class="bd-search-no-results">' . esc_html__( 'Keine Ergebnisse gefunden.', 'blogs-directory' ) . '</div>';
+	}
+
+	$html = '<ul class="bd-search-results-list">';
+
+	foreach ( array_values( $results ) as $row_index => $result ) {
+		$use_alternate = ( $row_index % 2 ) === 1;
+		$row_palette = blogs_directory_get_row_palette( $use_alternate, $settings );
+		$blog_url = set_url_scheme( 'http://' . $result['domain'] . $result['path'] );
+		$html .= '<li class="bd-search-result-item" style="background-color:' . esc_attr( $row_palette['background'] ) . '">';
+		$html .= '<div class="bd-search-result-content">';
+		$html .= '<a href="' . esc_url( $blog_url ) . '" class="bd-search-result-title" style="color:' . esc_attr( $row_palette['title'] ) . '">' . esc_html( $result['blogname'] ) . '</a>';
+
+		if ( ! empty( $result['blogdescription'] ) ) {
+			$html .= '<p class="bd-search-result-description" style="color:' . esc_attr( $row_palette['text'] ) . '">' . esc_html( wp_trim_words( $result['blogdescription'], 15 ) ) . '</p>';
+		}
+
+		$html .= '</div>';
+		$html .= '</li>';
+	}
+
+	$html .= '</ul>';
+
+	return $html;
+}
+
+/**
+	* admin-ajax Endpunkt fuer die Blog-Suchvorschau.
+	*/
+function blogs_directory_search_ajax_handler() {
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 		define( 'DONOTCACHEPAGE', true );
 	}
 
-	$phrase = isset( $_GET['phrase'] ) ? sanitize_text_field( $_GET['phrase'] ) : '';
-	
-	if ( empty( $phrase ) ) {
+	$nonce = isset( $_REQUEST['nonce'] ) ? wp_unslash( $_REQUEST['nonce'] ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'blogs-directory-search' ) ) {
+		status_header( 403 );
+		echo '<div class="bd-search-no-results">' . esc_html__( 'Sicherheitspruefung fehlgeschlagen.', 'blogs-directory' ) . '</div>';
+		wp_die();
+	}
+
+	if ( blogs_directory_is_search_rate_limited( 'blog-search-preview', 6, 10 ) ) {
+		status_header( 429 );
+		echo '<div class="bd-search-no-results">' . esc_html__( 'Zu viele Suchanfragen. Bitte kurz warten.', 'blogs-directory' ) . '</div>';
+		wp_die();
+	}
+
+	$phrase = blogs_directory_get_ajax_search_phrase();
+	if ( '' === $phrase || strlen( $phrase ) < 2 ) {
 		echo '';
-		exit;
+		wp_die();
 	}
 
-	// Hole Einstellungen
-	$settings = blogs_directory_get_output_settings();
-	$include_main_site = (int) get_site_option( 'blogs_directory_include_main_site', 1 );
-	$main_blog_id = (int) $current_site->id;
-	$per_page = 5; // Für Vorschau nur 5 Ergebnisse
-
-	// Query Blogs
-	if ( is_subdomain_install() ) {
-		$query = "SELECT blog_id, domain, public, archived, mature, spam, deleted FROM " . $wpdb->base_prefix . "blogs 
-				WHERE ( domain LIKE %s OR path LIKE %s ) AND spam != 1 AND deleted != 1 AND public = 1 
-				ORDER BY registered DESC LIMIT %d";
-		$results = $wpdb->get_results( $wpdb->prepare( 
-			$query, 
-			'%' . $wpdb->esc_like( $phrase ) . '%',
-			'%' . $wpdb->esc_like( $phrase ) . '%',
-			$per_page 
-		) );
-	} else {
-		$query = "SELECT blog_id, domain, path, public, archived, mature, spam, deleted FROM " . $wpdb->base_prefix . "blogs 
-				WHERE ( path LIKE %s ) AND spam != 1 AND deleted != 1 AND public = 1 
-				ORDER BY registered DESC LIMIT %d";
-		$results = $wpdb->get_results( $wpdb->prepare( 
-			$query, 
-			'%' . $wpdb->esc_like( $phrase ) . '%',
-			$per_page 
-		) );
-	}
-
-	if ( empty( $results ) ) {
-		echo '<div class="bd-search-no-results">' . esc_html__( 'Keine Ergebnisse gefunden.', 'blogs-directory' ) . '</div>';
-		exit;
-	}
-
-	// HTML der Ergebnisse
-	echo '<ul class="bd-search-results-list">';
-
-	$row_index = 0;
-	foreach ( $results as $result ) {
-		$blog_id = (int) $result->blog_id;
-		$use_alternate = ( $row_index % 2 ) == 1;
-		$row_palette = blogs_directory_get_row_palette( $use_alternate, $settings );
-
-		$args = array(
-			'blog_id'       => $blog_id,
-			'row_index'     => $row_index,
-			'settings'      => $settings,
-			'row_palette'   => $row_palette,
-			'show_reviews'  => (int) $settings['blogs_directory_show_site_reviews'] === 1,
-		);
-
-		// Blog-Details
-		switch_to_blog( $blog_id );
-		$blog_title = get_bloginfo( 'name' ) ?: get_bloginfo( 'url' );
-		$blog_description = get_bloginfo( 'description' ) !== '' ? get_bloginfo( 'description' ) : '';
-		$blog_url = get_bloginfo( 'url' );
-		restore_current_blog();
-
-		// Render Item
-		echo '<li class="bd-search-result-item" style="background-color:' . esc_attr( $row_palette['background'] ) . '">';
-		echo '<div class="bd-search-result-content">';
-		echo '<a href="' . esc_url( $blog_url ) . '" class="bd-search-result-title" style="color:' . esc_attr( $row_palette['title'] ) . '">' . esc_html( $blog_title ) . '</a>';
-		
-		if ( ! empty( $blog_description ) ) {
-			echo '<p class="bd-search-result-description" style="color:' . esc_attr( $row_palette['text'] ) . '">' . esc_html( wp_trim_words( $blog_description, 15 ) ) . '</p>';
-		}
-
-		echo '</div>';
-		echo '</li>';
-
-		$row_index++;
-	}
-
-	echo '</ul>';
-	exit;
+	echo blogs_directory_get_blog_search_results_html( $phrase, 5 );
+	wp_die();
 }
 
-// Hook
-add_action( 'init', 'blogs_directory_search_ajax_handler', 1 );
+add_action( 'wp_ajax_blogs_directory_search_preview', 'blogs_directory_search_ajax_handler' );
+add_action( 'wp_ajax_nopriv_blogs_directory_search_preview', 'blogs_directory_search_ajax_handler' );

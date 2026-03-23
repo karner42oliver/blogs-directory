@@ -188,7 +188,7 @@ msgstr ""
 
 #. Plugin URI of the plugin/theme
 msgid ""
-"https://github.com/Power-Source/wiki/piestingtal-source-wiki/blogs-verzeichnis-plugin/"
+"https://psource.eimen.net//wiki/piestingtal-source-wiki/blogs-verzeichnis-plugin/"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -203,5 +203,5 @@ msgid "PSOURCE"
 msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "https://github.com/Power-Source"
+msgid "https://psource.eimen.net/"
 msgstr ""

@@ -1,17 +1,17 @@
 <?php
 /*
-Plugin Name: MS-Blogs-Verzeichnis
-Plugin URI: https://cp-psource.github.io/blogs-directory/
+Plugin Name: PS Blogs-Verzeichnis
+Plugin URI: https://psource.eimen.net/wiki/ps-blogs-verzeichnis-dokumentation/
 Description: Dieses Plugin bietet ein paginiertes, vollständig durchsuchbares, Avatar inklusive, automatisches und ziemlich gut aussehendes Verzeichnis aller Blogs auf Deiner ClassicPress Multisite.
 Author: PSOURCE
-Author URI: https://github.com/Power-Source
+Author URI: https://psource.eimen.net/
 Version: 1.0.0
 Text Domain: blogs-directory
 Network: true
 */
 
 /*
-Copyright 2019-2026 PSOURCE (https://github.com/Power-Source)
+Copyright 2019-2026 PSOURCE (https://psource.eimen.net/)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -83,6 +83,7 @@ require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/routing.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/navigation.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/render/title.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/render/output.php';
+require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/search-ajax-handler.php';
 require_once BLOGS_DIRECTORY_PLUGIN_DIR . 'includes/core/search-form-ajax.php';
 //------------------------------------------------------------------------//
 //---Config---------------------------------------------------------------//

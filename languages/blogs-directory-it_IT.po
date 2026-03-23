@@ -213,9 +213,9 @@ msgstr "Elenco dei blog"
 #. Plugin URI of the plugin/theme
 #, fuzzy
 msgid ""
-"https://github.com/Power-Source/wiki/piestingtal-source-wiki/blogs-verzeichnis-plugin/"
+"https://psource.eimen.net//wiki/piestingtal-source-wiki/blogs-verzeichnis-plugin/"
 msgstr ""
-"https://github.com/Power-Source/wiki/piestingtal-source-wiki/blogs-verzeichnis-plugin/"
+"https://psource.eimen.net//wiki/piestingtal-source-wiki/blogs-verzeichnis-plugin/"
 
 #. Description of the plugin/theme
 #, fuzzy
@@ -235,5 +235,5 @@ msgstr "PSOURCE"
 
 #. Author URI of the plugin/theme
 #, fuzzy
-msgid "https://github.com/Power-Source"
-msgstr "https://github.com/Power-Source"
+msgid "https://psource.eimen.net/"
+msgstr "https://psource.eimen.net/"

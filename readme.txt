@@ -1,98 +1,128 @@
-=== MS-Blogs-Verzeichnis ===
+=== PS Blogs-Verzeichnis ===
 Contributors: DerN3rd (PSOURCE)
 Tags: multisite, blogs, verzeichnis, classicpress, wordpress, psource
 Requires at least: 3.8
 Tested up to: 5.6
+ClasicPress: 2.6.0
 Stable tag: 1.0.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Dieses Plugin bietet ein paginiertes, vollständig durchsuchbares, Avatar inklusive, automatisches und ziemlich gut aussehendes Verzeichnis aller Blogs auf Deiner ClassicPress Multisite.
+Ein modernes, performantes und durchsuchbares Verzeichnis fuer alle Seiten in Deiner ClassicPress Multisite - inklusive Layout-Optionen, Blog-Avataren, optionalen Bewertungen und Netzwerk-Suchmodulen.
 
 == Description ==
 
-Dieses Plugin bietet ein paginiertes, vollständig durchsuchbares, Avatar inklusive, automatisches und ziemlich gut aussehendes Verzeichnis aller Blogs auf Deiner ClassicPress Multisite.
+PS Blogs-Verzeichnis erstellt automatisch eine zentrale Verzeichnisseite fuer Dein Netzwerk und zeigt dort alle relevanten Blogs in einer strukturierten Liste oder Grid-Ansicht an.
 
-= MS-Blogs-Verzeichnis erstellt eine einfache und anpassbare Liste aller Webseiten in Deinem Netzwerk. =
+Das Plugin richtet sich an Multisite-Admins, die:
 
-Dieses benutzerfreundliche Plugin automatisiert die Verwaltung von Webseiten-Listen vollständig, sodass Du sie schnell einrichten kannst. Jede hinzugefügte Webseite, jede Slogan-Änderung und jedes gelöschte Blog wird sofort aktualisiert, sodass ein stets aktuelles Verzeichnis vorhanden ist.
+* ein gepflegtes Frontend-Verzeichnis aller Blogs anbieten wollen
+* Suchfunktionen fuer Besucher bereitstellen wollen
+* Blog-Branding (Avatar, Site-Icon, Logo) sauber integrieren moechten
+* optional Bewertungsdaten pro Site einblenden wollen
+* Netzwerkweite Einstellungen zentral steuern wollen
 
-= Passt sich dem Stil Deines Themes an =
+= Einsatzzweck =
 
-Standardmäßig übernimmt MS-Blogs-Verzeichnis Stilelemente aus Deinem Design, um sie perfekt in jedes Theme zu integrieren. Oder füge mit dem integrierten Farbanpassungstool einen Farbtupfer hinzu, um dem Ganzen noch mehr Glanz zu verleihen. Mit der integrierten Verzeichnissuche können Benutzer Blogs in Deinem Netzwerk schnell finden und darin navigieren. Jede Einstellung, von der Anzeigereihenfolge bis zur Auflistung pro Seite, kann mit einem Klick angepasst werden.
+Typische Einsatzszenarien:
+
+* Mitglieder-/Community-Netzwerke mit vielen Subsites
+* Bildungseinrichtungen mit Schul-, Kurs- oder Projektseiten
+* Agentur- und Hosting-Setups mit zentraler Kundenuebersicht
+* Content-Netzwerke, die nach Thema, Name oder Beschreibung auffindbar sein sollen
+
+= Module im Plugin =
+
+1. Core Routing & Ausgabe
+Erzeugt die Verzeichnisseite, Routing und Frontend-Rendering (Landing, Suche, Navigation, List/Grid).
+
+2. Netzwerk-Admin Einstellungen
+Steuert Sortierung, Seitenlaenge, Sichtbarkeit, Layout/Farben, Recent-Posts und Reviews zentral im Netzwerk.
+
+3. Blog-Avatar Modul
+Pro Subsite kann ein eigener Blog-Avatar gesetzt, zugeschnitten und zurueckgesetzt werden.
+
+4. Branding-Fallbacks
+Avatar-Kette: Custom Blog-Avatar -> Site-Icon/Logo -> Default-Avatar.
+
+5. Recent Posts Modul
+Zeigt optional aktuelle Beitraege je Blog direkt im Verzeichnis an (inkl. Titel-/Excerpt-Laenge und Author-Avatar).
+
+6. Site-Reviews Integration
+Optionale Anzeige von Bewertungsdurchschnitt und Anzahl je Site (inkl. Netzwerkmodus off/allow/force).
+
+7. Global Site Search Modul
+Eigenes Suchmodul fuer netzwerkweite Beitrags-Suche inkl. Formular/Widget.
+
+8. Performance- & Security-Layer
+Abgesicherte AJAX-Endpunkte (WordPress AJAX + Nonce + Throttle + Ergebnislimits), Caching mit automatischer Invalidierung bei relevanten Updates.
+
+= Features (Kurzueberblick) =
+
+* Automatische Verzeichnisseite fuer die Hauptseite
+* Durchsuchbare Blog-Liste mit Pagination
+* Layout-Modus: Liste oder Grid
+* Einstellbare Farben fuer Hintergrund, Titel, Text, Links und Rahmen
+* Optional: Beschreibungen, Recent Posts, Author-Avatare
+* Optional: Bewertungsanzeige ueber Site Reviews
+* Blog-Avatar-Verwaltung pro Subsite
+* Integration von Domain-Mapping (wenn vorhanden)
+* Netzwerkweite Steuerung ueber die Einstellungen
 
 = Verwendung =
 
-Es sollte automatisch eine Seite mit dem Namen „Sites“ auf Deiner Hauptseite erstellen, auf der jeder nach einer Website suchen kannst. Für den Fall, dass die Seite nicht automatisch erstellt wird, musst Du lediglich eine Seite mit dem Slug „Blogs“ ohne Anführungszeichen erstellen.
+Nach Aktivierung legt das Plugin auf der Hauptseite automatisch eine Verzeichnisseite an (Standard-Slug: blogs).
+
+Falls die Seite nicht automatisch erstellt wurde:
+
+1. Erstelle auf der Hauptseite manuell eine Seite.
+2. Verwende den Slug blogs (oder Deinen eigenen, siehe Anpassung).
+3. Oeffne Netzwerk-Admin -> Einstellungen -> Blogs-Verzeichnis und konfiguriere Darstellung/Suche.
 
 = Anpassung =
 
-Du kannst den von Blogs Directory verwendeten Seiten-Slug ändern, indem Du blogs-directory.php öffnest und den Slug in Zeile 45 bearbeitest, der standardmäßig wie folgt lautet: define('BLOGS_DIRECTORY_SLUG', 'your-slug');
+Du kannst den Verzeichnis-Slug per Konstante anpassen (z.B. in einer mu-plugin/bootstrap Datei oder direkt im Plugin-Setup):
 
-[POWERED BY PSOURCE](https://github.com/Power-Source/)
+define('BLOGS_DIRECTORY_SLUG', 'dein-slug');
 
-[GitHub](https://github.com/Power-Source/blogs-directory)
+Danach einmal Permalinks neu speichern bzw. Rewrite-Regeln aktualisieren.
 
-== Mehr PSOURCE ==
+== Installation ==
 
-= Gib Deinen Kunden vollständige Blogvorlagen an die Hand =
+1. Plugin in wp-content/plugins installieren.
+2. Netzwerkweit aktivieren (Multisite).
+3. In Netzwerk-Admin -> Einstellungen -> Blogs-Verzeichnis konfigurieren.
+4. Verzeichnisseite auf der Hauptseite pruefen.
 
-[Dank Blogvorlagen können Deine User sofort losbloggen](https://github.com/Power-Source/shop/artikel/ps-bloghosting-plugin/)
+== Frequently Asked Questions ==
 
-Mit Neue Blog-Vorlagen kannst Du einen Katalog mit Webseiten-Vorlagen erstellen, um die Produktivität erheblich zu verbessern.
-Verwende das Design und den Inhalt vorhandener Webseiten in Deinem Multisite-Netzwerk, um unglaublich schnell neue Webseiten zu erstellen.
+= Ist das Plugin nur fuer Multisite gedacht? =
 
-= Volle Kontrolle über Inhalts-Vorlagen =
+Ja. Das Plugin ist fuer ClassicPress/WordPress Multisite-Netzwerke konzipiert.
 
-[Mit dem Multisite Content Kopierer](https://github.com/Power-Source/piestingtal_source/multisite-content-kopierer/)
+= Kann ich private Blogs ausblenden? =
 
-Multisite Content Kopierer ist die perfekte Lösung zum Kopieren von Beiträgen, Seiten, Benutzern und sogar Plugins auf andere Seiten in Deinem Multisite-Netzwerk.
+Ja. In den Netzwerk-Einstellungen kannst Du private Blogs ausblenden.
 
-= Klone Einstellungen und Rechte =
+= Kann ich die Hauptseite aus dem Verzeichnis entfernen? =
 
-[Cloner ergänzt Bloghosting und Blogvorlagen vollständig.](https://github.com/Power-Source/piestingtal_source/cloner-klone-inhalte-in-multisite-per-mausklick/)
+Ja. Es gibt eine eigene Option, ob die Hauptseite angezeigt wird.
 
-Cloner kopiert jede WordPress-Webseite in Deinem Multisite-Netzwerk und verschiebt sie mit einem Klick auf eine beliebige URL im selben Netzwerk.
-Designänderungen vorzunehmen, eine neue Codezeile hinzuzufügen oder Dein Theme auf einer Live-Site zu optimieren, ist ein riskantes Geschäft. 
-Nur das Aktivieren des falschen Plugins kann Deine Webseite beschädigen. 
-Mit Cloner kannst Du Webseiten problemlos in Deinem Netzwerk verwalten und verschieben, um sie stressfrei bearbeiten zu können.
+= Muss ich Site Reviews aktiviert haben? =
 
-Migrieren, Stage, Backup
-Mit Cloner können Webseiten-Migration, Backups sowie sicheres Staging und Bereitstellen problemlos durchgeführt werden. 
-Verwende die Standardeinstellungen und kopiere Deine gesamte Webseite oder wähle nur die Elemente aus, die Du übertragen möchtest. 
-Perfekt für die Verwaltung von Live-Webseiten.
+Nein. Die Reviews-Integration ist optional und kann pro Netzwerkmodus gesteuert werden.
 
-= Finde mehr Piestingtal.Source =
+= Wie wirkt sich Caching auf Aktualitaet aus? =
 
-Wirf einen Blick in unser [PSOURCE Sortiment](https://github.com/Power-Source/psource_kategorien/psource-plugins/) und hole noch mehr aus Deinem WordPress/ClassicPress!
-
-Halte Dich mit unserem [Newsletter](https://github.com/Power-Source/webmasterservice-n3rdswork-digalize-das-piestingtal/newsletter-management/) über unsere Piestingtal.Source informiert!
-
-== Hilf uns ==
-
-Viele, viele Kaffees konsumieren wir während wir an unseren Plugins und Themes arbeiten.
-Wie wärs? Möchtest Du uns mit einer Kaffee-Spende bei der Arbeit an unseren Plugins unterstützen?
-
-= Unterstütze uns =
-
-Mach eine [Spende per Überweisung oder PayPal](https://github.com/Power-Source/spendenaktionen/unterstuetze-unsere-psource-free-werke/) wir Danken Dir!
-
-Halte Dich mit unserem [Newsletter](https://github.com/Power-Source/webmasterservice-n3rdswork-digalize-das-piestingtal/newsletter-management/) über unsere Piestingtal.Source informiert!
+Das Plugin nutzt kurze Caches fuer Performance und invalidiert diese automatisch bei relevanten Aenderungen (Einstellungen, Blog-Inhalte, Avatar-Updates, Site-Lifecycle).
 
 == ChangeLog ==
 
 = 1.0.0 =
-
-* PSOURCE Updater 1.3
-
-= 1.0.1 =
-
-* Fix deprecated create_function
-* Verzeichnistitel nun H2 Format zur besseren Anpassung
-* Textanpassungen
-* Bessere Code-Strukturierung
-
-= 1.0.0 =
-
-*PSOURCE RELEASE
+* PSOURCE RELEASE
+* Security-Hardening fuer oeffentliche Such-Endpunkte (WordPress AJAX, Nonce, Throttle, Ergebnislimit)
+* Performance-Optimierungen fuer Verzeichnissuche und Rendering
+* Caching fuer Branding, Reviews, Recent Posts und Suchindex
+* Automatische Cache-Invalidierung bei Einstellungen-, Blog- und Avatar-Updates
+* Ueberarbeitete Dokumentation und Modulbeschreibung

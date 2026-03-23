@@ -116,24 +116,22 @@ function blogs_directory_url_parse(){
 		}
 	} else if ( $blogs_directory_1 == 'search' ) {
 		//search
+		$page_type = 'search';
 		$nonce = isset( $_POST['_wp_nonce'] ) ? wp_unslash( $_POST['_wp_nonce'] ) : '';
 		if ( wp_verify_nonce( $nonce, 'search-sites' ) ) {
-				$page_type = 'search';
-				$phrase = isset( $_POST['phrase'] ) ? sanitize_text_field( wp_unslash( $_POST['phrase'] ) ) : '';
-				if ( empty( $phrase ) ) {
-					$phrase = sanitize_text_field( urldecode( $blogs_directory_2 ) );
-					$page = absint( $blogs_directory_3 );
-					if ( empty( $page ) ) {
-						$page = 1;
-					}
-				} else {
-					$page = absint( $blogs_directory_3 );
-					if ( empty( $page ) ) {
-						$page = 1;
-					}
-				}
-				$phrase = sanitize_text_field( urldecode( $phrase ) );
+			$phrase = isset( $_POST['phrase'] ) ? sanitize_text_field( wp_unslash( $_POST['phrase'] ) ) : '';
 		}
+
+		if ( empty( $phrase ) ) {
+			$phrase = sanitize_text_field( urldecode( $blogs_directory_2 ) );
+		}
+
+		$page = absint( $blogs_directory_3 );
+		if ( empty( $page ) ) {
+			$page = 1;
+		}
+
+		$phrase = sanitize_text_field( urldecode( $phrase ) );
 	}
 
 	$blogs_directory['page_type'] = $page_type;

@@ -212,7 +212,7 @@ function blogs_directory_site_admin_options() {
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th width="33%" scope="row"><?php _e('Hintergrundfarbe','blogs-directory') ?></th>
+                    <th width="33%" scope="row"><?php _e('Hintergrund 1','blogs-directory') ?></th>
                     <td>
                     <div class="bd-color-control">
                         <input name="blogs_directory_background_color" type="color" id="blogs_directory_background_color" value="<?php echo esc_attr( $blogs_directory_background_color ); ?>" />
@@ -252,7 +252,7 @@ function blogs_directory_site_admin_options() {
                     <br /><span class="description"><?php _e('Farbe für alle Links in diesen Zeilen.','blogs-directory'); ?></span></td>
                 </tr>
                 <tr valign="top">
-                    <th width="33%" scope="row"><?php _e('Alternative Hintergrundfarbe','blogs-directory') ?></th>
+                    <th width="33%" scope="row"><?php _e('Hintergrund 2','blogs-directory') ?></th>
                     <td>
                     <div class="bd-color-control">
                         <input name="blogs_directory_alternate_background_color" type="color" id="blogs_directory_alternate_background_color" value="<?php echo esc_attr( $blogs_directory_alternate_background_color ); ?>" />
@@ -527,6 +527,10 @@ function blogs_directory_save_options() {
         update_site_option( 'blogs_directory_show_site_reviews', $show_site_reviews );
         update_site_option( 'blogs_directory_site_reviews_mode', $site_reviews_mode );
     }
+
+	if ( function_exists( 'blogs_directory_cache_bust' ) ) {
+		blogs_directory_cache_bust( 'all' );
+	}
 
     wp_safe_redirect( add_query_arg( array( 'page' => 'blog-directory-settings', 'tab' => $active_tab, 'updated' => 'true', 'dmsg' => 'settings-saved' ), network_admin_url( 'settings.php' ) ) );
 	exit;

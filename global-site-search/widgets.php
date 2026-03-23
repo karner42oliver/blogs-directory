@@ -28,42 +28,42 @@ class Global_Site_Search_Widget extends WP_Widget {
 		}
 
 		// Suchformular
-		$phrase = isset($_GET['gss_widget_phrase']) ? trim(stripslashes($_GET['gss_widget_phrase'])) : '';
+		$phrase = isset($_GET['gss_widget_phrase']) ? sanitize_text_field(wp_unslash($_GET['gss_widget_phrase'])) : '';
 		// Widget-Suchformular per AJAX, damit kein Redirect erfolgt
 		echo '<form id="gss-widget-form-' . esc_attr($this->id) . '" action="#" method="get">';
+		echo '<input type="hidden" name="gss_widget_nonce" value="' . esc_attr( global_site_search_get_ajax_nonce() ) . '">';
 		echo '<input type="text" name="gss_widget_phrase" value="' . esc_attr($phrase) . '" placeholder="' . esc_attr__('Suchbegriff...', 'postindexer') . '" style="width:70%;margin-right:0.5em;">';
 		echo '<input type="submit" value="' . esc_attr__('Suchen', 'postindexer') . '">';
 		echo '</form>';
 		echo '<div id="gss-widget-results-' . esc_attr($this->id) . '">';
 		if ($phrase !== '') {
-			$limit = 5;
-			$post_type = get_site_option('global_site_search_post_type', 'post');
-			$where = $wpdb->prepare("post_title LIKE %s AND post_type = %s AND post_status = 'publish'", '%' . $wpdb->esc_like($phrase) . '%', $post_type);
-			$results = $wpdb->get_results("SELECT * FROM {$wpdb->base_prefix}network_posts WHERE $where ORDER BY post_date DESC LIMIT $limit");
-			if ($results) {
-				echo '<ul class="gss-widget-results">';
-				foreach ($results as $row) {
-					echo '<li><a href="' . esc_url($row->guid) . '">' . esc_html($row->post_title) . '</a></li>';
-				}
-				echo '</ul>';
-				$main_site_url = network_home_url( global_site_search_get_search_base() . '/' . urlencode($phrase) . '/' );
-				echo '<div style="margin-top:0.7em;"><a href="' . esc_url($main_site_url) . '" style="font-weight:bold;">' . esc_html__('Weitere Treffer anzeigen', 'postindexer') . '</a></div>';
-			} else {
-				echo '<div style="margin-top:0.7em;color:#888;">' . esc_html__('Keine Treffer gefunden.', 'postindexer') . '</div>';
-			}
+			echo global_site_search_render_live_results( $phrase, 5, true );
 		}
 		echo '</div>';
 		// AJAX-Handler für das Widget
 		echo '<script>document.addEventListener("DOMContentLoaded",function(){
             var form=document.getElementById("gss-widget-form-' . esc_attr($this->id) . '");
             var results=document.getElementById("gss-widget-results-' . esc_attr($this->id) . '");
+            var ajaxUrl=' . wp_json_encode( global_site_search_get_ajax_url() ) . ';
             if(form){
                 form.addEventListener("submit",function(e){
                     e.preventDefault();
                     var phrase=form.querySelector("input[name=gss_widget_phrase]").value;
+                    var nonce=form.querySelector("input[name=gss_widget_nonce]").value;
                     if(!phrase) return;
                     results.innerHTML=\'<div style="color:#888;">Suche läuft...</div>\';
-                    fetch(window.location.pathname+"?gss_widget_ajax=1&phrase="+encodeURIComponent(phrase))
+                    var body=new URLSearchParams();
+                    body.append("action","global_site_search_widget_live");
+                    body.append("phrase",phrase);
+                    body.append("nonce",nonce);
+                    fetch(ajaxUrl,{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+                            "X-Requested-With":"XMLHttpRequest"
+                        },
+                        body:body.toString()
+                    })
                         .then(r=>r.text())
                         .then(html=>{results.innerHTML=html;});
                 });

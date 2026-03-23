@@ -115,6 +115,9 @@ function blogs_directory_process_blog_avatar_action( $action, array $post_data, 
 
 	if ( 'reset' === $action ) {
 		blogs_directory_delete_blog_avatar_files( $avatar_dir, $blog_id, $sizes );
+		if ( function_exists( 'blogs_directory_cache_bust' ) ) {
+			blogs_directory_cache_bust( 'branding' );
+		}
 
 		return array(
 			'success' => true,
@@ -183,6 +186,10 @@ function blogs_directory_process_blog_avatar_action( $action, array $post_data, 
 		if ( is_wp_error( $save_result ) ) {
 			return array( 'success' => false, 'error_key' => 'image-error' );
 		}
+	}
+
+	if ( function_exists( 'blogs_directory_cache_bust' ) ) {
+		blogs_directory_cache_bust( 'branding' );
 	}
 
 	return array(

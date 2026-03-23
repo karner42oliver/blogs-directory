@@ -95,6 +95,306 @@ function blogs_directory_get_output_settings() {
 }
 
 /**
+	* Liest Werte bevorzugt aus dem Object Cache und faellt auf Site-Transients zurueck.
+	*/
+function blogs_directory_cache_get_generation( $scope = 'global' ) {
+	$scope = sanitize_key( (string) $scope );
+	if ( '' === $scope ) {
+		$scope = 'global';
+	}
+
+	$option_name = 'blogs_directory_cache_gen_' . $scope;
+	$generation = (int) get_site_option( $option_name, 1 );
+
+	return max( 1, $generation );
+}
+
+/**
+	* Erhoeht eine Cache-Generation und invalidiert damit zugehoerige Keys.
+	*/
+function blogs_directory_cache_bump_generation( $scope = 'global' ) {
+	$scope = sanitize_key( (string) $scope );
+	if ( '' === $scope ) {
+		$scope = 'global';
+	}
+
+	$option_name = 'blogs_directory_cache_gen_' . $scope;
+	$current = (int) get_site_option( $option_name, 1 );
+	$next = $current + 1;
+	if ( $next < 1 ) {
+		$next = 1;
+	}
+
+	update_site_option( $option_name, $next );
+
+	return $next;
+}
+
+/**
+	* Invalidiert Caches gezielt oder global.
+	*/
+function blogs_directory_cache_bust( $scope = 'all' ) {
+	$scope = sanitize_key( (string) $scope );
+
+	if ( '' === $scope || 'all' === $scope ) {
+		blogs_directory_cache_bump_generation( 'global' );
+		return;
+	}
+
+	blogs_directory_cache_bump_generation( $scope );
+}
+
+/**
+	* Baut den realen Cache-Key aus Scope-Generationen.
+	*/
+function blogs_directory_cache_build_key( $cache_key, $scope = 'global' ) {
+	$scope = sanitize_key( (string) $scope );
+	if ( '' === $scope ) {
+		$scope = 'global';
+	}
+
+	$global_generation = blogs_directory_cache_get_generation( 'global' );
+	$scope_generation = blogs_directory_cache_get_generation( $scope );
+
+	return 'g' . $global_generation . '-s' . $scope_generation . ':' . $cache_key;
+}
+
+/**
+	* Liest Werte bevorzugt aus dem Object Cache und faellt auf Site-Transients zurueck.
+	*/
+function blogs_directory_cache_get( $cache_key, $group = 'blogs-directory', $scope = 'global' ) {
+	static $runtime_cache = array();
+	$effective_key = blogs_directory_cache_build_key( $cache_key, $scope );
+
+	$runtime_key = $group . ':' . $effective_key;
+	if ( array_key_exists( $runtime_key, $runtime_cache ) ) {
+		return $runtime_cache[ $runtime_key ];
+	}
+
+	$payload = wp_cache_get( $effective_key, $group );
+	if ( is_array( $payload ) && array_key_exists( 'value', $payload ) ) {
+		$runtime_cache[ $runtime_key ] = $payload['value'];
+		return $payload['value'];
+	}
+
+	$payload = get_site_transient( 'bd_cache_' . md5( $runtime_key ) );
+	if ( is_array( $payload ) && array_key_exists( 'value', $payload ) ) {
+		wp_cache_set( $effective_key, $payload, $group, 300 );
+		$runtime_cache[ $runtime_key ] = $payload['value'];
+		return $payload['value'];
+	}
+
+	return false;
+}
+
+/**
+	* Schreibt Werte parallel in Runtime-, Object- und Site-Transient-Cache.
+	*/
+function blogs_directory_cache_set( $cache_key, $value, $expiration = 300, $group = 'blogs-directory', $scope = 'global' ) {
+	$effective_key = blogs_directory_cache_build_key( $cache_key, $scope );
+	$payload = array( 'value' => $value );
+	wp_cache_set( $effective_key, $payload, $group, $expiration );
+	set_site_transient( 'bd_cache_' . md5( $group . ':' . $effective_key ), $payload, $expiration );
+
+	return $value;
+}
+
+/**
+	* Liefert Domain-Mapping-Overrides fuer mehrere Blogs in einer Query.
+	*/
+function blogs_directory_get_domain_map_lookup( array $blog_ids ) {
+	global $wpdb;
+
+	$blog_ids = array_values( array_unique( array_filter( array_map( 'absint', $blog_ids ) ) ) );
+	if ( empty( $blog_ids ) || ! defined( 'DOMAINMAP_TABLE_MAP' ) ) {
+		return array();
+	}
+
+	sort( $blog_ids );
+	$cache_key = 'domain-map:' . md5( wp_json_encode( $blog_ids ) );
+	$cached = blogs_directory_cache_get( $cache_key, 'blogs-directory-domain-map', 'domain-map' );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$placeholders = implode( ',', array_fill( 0, count( $blog_ids ), '%d' ) );
+	$query = $wpdb->prepare(
+		"SELECT blog_id, domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id IN ($placeholders) ORDER BY blog_id ASC, id ASC",
+		$blog_ids
+	);
+	$rows = $wpdb->get_results( $query, ARRAY_A );
+	$lookup = array();
+
+	foreach ( $rows as $row ) {
+		$blog_id = isset( $row['blog_id'] ) ? absint( $row['blog_id'] ) : 0;
+		if ( $blog_id > 0 && ! isset( $lookup[ $blog_id ] ) && ! empty( $row['domain'] ) ) {
+			$lookup[ $blog_id ] = array(
+				'domain' => (string) $row['domain'],
+				'path'   => '/',
+			);
+		}
+	}
+
+	return blogs_directory_cache_set( $cache_key, $lookup, 300, 'blogs-directory-domain-map', 'domain-map' );
+}
+
+/**
+	* Baut einen gecachten Suchindex fuer Blogname und Beschreibung.
+	*/
+function blogs_directory_get_blog_search_index() {
+	global $wpdb;
+
+	$cache_key = 'blog-search-index-v1';
+	$cached = blogs_directory_cache_get( $cache_key, 'blogs-directory-search', 'search' );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$blogs = $wpdb->get_results(
+		"SELECT blog_id, domain, path, public, archived, mature, spam, deleted, registered, last_updated
+		 FROM {$wpdb->base_prefix}blogs
+		 WHERE spam = 0 AND deleted = 0 AND archived = '0'",
+		ARRAY_A
+	);
+
+	if ( empty( $blogs ) ) {
+		return blogs_directory_cache_set( $cache_key, array(), 300, 'blogs-directory-search', 'search' );
+	}
+
+	$domain_map_lookup = blogs_directory_get_domain_map_lookup( wp_list_pluck( $blogs, 'blog_id' ) );
+	$index = array();
+
+	foreach ( $blogs as $blog ) {
+		$blog_id = isset( $blog['blog_id'] ) ? absint( $blog['blog_id'] ) : 0;
+		if ( $blog_id < 1 ) {
+			continue;
+		}
+
+		if ( isset( $domain_map_lookup[ $blog_id ] ) ) {
+			$blog['domain'] = $domain_map_lookup[ $blog_id ]['domain'];
+			$blog['path'] = $domain_map_lookup[ $blog_id ]['path'];
+		}
+
+		$blog_name = get_blog_option( $blog_id, 'blogname', $blog['domain'] . $blog['path'] );
+		$blog_description = get_blog_option( $blog_id, 'blogdescription', '' );
+		$blog_public_option = (int) get_blog_option( $blog_id, 'blog_public', $blog['public'] );
+		$search_blob = strtolower( remove_accents( trim( $blog_name . ' ' . $blog_description . ' ' . $blog['domain'] . ' ' . $blog['path'] ) ) );
+
+		$index[] = array(
+			'blog_id'            => $blog_id,
+			'domain'             => (string) $blog['domain'],
+			'path'               => (string) $blog['path'],
+			'public'             => isset( $blog['public'] ) ? (int) $blog['public'] : 1,
+			'last_updated'       => isset( $blog['last_updated'] ) ? (string) $blog['last_updated'] : '',
+			'blogname'           => (string) $blog_name,
+			'blogdescription'    => (string) $blog_description,
+			'blog_public_option' => $blog_public_option,
+			'search_blob'        => $search_blob,
+		);
+	}
+
+	return blogs_directory_cache_set( $cache_key, $index, 15 * MINUTE_IN_SECONDS, 'blogs-directory-search', 'search' );
+}
+
+/**
+	* Prueft, ob ein indexierter Blog aufgrund aktueller Einstellungen verborgen werden soll.
+	*/
+function blogs_directory_should_hide_indexed_blog( array $blog, array $settings ) {
+	$main_site_blog_id = defined( 'BLOG_ID_CURRENT_SITE' ) ? (int) BLOG_ID_CURRENT_SITE : ( function_exists( 'get_main_site_id' ) ? (int) get_main_site_id() : 1 );
+	if ( empty( $settings['blogs_directory_include_main_site'] ) && (int) $blog['blog_id'] === $main_site_blog_id ) {
+		return true;
+	}
+
+	if ( isset( $settings['blogs_directory_hide_blogs']['private'] ) && 1 == $settings['blogs_directory_hide_blogs']['private'] && 1 !== (int) $blog['blog_public_option'] ) {
+		return true;
+	}
+
+	if ( isset( $settings['blogs_directory_hide_blogs']['pro_site'] ) && 1 == $settings['blogs_directory_hide_blogs']['pro_site'] ) {
+		global $ProSites_Module_PayToBlog, $psts;
+		if ( is_object( $ProSites_Module_PayToBlog ) && is_object( $psts ) && $psts->get_setting( 'ptb_front_disable' ) && function_exists( 'is_pro_site' ) && ! is_pro_site( $blog['blog_id'], 1 ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+	* Durchsucht den gecachten Blogindex und liefert relevante Treffer.
+	*/
+function blogs_directory_search_blogs_indexed( $phrase, array $settings, $limit = 0 ) {
+	$phrase = sanitize_text_field( (string) $phrase );
+	$phrase = trim( preg_replace( '/\s+/u', ' ', $phrase ) );
+	if ( '' === $phrase ) {
+		return array();
+	}
+
+	$terms = array_values(
+		array_filter(
+			array_map(
+				static function ( $term ) {
+					return strtolower( remove_accents( sanitize_text_field( $term ) ) );
+				},
+				preg_split( '/\s+/u', $phrase )
+			)
+		)
+	);
+
+	if ( empty( $terms ) ) {
+		return array();
+	}
+
+	$results = array();
+	foreach ( blogs_directory_get_blog_search_index() as $blog ) {
+		if ( blogs_directory_should_hide_indexed_blog( $blog, $settings ) ) {
+			continue;
+		}
+
+		$title_blob = strtolower( remove_accents( $blog['blogname'] ) );
+		$description_blob = strtolower( remove_accents( $blog['blogdescription'] ) );
+		$search_blob = isset( $blog['search_blob'] ) ? $blog['search_blob'] : $title_blob . ' ' . $description_blob;
+		$score = 0;
+
+		foreach ( $terms as $term ) {
+			if ( false !== strpos( $title_blob, $term ) ) {
+				$score += 2;
+			}
+			if ( false !== strpos( $description_blob, $term ) ) {
+				$score += 1;
+			}
+			if ( false === strpos( $search_blob, $term ) ) {
+				$score = 0;
+				break;
+			}
+		}
+
+		if ( $score > 0 ) {
+			$blog['percent'] = $score;
+			$results[] = $blog;
+		}
+	}
+
+	if ( count( $results ) > 1 ) {
+		usort(
+			$results,
+			static function ( $left, $right ) {
+				if ( $left['percent'] === $right['percent'] ) {
+					return strcasecmp( $left['blogname'], $right['blogname'] );
+				}
+
+				return ( $left['percent'] > $right['percent'] ) ? -1 : 1;
+			}
+		);
+	}
+
+	if ( $limit > 0 ) {
+		return array_slice( $results, 0, absint( $limit ) );
+	}
+
+	return $results;
+}
+
+/**
  * Liefert die Farbpalette fuer eine Verzeichniszeile.
  */
 function blogs_directory_get_row_palette( $use_alternate, array $settings ) {
@@ -267,6 +567,11 @@ function blogs_directory_get_custom_blog_avatar_url( $blog_id, $size ) {
 	}
 
 	$size = blogs_directory_map_avatar_size( $size );
+	$cache_key = 'custom-avatar-url:' . $blog_id . ':' . $size;
+	$cached = blogs_directory_cache_get( $cache_key, 'blogs-directory-branding', 'branding' );
+	if ( false !== $cached ) {
+		return (string) $cached;
+	}
 
 	$upload_dir = blogs_directory_get_avatars_upload_dir();
 	if ( empty( $upload_dir['basedir'] ) || empty( $upload_dir['baseurl'] ) ) {
@@ -289,12 +594,12 @@ function blogs_directory_get_custom_blog_avatar_url( $blog_id, $size ) {
 			$file_path = $avatar_dir . $filename;
 
 			if ( is_file( $file_path ) ) {
-				return trailingslashit( $upload_dir['baseurl'] ) . 'avatars/blog/' . $folder . '/' . $filename;
+				return blogs_directory_cache_set( $cache_key, trailingslashit( $upload_dir['baseurl'] ) . 'avatars/blog/' . $folder . '/' . $filename, 15 * MINUTE_IN_SECONDS, 'blogs-directory-branding', 'branding' );
 			}
 		}
 	}
 
-	return '';
+	return blogs_directory_cache_set( $cache_key, '', 5 * MINUTE_IN_SECONDS, 'blogs-directory-branding', 'branding' );
 }
 
 /**
@@ -308,6 +613,12 @@ function blogs_directory_get_blog_branding_url( $blog_id, $size, $fallback_order
 
 	$size = absint( $size );
 	$fallback_order = in_array( $fallback_order, array( 'site_icon_logo', 'logo_site_icon' ), true ) ? $fallback_order : 'site_icon_logo';
+	$cache_key = 'branding-url:' . $blog_id . ':' . $size . ':' . $fallback_order;
+	$cached = blogs_directory_cache_get( $cache_key, 'blogs-directory-branding', 'branding' );
+	if ( false !== $cached ) {
+		return (string) $cached;
+	}
+
 	switch_to_blog( $blog_id );
 
 	$site_icon_url = get_site_icon_url( $size );
@@ -349,7 +660,7 @@ function blogs_directory_get_blog_branding_url( $blog_id, $size, $fallback_order
 
 	restore_current_blog();
 
-	return $branding_url;
+	return blogs_directory_cache_set( $cache_key, $branding_url, 15 * MINUTE_IN_SECONDS, 'blogs-directory-branding', 'branding' );
 }
 
 /**
@@ -399,23 +710,14 @@ function blogs_directory_get_blog_avatar_html( $blog_id, $size, $alt, $fallback_
  * Holt Bewertungsdurchschnitt und Anzahl aus Site Reviews pro Blog.
  */
 function blogs_directory_get_site_reviews_summary( $blog_id ) {
-	static $runtime_cache = array();
-
 	$blog_id = absint( $blog_id );
 	if ( $blog_id < 1 ) {
 		return array( 'count' => 0, 'average' => 0.0 );
 	}
 
-	if ( isset( $runtime_cache[ $blog_id ] ) ) {
-		return $runtime_cache[ $blog_id ];
-	}
-
-	// Nur echte Ergebnisse (count > 0) aus dem Transient-Cache laden.
-	// Nullergebnisse werden NICHT gecacht, damit spätere Reviews sofort sichtbar werden.
-	$cache_key = 'blogs_directory_reviews_v2_' . $blog_id;
-	$cached = get_site_transient( $cache_key );
-	if ( is_array( $cached ) && isset( $cached['count'] ) && $cached['count'] > 0 ) {
-		$runtime_cache[ $blog_id ] = $cached;
+	$cache_key = 'site-reviews:' . $blog_id;
+	$cached = blogs_directory_cache_get( $cache_key, 'blogs-directory-reviews', 'reviews' );
+	if ( is_array( $cached ) && isset( $cached['count'] ) && isset( $cached['average'] ) ) {
 		return $cached;
 	}
 
@@ -449,14 +751,40 @@ function blogs_directory_get_site_reviews_summary( $blog_id ) {
 		'average' => $average,
 	);
 
-	// Nur cachen wenn wirklich Bewertungen da sind.
-	if ( $count > 0 ) {
-		set_site_transient( $cache_key, $result, 15 * MINUTE_IN_SECONDS );
+	$ttl = $count > 0 ? 15 * MINUTE_IN_SECONDS : 5 * MINUTE_IN_SECONDS;
+
+	return blogs_directory_cache_set( $cache_key, $result, $ttl, 'blogs-directory-reviews', 'reviews' );
+}
+
+/**
+	* Erzeugt einen leichtgewichtigen Auszug ohne the_content-Filter.
+	*/
+function blogs_directory_get_recent_post_excerpt( $post_id, $content_chars ) {
+	$content_chars = absint( $content_chars );
+	if ( $content_chars < 1 ) {
+		return '';
 	}
 
-	$runtime_cache[ $blog_id ] = $result;
+	$excerpt = wp_strip_all_tags( (string) get_post_field( 'post_excerpt', $post_id ) );
+	if ( '' === $excerpt ) {
+		$raw = (string) get_post_field( 'post_content', $post_id );
+		$raw = preg_replace( '/<!--more[^>]*-->.*$/s', '', $raw );
+		$raw = preg_replace( '/<script\b[^>]*>.*?<\/script>/is', '', $raw );
+		$raw = preg_replace( '/<style\b[^>]*>.*?<\/style>/is', '', $raw );
+		$raw = strip_shortcodes( $raw );
+		$excerpt = wp_strip_all_tags( $raw, true );
+	}
 
-	return $result;
+	$excerpt = trim( preg_replace( '/\s+/u', ' ', $excerpt ) );
+	if ( '' === $excerpt ) {
+		return '';
+	}
+
+	if ( function_exists( 'mb_strimwidth' ) ) {
+		return mb_strimwidth( $excerpt, 0, $content_chars, '...' );
+	}
+
+	return substr( $excerpt, 0, $content_chars );
 }
 
 /**
@@ -509,6 +837,11 @@ function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
 	$show_avatars = ! empty( $settings['blogs_directory_recent_posts_show_avatars'] );
 	$avatar_size = isset( $settings['blogs_directory_recent_posts_avatar_size'] ) ? absint( $settings['blogs_directory_recent_posts_avatar_size'] ) : 24;
 	$avatar_size = max( 16, min( 96, $avatar_size ) );
+	$cache_key = 'recent-posts:' . $blog_id . ':' . md5( wp_json_encode( array( $post_type, $number, $title_chars, $content_chars, $show_avatars, $avatar_size ) ) );
+	$cached = blogs_directory_cache_get( $cache_key, 'blogs-directory-recent-posts', 'recent-posts' );
+	if ( false !== $cached ) {
+		return (string) $cached;
+	}
 
 	switch_to_blog( $blog_id );
 
@@ -525,7 +858,7 @@ function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
 	if ( ! $query->have_posts() ) {
 		wp_reset_postdata();
 		restore_current_blog();
-		return '';
+		return blogs_directory_cache_set( $cache_key, '', 5 * MINUTE_IN_SECONDS, 'blogs-directory-recent-posts', 'recent-posts' );
 	}
 
 	$html = '<div class="blogs_dir_recent_posts">';
@@ -556,20 +889,7 @@ function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
 		$item .= '<a href="' . esc_url( $permalink ) . '" class="blogs_dir_recent_posts_link">' . esc_html( $title ) . '</a>';
 
 		if ( $content_chars > 0 ) {
-			// Zuerst manuell gesetzten Excerpt versuchen (enthält keinen More-Tag-Text)
-			$excerpt = wp_strip_all_tags( get_post_field( 'post_excerpt', get_the_ID() ) );
-			if ( '' === $excerpt ) {
-				// Fallback: rohen post_content nehmen, alles ab <!--more ...--> abschneiden
-				$raw = get_post_field( 'post_content', get_the_ID() );
-				$raw = preg_replace( '/<!--more[^>]*-->.*$/s', '', $raw );
-				$excerpt = wp_strip_all_tags( apply_filters( 'the_content', $raw ) );
-			}
-
-			if ( function_exists( 'mb_strimwidth' ) ) {
-				$excerpt = mb_strimwidth( $excerpt, 0, $content_chars, '...' );
-			} else {
-				$excerpt = substr( $excerpt, 0, $content_chars );
-			}
+			$excerpt = blogs_directory_get_recent_post_excerpt( get_the_ID(), $content_chars );
 
 			if ( '' !== $excerpt ) {
 				$item .= '<br /><span class="blogs_dir_recent_posts_excerpt">' . esc_html( $excerpt ) . '</span>';
@@ -587,8 +907,75 @@ function blogs_directory_get_recent_posts_html( $blog_id, array $settings ) {
 	wp_reset_postdata();
 	restore_current_blog();
 
-	return $html;
+	return blogs_directory_cache_set( $cache_key, $html, 5 * MINUTE_IN_SECONDS, 'blogs-directory-recent-posts', 'recent-posts' );
 }
+
+/**
+	* Reagiert auf Post-Aenderungen und invalidiert betroffene Caches.
+	*/
+function blogs_directory_cache_invalidate_on_post_change( $post_id, $post = null ) {
+	if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		return;
+	}
+
+	$post = get_post( $post_id );
+	if ( ! $post instanceof WP_Post ) {
+		blogs_directory_cache_bust( 'recent-posts' );
+		return;
+	}
+
+	if ( 'site-review' === $post->post_type ) {
+		blogs_directory_cache_bust( 'reviews' );
+	}
+
+	blogs_directory_cache_bust( 'recent-posts' );
+}
+
+/**
+	* Invalidation fuer relevante Option-Updates pro Blog.
+	*/
+function blogs_directory_cache_invalidate_on_option_update( $option, $old_value, $value ) {
+	$option = (string) $option;
+
+	if ( in_array( $option, array( 'blogname', 'blogdescription', 'blog_public' ), true ) ) {
+		blogs_directory_cache_bust( 'search' );
+		return;
+	}
+
+	if ( 'site_icon' === $option || 0 === strpos( $option, 'theme_mods_' ) ) {
+		blogs_directory_cache_bust( 'branding' );
+	}
+}
+
+/**
+	* Invalidation fuer Netzwerk-Optionen des Plugins.
+	*/
+function blogs_directory_cache_invalidate_on_site_option_update( $option, $value, $old_value ) {
+	if ( 0 === strpos( (string) $option, 'blogs_directory_' ) ) {
+		blogs_directory_cache_bust( 'all' );
+	}
+}
+
+/**
+	* Invalidation bei Site-Lifecycle-Events im Netzwerk.
+	*/
+function blogs_directory_cache_invalidate_on_site_lifecycle() {
+	blogs_directory_cache_bust( 'search' );
+	blogs_directory_cache_bust( 'domain-map' );
+}
+
+add_action( 'save_post', 'blogs_directory_cache_invalidate_on_post_change', 10, 2 );
+add_action( 'deleted_post', 'blogs_directory_cache_invalidate_on_post_change', 10, 2 );
+add_action( 'trashed_post', 'blogs_directory_cache_invalidate_on_post_change', 10, 2 );
+add_action( 'untrashed_post', 'blogs_directory_cache_invalidate_on_post_change', 10, 2 );
+add_action( 'updated_option', 'blogs_directory_cache_invalidate_on_option_update', 10, 3 );
+add_action( 'updated_site_option', 'blogs_directory_cache_invalidate_on_site_option_update', 10, 3 );
+add_action( 'wpmu_new_blog', 'blogs_directory_cache_invalidate_on_site_lifecycle' );
+add_action( 'archive_blog', 'blogs_directory_cache_invalidate_on_site_lifecycle' );
+add_action( 'unarchive_blog', 'blogs_directory_cache_invalidate_on_site_lifecycle' );
+add_action( 'make_spam_blog', 'blogs_directory_cache_invalidate_on_site_lifecycle' );
+add_action( 'make_ham_blog', 'blogs_directory_cache_invalidate_on_site_lifecycle' );
+add_action( 'delete_blog', 'blogs_directory_cache_invalidate_on_site_lifecycle' );
 
 /**
  * Rendert die Landing-Seite des Blogs-Verzeichnisses.
@@ -647,18 +1034,13 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
 		$blogs = $wpdb->get_results( $query, ARRAY_A );
 		$blogs = apply_filters( 'blogs_directory_blogs_list', $blogs );
 		if ( count($blogs) > 0 ) {
+			$domain_map_lookup = blogs_directory_get_domain_map_lookup( wp_list_pluck( $blogs, 'blog_id' ) );
 			//=================================//
 			foreach ($blogs as $blog){
-                if(defined('DOMAINMAP_TABLE_MAP')) {
-                    $mapped_url_details = $wpdb->get_row($wpdb->prepare( "SELECT * FROM ".DOMAINMAP_TABLE_MAP." WHERE blog_id = %d ORDER BY id ASC LIMIT 1", $blog['blog_id'] ), ARRAY_A);
-
-                    if($mapped_url_details) {
-                        $blog['domain'] = $mapped_url_details['domain'];
-                        $blog['path'] = '/';
-                    }
-                }
-                else
-                    $mapped_url_details = false;
+				if ( isset( $domain_map_lookup[ $blog['blog_id'] ] ) ) {
+					$blog['domain'] = $domain_map_lookup[ $blog['blog_id'] ]['domain'];
+					$blog['path'] = $domain_map_lookup[ $blog['blog_id'] ]['path'];
+				}
 
                 //Hide some blogs
                 if ( blogs_directory_hide_some_blogs( $blog['blog_id'] ) )
@@ -739,95 +1121,9 @@ function blogs_directory_render_landing_content( $content, $blogs_directory, $se
  * Rendert die Suchseite des Blogs-Verzeichnisses.
  */
 function blogs_directory_render_search_content( $content, $blogs_directory, $settings ) {
-	global $wpdb, $current_site;
+	global $current_site;
 	$layout_mode = blogs_directory_get_layout_mode( $settings );
-
-	if ($blogs_directory['page'] == 1){
-		$start = 0;
-	} else {
-		$math = $blogs_directory['page'] - 1;
-		$math = $settings['blogs_directory_per_page'] * $math;
-		$start = $math;
-	}
-
-
-    //get all blogs
-    $query      = "SELECT * FROM " . $wpdb->base_prefix . "blogs";
-	if ( isset( $settings['blogs_directory_hide_blogs']['private'] ) && 1 == $settings['blogs_directory_hide_blogs']['private'] ) {
-		$query .= " WHERE spam = 0 AND deleted = 0 AND archived = '0' AND public = 1";
-	}
-    else
-        $query .= " WHERE spam = 0 AND deleted = 0 AND archived = '0'";
-	if ( $settings['blogs_directory_sort_by'] == 'alphabetically' ) {
-		if ( is_subdomain_install() ) {
-			$query .= " ORDER BY domain ASC";
-		} else {
-			$query .= " ORDER BY path ASC";
-		}
-	} else if ( $settings['blogs_directory_sort_by'] == 'latest' ) {
-		$query .= " ORDER BY blog_id DESC";
-	} else {
-		$query .= " ORDER BY last_updated DESC";
-	}
-    $temp_blogs = $wpdb->get_results( $query, ARRAY_A );
-
-	$blogs = array();
-
-    //search by
-    if ( !empty( $temp_blogs ) ) {
-        foreach ( $temp_blogs as $blog ) {
-
-            //Hide some blogs
-            if ( blogs_directory_hide_some_blogs( $blog['blog_id'] ) )
-                continue;
-
-			if ( ! empty( $settings['blogs_directory_include_main_site'] ) || (int) $current_site->id !== (int) $blog['blog_id'] ) {
-				$search_arr = explode( ' ', $blogs_directory['phrase'] );
-
-				$query      = "SELECT option_name FROM {$wpdb->base_prefix}{$blog['blog_id']}_options WHERE option_name IN ('blogname', 'blogdescription')";
-				for ($i=0; $i<count($search_arr); $i++) {
-					$query .= $wpdb->prepare( " AND option_value LIKE '%%%s%%'", $search_arr[$i]);
-				}
-				$found_words = $wpdb->get_results( $query, ARRAY_A );
-
-				if (count($found_words) == 0)
-					continue;
-
-            $found_word_name = 0;
-			$found_word_description = 0;
-
-			foreach ($found_words as $found_word) {
-				if ($found_word['option_name'] == 'blogname') {
-					$found_word_name++;
-				} else if ($found_word['option_name'] == 'blogdescription') {
-					$found_word_description++;
-				}
-			}
-
-            $blogname           = get_blog_option( $blog['blog_id'], 'blogname', $blog['domain'] . $blog['path'] );
-            $blogdescription    = get_blog_option( $blog['blog_id'], 'blogdescription', $blog['domain'] . $blog['path'] );
-            $percent            = $found_word_name + $found_word_description;
-
-            if ( 0 < $percent ) {
-                $blog['blogname']           = $blogname;
-                $blog['blogdescription']    = $blogdescription;
-                $blog['percent']            = $percent;
-                $blogs[]                    = $blog;
-            }
-		}
-    }
-
-    // sort blogs by percent
-	if (count($blogs) > 1) {
-    	$fn = function ($a, $b) {
-        	if ($a["percent"] == $b["percent"]) {
-            	return 0;
-        	}
-        	return ($a["percent"] > $b["percent"]) ? -1 : 1;
-    		};
-    		usort($blogs, $fn);
-		}
-	}
+	$blogs = blogs_directory_search_blogs_indexed( $blogs_directory['phrase'], $settings );
 
 	$blogs_total = count( $blogs );
 	$per_page = max( 1, absint( $settings['blogs_directory_per_page'] ) );
